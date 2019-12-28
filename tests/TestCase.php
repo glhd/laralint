@@ -1,6 +1,6 @@
 <?php
 
-namespace Galahad\Aire\Tests;
+namespace Galahad\LaraLint\Tests;
 
 use Glhd\LaraLint\Support\LaraLintServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
