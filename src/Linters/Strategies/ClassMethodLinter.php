@@ -3,9 +3,8 @@
 namespace Glhd\LaraLint\Linters\Strategies;
 
 use Glhd\LaraLint\Contracts\Linter;
-use Glhd\LaraLint\Nodes\MethodDeclaration;
 use Microsoft\PhpParser\Node;
-use Microsoft\PhpParser\Node\MethodDeclaration as BaseMethodDeclaration;
+use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 
 abstract class ClassMethodLinter implements Linter
@@ -18,15 +17,15 @@ abstract class ClassMethodLinter implements Linter
 			$this->classDeclaration = $node;
 		}
 		
-		if (null !== $this->classDeclaration && $node instanceof BaseMethodDeclaration) {
-			$this->enterMethod(new MethodDeclaration($node));
+		if (null !== $this->classDeclaration && $node instanceof MethodDeclaration) {
+			$this->enterMethod($node);
 		}
 	}
 	
 	public function exitNode(Node $node) : void
 	{
-		if (null !== $this->classDeclaration && $node instanceof BaseMethodDeclaration) {
-			$this->exitMethod(new MethodDeclaration($node));
+		if (null !== $this->classDeclaration && $node instanceof MethodDeclaration) {
+			$this->exitMethod($node);
 		}
 		
 		if ($node === $this->classDeclaration) {

@@ -1,49 +1,55 @@
 {
-  "name": "glhd/laralint",
-  "description": "Laravel linting framework",
-  "keywords": [
-    "laravel",
-    "lint",
-    "linting"
-  ],
-  "authors": [
-    {
-      "name": "Chris Morrell",
-      "homepage": "http://www.cmorrell.com"
-    }
-  ],
-  "license": "MIT",
-  "require": {
-    "microsoft/tolerant-php-parser": "^0.0.19",
-    "illuminate/support": "^5.7|^6.0",
-    "illuminate/console": "^5.7|^6.0"
-  },
-  "require-dev": {
-    "laravel/framework": "^6.0",
-    "orchestra/testbench": "^4.0",
-    "phpunit/phpunit": "^8.0",
-    "mockery/mockery": "^1.1",
-    "php-coveralls/php-coveralls": "^2.1"
-  },
-  "autoload": {
-    "psr-4": {
-      "Glhd\\LaraLint\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "classmap": [
-      "tests/TestCase.php"
-    ],
-    "psr-4": {
-      "Glhd\\LaraLint\\Tests\\": "tests/"
-    }
-  },
-  "minimum-stability": "stable",
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Glhd\\LaraLint\\Support\\LaraLintServiceProvider"
-      ]
-    }
-  }
+	"name": "glhd/laralint",
+	"description": "Laravel linting framework",
+	"keywords": [
+		"laravel",
+		"lint",
+		"linting"
+	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/inxilpro/microsoft-php-parser-fork"
+		}
+	],
+	"authors": [
+		{
+			"name": "Chris Morrell",
+			"homepage": "http://www.cmorrell.com"
+		}
+	],
+	"license": "MIT",
+	"require": {
+		"microsoft/tolerant-php-parser": "dev-MethodDeclarationModifierGetters",
+		"illuminate/support": "^5.7|^6.0",
+		"illuminate/console": "^5.7|^6.0"
+	},
+	"require-dev": {
+		"laravel/framework": "^6.0",
+		"orchestra/testbench": "^4.0",
+		"phpunit/phpunit": "^8.0",
+		"mockery/mockery": "^1.1",
+		"php-coveralls/php-coveralls": "^2.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Glhd\\LaraLint\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"classmap": [
+			"tests/TestCase.php"
+		],
+		"psr-4": {
+			"Glhd\\LaraLint\\Tests\\": "tests/"
+		}
+	},
+	"minimum-stability": "stable",
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Glhd\\LaraLint\\Support\\LaraLintServiceProvider"
+			]
+		}
+	}
 }

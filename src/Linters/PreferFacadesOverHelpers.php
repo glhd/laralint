@@ -4,7 +4,6 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\Linter;
 use Glhd\LaraLint\Linters\Helpers\CollectsIndividualNodes;
-use Glhd\LaraLint\ResultCollection;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\Expression\CallExpression;
 

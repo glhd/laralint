@@ -6,7 +6,6 @@ use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
-use Glhd\LaraLint\Result;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use RuntimeException;
@@ -28,15 +27,13 @@ class LintCommand extends Command
 				return new $class_name();
 			});
 		
-		// FIXME:
-		
 		$printer = $this->getPrinter();
 		$printer->opening();
 		
 		$this->files()
 			->each(function(SplFileInfo $file) use ($printer, $linters) {
 				$printer->results(
-					$file->getRealPath(), 
+					$file->getRealPath(),
 					FileProcessor::make($file, $linters)->lint()
 				);
 			});
