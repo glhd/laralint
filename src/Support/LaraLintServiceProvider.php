@@ -2,6 +2,7 @@
 
 namespace Glhd\LaraLint\Support;
 
+use Glhd\LaraLint\Commands\InstallCommand;
 use Glhd\LaraLint\Commands\LintCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +22,7 @@ class LaraLintServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 LintCommand::class,
+                InstallCommand::class,
             ]);
         }
     }

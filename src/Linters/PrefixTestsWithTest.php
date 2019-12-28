@@ -11,6 +11,8 @@ class PrefixTestsWithTest extends ClassMethodLinter
 {
 	use FlagsNodesByRuleset;
 	
+	protected const MESSAGE = 'Test methods must start with test_';
+	
 	protected function shouldWalkClass(ClassDeclaration $node) : bool
 	{
 		return preg_match('/Test$/', $node->getNamespacedName()->getFullyQualifiedNameText());
@@ -18,12 +20,10 @@ class PrefixTestsWithTest extends ClassMethodLinter
 	
 	protected function enterMethod(MethodDeclaration $node) : void
 	{
-		$this->flagNodeIfAllRulesMatch(
-			$node,
-			'Test methods must start with test_',
+		$this->flagNodeIfAllRulesMatch($node, static::MESSAGE, [
 			false === $node->isStatic(),
 			$node->isPublic(),
-			0 !== strpos($node->getName(), 'test_')
-		);
+			0 !== strpos($node->getName(), 'test_'),
+		]);
 	}
 }
