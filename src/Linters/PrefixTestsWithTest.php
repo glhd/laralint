@@ -2,14 +2,14 @@
 
 namespace Glhd\LaraLint\Linters;
 
-use Glhd\LaraLint\Linters\Helpers\CollectsNodesByRuleset;
+use Glhd\LaraLint\Linters\Helpers\FlagsNodesByRuleset;
 use Glhd\LaraLint\Linters\Strategies\ClassMethodLinter;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 
 class PrefixTestsWithTest extends ClassMethodLinter
 {
-	use CollectsNodesByRuleset;
+	use FlagsNodesByRuleset;
 	
 	protected function shouldWalkClass(ClassDeclaration $node) : bool
 	{
@@ -18,7 +18,7 @@ class PrefixTestsWithTest extends ClassMethodLinter
 	
 	protected function enterMethod(MethodDeclaration $node) : void
 	{
-		$this->collectNodeIfAllRulesMatch(
+		$this->flagNodeIfAllRulesMatch(
 			$node,
 			'Test methods must start with test_',
 			false === $node->isStatic(),

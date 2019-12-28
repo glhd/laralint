@@ -7,14 +7,14 @@ use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 
-trait CollectsNodesByRuleset
+trait FlagsNodesByRuleset
 {
-	use CollectsIndividualNodes;
+	use FlagsIndividualNodes;
 	
-	protected function collectNodeIfAllRulesMatch(Node $node, string $message, bool ...$rules) : void
+	protected function flagNodeIfAllRulesMatch(Node $node, string $message, bool ...$rules) : void
 	{
 		if (!Collection::make($rules)->contains(false)) {
-			$this->collectNode($node, $message);
+			$this->flagNode($node, $message);
 		}
 	}
 }

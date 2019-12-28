@@ -6,7 +6,7 @@ use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Microsoft\PhpParser\Node;
 
-trait CollectsIndividualNodes
+trait FlagsIndividualNodes
 {
 	protected $individual_results = [];
 	
@@ -15,10 +15,8 @@ trait CollectsIndividualNodes
 		return new ResultCollection($this->individual_results);
 	}
 	
-	protected function collectNode(Node $node, string $message)
+	protected function flagNode(Node $node, string $message) : void
 	{
 		$this->individual_results[] = new Result($node, $message);
-		
-		return $this;
 	}
 }
