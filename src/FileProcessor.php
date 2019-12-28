@@ -14,51 +14,53 @@ class FileProcessor
 	 */
 	protected $file;
 	
-	public function __construct(SplFileInfo $file)
+	/**
+	 * @var \Illuminate\Support\Collection
+	 */
+	protected $linters;
+	
+	public function __construct(SplFileInfo $file, Collection $linters)
 	{
 		$this->file = $file;
+		$this->linters = $linters;
 	}
 	
-	public static function make(SplFileInfo $file) : self
+	public static function make(SplFileInfo $file, Collection $linters) : self
 	{
-		return new static($file);
+		return new static($file, $linters);
 	}
 	
-	public function lint(Collection $linters) : ResultCollection
+	public function lint() : ResultCollection
 	{
-		$parser = new Parser();
-		
 		// TODO: Allow for blade compilation
-		$ast = $parser->parseSourceFile(file_get_contents($this->file->getRealPath()));
+		$ast = (new Parser())->parseSourceFile(file_get_contents($this->file->getRealPath()));
 		
-		$walk = function($nodes, $walk) use ($linters) {
-			foreach ($nodes as $node) {
-				// TODO: Try/catch
-				$linters->each(function(Linter $linter) use ($node) {
-					$linter->enterNode($node);
-				});
-				
-				$walk($node->getChildNodes(), $walk);
-				
-				$linters->each(function(Linter $linter) use ($node) {
-					$linter->leaveNode($node);
-				});
-			}
-		};
+		// We'll walk the entire tree and perform any filtering
+		// or collection logic on all the nodes and tokens
+		$this->walk($ast->getChildNodes());
 		
-		$walk($ast->getChildNodes(), $walk);
-		
-		// $position = PositionUtilities::getLineCharacterPositionFromPosition(
-		// 	$node->getStart(),
-		// 	$node->getFileContents()
-		// );
-		//
-		// dump($node->getNodeKindName(), $position);
-		
+		// Then we'll run the "lint" stage on all the linters to collect
+		// all our results
 		return new ResultCollection(
-			$linters->flatMap(function(Linter $linter) {
+			$this->linters->flatMap(function(Linter $linter) {
 				return $linter->lint();
 			})
 		);
+	}
+	
+	protected function walk($nodes) : void
+	{
+		foreach ($nodes as $node) {
+			// TODO: Try/catch
+			$this->linters->each(function(Linter $linter) use ($node) {
+				$linter->enterNode($node);
+			});
+			
+			$this->walk($node->getChildNodes());
+			
+			$this->linters->each(function(Linter $linter) use ($node) {
+				$linter->exitNode($node);
+			});
+		}
 	}
 }

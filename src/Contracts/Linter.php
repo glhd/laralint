@@ -9,7 +9,7 @@ interface Linter
 {
 	public function enterNode(Node $node) : void;
 	
-	public function lint() : ResultCollection;
+	public function exitNode(Node $node) : void;
 	
-	public function leaveNode(Node $node) : void;
+	public function lint() : ResultCollection;
 }

@@ -23,10 +23,10 @@ abstract class ClassMethodLinter implements Linter
 		}
 	}
 	
-	public function leaveNode(Node $node) : void
+	public function exitNode(Node $node) : void
 	{
 		if (null !== $this->classDeclaration && $node instanceof BaseMethodDeclaration) {
-			$this->leaveMethod(new MethodDeclaration($node));
+			$this->exitMethod(new MethodDeclaration($node));
 		}
 		
 		if ($node === $this->classDeclaration) {
@@ -41,7 +41,7 @@ abstract class ClassMethodLinter implements Linter
 	
 	abstract protected function enterMethod(MethodDeclaration $node) : void;
 	
-	protected function leaveMethod(MethodDeclaration $node) : void
+	protected function exitMethod(MethodDeclaration $node) : void
 	{
 		
 	}

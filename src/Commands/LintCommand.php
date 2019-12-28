@@ -2,14 +2,13 @@
 
 namespace Glhd\LaraLint\Commands;
 
+use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
+use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Glhd\LaraLint\Result;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Microsoft\PhpParser\DiagnosticsProvider;
-use Microsoft\PhpParser\Parser;
-use Microsoft\PhpParser\PositionUtilities;
 use RuntimeException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -17,7 +16,7 @@ use Symfony\Component\Process\Process;
 
 class LintCommand extends Command
 {
-	protected $signature = 'laralint:lint {--path=} {--diff}';
+	protected $signature = 'laralint:lint {filename?} {--path=} {--diff} {--formatter=phpcs} {--encoding=} {--report=} {--extensions=}';
 	
 	protected $description = 'Run LaraLint on your project';
 	
@@ -29,27 +28,32 @@ class LintCommand extends Command
 				return new $class_name();
 			});
 		
+		// FIXME:
+		
+		$printer = $this->getPrinter();
+		$printer->opening();
+		
 		$this->files()
-			->each(function(SplFileInfo $file) use ($linters) {
-				$this->getOutput()->newLine();
-				$this->info($file->getRealPath());
-				
-				$results = FileProcessor::make($file)->lint($linters);
-				
-				if ($results->isNotEmpty()) {
-					$results->each(function(Result $result) {
-						$this->warn($result->getMessage());
-					});
-				} else {
-					$this->info('No issues.');
-				}
+			->each(function(SplFileInfo $file) use ($printer, $linters) {
+				$printer->results(
+					$file->getRealPath(), 
+					FileProcessor::make($file, $linters)->lint()
+				);
 			});
+		
+		$printer->closing();
 	}
 	
 	protected function files() : Collection
 	{
 		if ($this->option('diff')) {
 			return $this->gitDiffFiles();
+		}
+		
+		if ($this->hasArgument('filename')) {
+			return new Collection([
+				new SplFileInfo($this->argument('filename')),
+			]);
 		}
 		
 		return Collection::make(
@@ -76,5 +80,11 @@ class LintCommand extends Command
 			->map(function($filename) {
 				return new SplFileInfo(base_path($filename));
 			});
+	}
+	
+	protected function getPrinter() : Printer
+	{
+		// FIXME:
+		return new PHP_CodeSniffer($this->getOutput());
 	}
 }
