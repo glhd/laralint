@@ -2,29 +2,34 @@
 
 namespace Glhd\LaraLint\Linters;
 
-use Glhd\LaraLint\Contracts\Linter;
+use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Linters\Helpers\FlagsIndividualNodes;
+use Glhd\LaraLint\Linters\Helpers\WalksNodeTypes;
+use Glhd\LaraLint\Linters\Strategies\SimpleNodeLinter;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\Expression\CallExpression;
 
-class PreferFacadesOverHelpers implements Linter
+class PreferFacadesOverHelpers extends SimpleNodeLinter implements ConditionalLinter
 {
-	use FlagsIndividualNodes;
+	use FlagsIndividualNodes, WalksNodeTypes;
+	
+	protected const FACADE_MAP = [
+		'auth' => 'Auth', // TODO
+	];
+	
+	protected $walk_node_types = [
+		CallExpression::class,
+	];
 	
 	public function enterNode(Node $node) : void
 	{
-		if (!$node instanceof CallExpression) {
-			return;
-		}
-		
 		$name = ltrim($node->callableExpression->getText(), '\\');
-		if ('auth' === $name) {
-			$this->flagNode($node, 'Use the Auth facade rather than the auth() helper.');
-		}
-	}
-	
-	public function exitNode(Node $node) : void
-	{
 		
+		foreach (static::FACADE_MAP as $helper => $facade) {
+			if ($name === $helper) {
+				$this->flagNode($node, "Use the {$facade} facade rather than the {$helper}() helper.");
+				return;
+			}
+		}
 	}
 }

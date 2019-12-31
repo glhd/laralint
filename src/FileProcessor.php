@@ -2,8 +2,10 @@
 
 namespace Glhd\LaraLint;
 
+use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\Linter;
 use Illuminate\Support\Collection;
+use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Parser;
 use SplFileInfo;
 
@@ -53,14 +55,25 @@ class FileProcessor
 		foreach ($nodes as $node) {
 			// TODO: Try/catch
 			$this->linters->each(function(Linter $linter) use ($node) {
-				$linter->enterNode($node);
+				if ($this->shouldWalkNode($node, $linter)) {
+					$linter->enterNode($node);
+				}
 			});
 			
 			$this->walk($node->getChildNodes());
 			
 			$this->linters->each(function(Linter $linter) use ($node) {
-				$linter->exitNode($node);
+				if ($this->shouldWalkNode($node, $linter)) {
+					$linter->exitNode($node);
+				}
 			});
 		}
+	}
+	
+	protected function shouldWalkNode(Node $node, Linter $linter) : bool
+	{
+		return ($linter instanceof ConditionalLinter)
+			? $linter->shouldWalkNode($node)
+			: true;
 	}
 }
