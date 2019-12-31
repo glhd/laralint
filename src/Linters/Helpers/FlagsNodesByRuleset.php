@@ -12,7 +12,7 @@ trait FlagsNodesByRuleset
 	
 	protected function flagNodeIfAllRulesMatch(Node $node, string $message, array $rules) : void
 	{
-		if ($this->allRulesMatch()) {
+		if ($this->allRulesMatch($node, $rules)) {
 			$this->flagNode($node, $message);
 		}
 	}
@@ -30,6 +30,6 @@ trait FlagsNodesByRuleset
 			->filter(function(bool $result) {
 				return false === $result;
 			})
-			->isNotEmpty();
+			->isEmpty();
 	}
 }
