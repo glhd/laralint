@@ -6,6 +6,7 @@ use Glhd\LaraLint\Linters\Helpers\FlagsNodesByRuleset;
 use Glhd\LaraLint\Linters\Strategies\ClassMethodLinter;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
+use Microsoft\PhpParser\TokenKind;
 
 class PrefixTestsWithTest extends ClassMethodLinter
 {
@@ -22,7 +23,8 @@ class PrefixTestsWithTest extends ClassMethodLinter
 	{
 		$this->flagNodeIfAllRulesMatch($node, static::MESSAGE, [
 			false === $node->isStatic(),
-			$node->isPublic(),
+			false === $node->hasModifier(TokenKind::ProtectedKeyword),
+			false === $node->hasModifier(TokenKind::PrivateKeyword),
 			0 !== strpos($node->getName(), 'test_'),
 		]);
 	}
