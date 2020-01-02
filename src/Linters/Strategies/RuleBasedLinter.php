@@ -8,6 +8,7 @@ use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
+use ReflectionFunction;
 use RuntimeException;
 
 class RuleBasedLinter extends SimpleNodeLinter
@@ -111,8 +112,12 @@ class RuleBasedLinter extends SimpleNodeLinter
 				};
 			
 			case 'Closure':
-				return function(Node $node) use ($rule) {
-					return (bool) $rule[0]($node);
+				// FIXME: Better error handling
+				$reflect = new ReflectionFunction($rule[0]);
+				$type_hint = (string) $reflect->getParameters()[0]->getType();
+				return function(Node $node) use ($rule, $type_hint) {
+					return get_class($node) === $type_hint
+						&& (bool) $rule[0]($node);
 				};
 			
 			case 'string, string':
