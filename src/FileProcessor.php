@@ -11,6 +11,8 @@ use SplFileInfo;
 
 class FileProcessor
 {
+	public static $debugging = false;
+	
 	/**
 	 * @var \SplFileInfo
 	 */
@@ -20,6 +22,8 @@ class FileProcessor
 	 * @var \Illuminate\Support\Collection
 	 */
 	protected $linters;
+	
+	protected $depth = -1;
 	
 	public function __construct(SplFileInfo $file, Collection $linters)
 	{
@@ -52,8 +56,19 @@ class FileProcessor
 	
 	protected function walk($nodes) : void
 	{
+		$this->depth++;
+		
 		foreach ($nodes as $node) {
 			// TODO: Try/catch
+			
+			if (static::$debugging) {
+				$indent = str_repeat('  ', $this->depth);
+				
+				echo $indent.'>>> ['.get_class($node).'] '.PHP_EOL;
+				$node_text = trim($node->getText());
+				echo $indent.str_replace("\n", "\n{$indent}", $node_text).PHP_EOL;
+			}
+			
 			$this->linters->each(function(Linter $linter) use ($node) {
 				if ($this->shouldWalkNode($node, $linter)) {
 					$linter->enterNode($node);
@@ -62,12 +77,18 @@ class FileProcessor
 			
 			$this->walk($node->getChildNodes());
 			
+			if (static::$debugging) {
+				echo $indent.'<<< ['.get_class($node).']'.PHP_EOL;
+			}
+			
 			$this->linters->each(function(Linter $linter) use ($node) {
 				if ($this->shouldWalkNode($node, $linter)) {
 					$linter->exitNode($node);
 				}
 			});
 		}
+		
+		$this->depth--;
 	}
 	
 	protected function shouldWalkNode(Node $node, Linter $linter) : bool
