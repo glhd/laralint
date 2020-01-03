@@ -7,8 +7,6 @@ use Glhd\LaraLint\Contracts\Matcher;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
-use Microsoft\PhpParser\Node\ClassBaseClause;
-use Microsoft\PhpParser\Node\MethodDeclaration;
 use ReflectionFunction;
 use Throwable;
 
@@ -16,28 +14,28 @@ class OrderedNodeMatcher implements Matcher
 {
 	/**
 	 * This holds all the parsed rules that we're matching against
-	 * 
+	 *
 	 * @var \Illuminate\Support\Collection
 	 */
 	protected $rules;
 	
 	/**
 	 * This tracks the current rule that we're matching against
-	 * 
-	 * @var int 
+	 *
+	 * @var int
 	 */
 	protected $current_rule = 0;
 	
 	/**
 	 * This holds all the nodes that we've matched during this iteration
-	 * 
-	 * @var \Illuminate\Support\Collection 
+	 *
+	 * @var \Illuminate\Support\Collection
 	 */
 	protected $matched_nodes;
 	
 	/**
 	 * This is the callback that gets triggered when all rules have been matched
-	 * 
+	 *
 	 * @var callable
 	 */
 	protected $on_match_callback;
@@ -53,38 +51,6 @@ class OrderedNodeMatcher implements Matcher
 		$this->parseAndAddRule(func_get_args());
 		
 		return $this;
-	}
-	
-	public function withChildMethod($matcher = null) : self
-	{
-		return $this->withChild(function(MethodDeclaration $node) use ($matcher) {
-			if (null === $matcher) {
-				return true;
-			}
-			if (is_string($matcher) && $matcher === $node->getName()) {
-				return true;
-			}
-			if ($matcher instanceof Closure && $matcher($node)) {
-				return true;
-			}
-			return false;
-		});
-	}
-	
-	public function withBaseClass($matcher = null) : self
-	{
-		return $this->withChild(function(ClassBaseClause $node) use ($matcher) {
-			if (null === $matcher) {
-				return true;
-			}
-			if (is_string($matcher) && $matcher === $node->baseClass->getText()) {
-				return true;
-			}
-			if ($matcher instanceof Closure && $matcher($node)) {
-				return true;
-			}
-			return false;
-		});
 	}
 	
 	public function onMatch(callable $callback) : void

@@ -9,14 +9,13 @@ use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\Expression\MemberAccessExpression;
-use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 
 class DoNotApplyMiddlewareInControllers extends MatchingLinter
 {
 	protected function matcher() : Matcher
 	{
-		return $this->orderedMatcher()
+		return $this->classMatcher()
 			->withChild(ClassDeclaration::class)
 			->withBaseClass(function(ClassBaseClause $node) {
 				return preg_match('/Controller$/', $node->baseClass->getText());

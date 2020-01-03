@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
 
 class LintCommand extends Command
 {
-	protected $signature = 'laralint:lint {filename?} {--path=} {--diff} {--printer=} {--encoding=} {--report=} {--extensions=}';
+	protected $signature = 'laralint:lint {filename?} {--diff} {--printer=} {--step}';
 	
 	protected $description = 'Run LaraLint on your project';
 	
@@ -33,10 +33,16 @@ class LintCommand extends Command
 		
 		$this->files()
 			->each(function(SplFileInfo $file) use ($printer, $linters) {
-				$printer->results(
+				$printer->startFile($file->getRealPath());
+				
+				$printer->fileResults(
 					$file->getRealPath(),
 					FileProcessor::make($file, $linters)->lint()
 				);
+				
+				if ($this->option('step') && false === $this->confirm('Continue?', true)) {
+					return false;
+				}
 			});
 		
 		$printer->closing();
@@ -48,10 +54,8 @@ class LintCommand extends Command
 			return $this->gitDiffFiles();
 		}
 		
-		if ($this->hasArgument('filename')) {
-			return new Collection([
-				new SplFileInfo($this->argument('filename')),
-			]);
+		if ($filename = $this->argument('filename')) {
+			return new Collection([new SplFileInfo($filename)]);
 		}
 		
 		return Collection::make(

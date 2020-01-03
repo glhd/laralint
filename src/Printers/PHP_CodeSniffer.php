@@ -27,7 +27,12 @@ class PHP_CodeSniffer extends IlluminatePrinter
 		$this->writeln('</phpcs>');
 	}
 	
-	public function results(string $filename, ResultCollection $results) : void
+	public function startFile(string $filename) : void
+	{
+		// Do nothing
+	}
+	
+	public function fileResults(string $filename, ResultCollection $results) : void
 	{
 		$this->writeln(sprintf(
 			'  <file name="%s" errors="%d" warnings="0" fixable="0">',

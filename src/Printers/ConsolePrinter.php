@@ -35,20 +35,24 @@ class ConsolePrinter extends IlluminatePrinter
 		}
 	}
 	
-	public function results(string $filename, ResultCollection $results) : void
+	public function startFile(string $filename) : void
 	{
-		$this->file_count++;
+		$this->section("\n$filename");
 		
+		$this->file_count++;
+	}
+	
+	public function fileResults(string $filename, ResultCollection $results) : void
+	{
 		if ($results->isEmpty()) {
+			$this->writeln("<info>No issues.\n</info>");
 			return;
 		}
 		
 		$this->result_count += $results->count();
 		
-		$this->section("\n$filename");
-		
 		$this->table(
-			['Line', 'Character', 'Message'],
+			['Line', 'Char', 'Message'],
 			$results->toBase()->map(function(Result $result) {
 				return [
 					$result->getLine(),

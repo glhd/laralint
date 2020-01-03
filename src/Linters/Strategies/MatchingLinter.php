@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Linters\Strategies;
 
 use Glhd\LaraLint\Contracts\Linter;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Matchers\ClassMemberMatcher;
 use Glhd\LaraLint\Linters\Matchers\OrderedNodeMatcher;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
@@ -61,5 +62,10 @@ abstract class MatchingLinter implements Linter
 	protected function orderedMatcher() : OrderedNodeMatcher
 	{
 		return new OrderedNodeMatcher();
+	}
+	
+	protected function classMatcher() : ClassMemberMatcher
+	{
+		return new ClassMemberMatcher();
 	}
 }

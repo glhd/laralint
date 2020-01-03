@@ -10,5 +10,7 @@ interface Printer
 	
 	public function closing() : void;
 	
-	public function results(string $filename, ResultCollection $results) : void;
+	public function startFile(string $filename) : void;
+	
+	public function fileResults(string $filename, ResultCollection $results) : void;
 }
