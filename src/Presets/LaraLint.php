@@ -7,6 +7,7 @@ use Glhd\LaraLint\Linters\AvoidGlobalFacadeAliases;
 use Glhd\LaraLint\Linters\AvoidViewCompact;
 use Glhd\LaraLint\Linters\AvoidViewWith;
 use Glhd\LaraLint\Linters\DoNotApplyMiddlewareInControllers;
+use Glhd\LaraLint\Linters\OrderClassMembers;
 use Glhd\LaraLint\Linters\OrderUseStatementsAlphabetically;
 use Glhd\LaraLint\Linters\PreferAuthId;
 use Glhd\LaraLint\Linters\PreferFacadesOverHelpers;
@@ -26,6 +27,7 @@ class LaraLint implements Preset
 			AvoidViewCompact::class,
 			PreferAuthId::class,
 			AvoidGlobalFacadeAliases::class,
+			OrderClassMembers::class,
 		]);
 	}
 }

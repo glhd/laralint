@@ -46,9 +46,11 @@ class OrderedNodeMatcher implements Matcher
 		return $this;
 	}
 	
-	public function onMatch(callable $callback) : void
+	public function onMatch(callable $callback) : self
 	{
 		$this->on_match_callback = $callback;
+		
+		return $this;
 	}
 	
 	public function enterNode(Node $node) : void
