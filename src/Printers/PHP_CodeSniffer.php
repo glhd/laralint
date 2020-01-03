@@ -1,9 +1,10 @@
-<?php
+<?php /** @noinspection PhpHierarchyChecksInspection */
 
 namespace Glhd\LaraLint\Printers;
 
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
+use Illuminate\Console\OutputStyle;
 
 class PHP_CodeSniffer extends IlluminatePrinter
 {
@@ -36,14 +37,25 @@ class PHP_CodeSniffer extends IlluminatePrinter
 		
 		$results->each(function(Result $result) {
 			$this->writeln(sprintf(
-				'    <error line="%d" column="%d" source="%s" severity="5" fixable="0">%s</error>',
+				'    <error line="%d" column="%d" source="%s" severity="5" fixable="0">',
 				$result->getLine(),
 				$result->getCharacter(),
-				'LaraLint',
-				$result->getMessage()
+				'LaraLint'
 			));
+			$this->writeln("      {$result->getMessage()}");
+			$this->writeln('    </error>');
 		});
 		
 		$this->writeln('  </file>');
+	}
+	
+	protected function write($messages, bool $newline = false, int $type = OutputStyle::OUTPUT_RAW) : void
+	{
+		$this->output->write($messages, $newline, $type);
+	}
+	
+	protected function writeln($messages, int $type = OutputStyle::OUTPUT_RAW) : void
+	{
+		$this->output->writeln($messages, $type);
 	}
 }

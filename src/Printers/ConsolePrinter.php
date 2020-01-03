@@ -1,0 +1,63 @@
+<?php
+
+namespace Glhd\LaraLint\Printers;
+
+use Glhd\LaraLint\Result;
+use Glhd\LaraLint\ResultCollection;
+use Illuminate\Console\OutputStyle;
+use Illuminate\Support\Str;
+
+class ConsolePrinter extends IlluminatePrinter
+{
+	protected $file_count = 0;
+	
+	protected $result_count = 0;
+	
+	public function opening() : void
+	{
+		$this->newLine();
+		$this->writeln('<info>   _                        _</info>');
+		$this->writeln('<info> _|_)                    \_|_)  o</info>');
+		$this->writeln('<info>  |     __,   ,_    __,    |        _  _  _|_</info>');
+		$this->writeln('<info> _|    /  |  /  |  /  |   _|    |  / |/ |  |</info>');
+		$this->writeln('<info> /\___/\_/|_/   |_/\_/|_/(/\___/|_/  |  |_/|_/</info>');
+		$this->newLine();
+	}
+	
+	public function closing() : void
+	{
+		if ($this->result_count) {
+			$warnings = Str::plural('warning', $this->result_count);
+			$files = Str::plural('file', $this->file_count);
+			
+			$this->writeln(" <error> {$this->result_count} total {$warnings} in {$this->file_count} {$files} </error>");
+			$this->newLine();
+		}
+	}
+	
+	public function results(string $filename, ResultCollection $results) : void
+	{
+		$this->file_count++;
+		
+		if ($results->isEmpty()) {
+			return;
+		}
+		
+		$this->result_count += $results->count();
+		
+		$this->section("\n$filename");
+		
+		$this->table(
+			['Line', 'Character', 'Message'],
+			$results->toBase()->map(function(Result $result) {
+				return [
+					$result->getLine(),
+					$result->getCharacter(),
+					$result->getMessage(),
+				];
+			})->toArray()
+		);
+		
+		$this->newLine();
+	}
+}

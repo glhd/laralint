@@ -5,6 +5,7 @@ namespace Glhd\LaraLint\Commands;
 use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
+use Glhd\LaraLint\Printers\ConsolePrinter;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -15,7 +16,7 @@ use Symfony\Component\Process\Process;
 
 class LintCommand extends Command
 {
-	protected $signature = 'laralint:lint {filename?} {--path=} {--diff} {--formatter=phpcs} {--encoding=} {--report=} {--extensions=}';
+	protected $signature = 'laralint:lint {filename?} {--path=} {--diff} {--printer=} {--encoding=} {--report=} {--extensions=}';
 	
 	protected $description = 'Run LaraLint on your project';
 	
@@ -81,7 +82,10 @@ class LintCommand extends Command
 	
 	protected function getPrinter() : Printer
 	{
-		// FIXME:
-		return new PHP_CodeSniffer($this->getOutput());
+		if ('phpcs' === $this->option('printer')) {
+			return new PHP_CodeSniffer($this->getOutput());
+		}
+		
+		return new ConsolePrinter($this->getOutput());
 	}
 }

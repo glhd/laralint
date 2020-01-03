@@ -5,6 +5,9 @@ namespace Glhd\LaraLint\Printers;
 use Glhd\LaraLint\Contracts\Printer;
 use Illuminate\Console\OutputStyle;
 
+/**
+ * @mixin \Illuminate\Console\OutputStyle
+ */
 abstract class IlluminatePrinter implements Printer
 {
 	/**
@@ -17,13 +20,8 @@ abstract class IlluminatePrinter implements Printer
 		$this->output = $output;
 	}
 	
-	protected function write($messages, bool $newline = false, int $type = OutputStyle::OUTPUT_RAW) : void 
+	public function __call($name, $arguments)
 	{
-		$this->output->write($messages, $newline, $type);
-	}
-	
-	protected function writeln($messages, int $type = OutputStyle::OUTPUT_RAW) : void
-	{
-		$this->output->writeln($messages, $type);
+		return $this->output->$name(...$arguments);
 	}
 }

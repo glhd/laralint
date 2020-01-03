@@ -3,6 +3,7 @@
 namespace Glhd\LaraLint\Linters\Matchers;
 
 use Closure;
+use Glhd\LaraLint\Contracts\Matcher;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
@@ -11,7 +12,7 @@ use Microsoft\PhpParser\Node\MethodDeclaration;
 use ReflectionFunction;
 use Throwable;
 
-class OrderedNodeMatcher
+class OrderedNodeMatcher implements Matcher
 {
 	/**
 	 * This holds all the parsed rules that we're matching against
@@ -86,11 +87,9 @@ class OrderedNodeMatcher
 		});
 	}
 	
-	public function onMatch(callable $callback) : self
+	public function onMatch(callable $callback) : void
 	{
 		$this->on_match_callback = $callback;
-		
-		return $this;
 	}
 	
 	public function enterNode(Node $node) : void
@@ -103,13 +102,18 @@ class OrderedNodeMatcher
 		$this->matched_nodes->push($node);
 		
 		// If we've matched all rules, call the callback
-		if ($this->current_rule > $this->rules->count()) {
-			call_user_func_array($this->on_match_callback, $this->matched_nodes->toArray());
+		if ($this->current_rule >= $this->rules->count()) {
+			call_user_func($this->on_match_callback, $this->matched_nodes);
 			
 			// Once we've called the "on match" callback, reset the matcher
 			$this->current_rule = 0;
 			$this->matched_nodes = new Collection();
 		}
+	}
+	
+	public function exitNode(Node $node) : void
+	{
+		// We don't need to worry about exiting a node in this matcher
 	}
 	
 	protected function nodeMatchesCurrentRule(Node $node) : bool
