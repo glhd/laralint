@@ -5,10 +5,10 @@ namespace Glhd\LaraLint\Commands;
 use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
+use Glhd\LaraLint\Printers\CompactPrinter;
 use Glhd\LaraLint\Printers\ConsolePrinter;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 use RuntimeException;
 use SplFileInfo;
@@ -17,7 +17,7 @@ use Symfony\Component\Process\Process;
 
 class LintCommand extends Command
 {
-	protected $signature = 'laralint:lint {filename?} {--diff} {--printer=} {--step} {--step-all}';
+	protected $signature = 'laralint:lint {filename?*} {--diff} {--printer=} {--step} {--step-all}';
 	
 	protected $description = 'Run LaraLint on your project';
 	
@@ -44,7 +44,7 @@ class LintCommand extends Command
 					(
 						($this->option('step') && $results->isNotEmpty())
 						|| $this->option('step-all')
-					) 
+					)
 					&& false === $this->confirm('Continue?', true)
 				) {
 					return false;
@@ -65,7 +65,11 @@ class LintCommand extends Command
 		}
 		
 		if ($filename = $this->argument('filename')) {
-			return new LazyCollection([new SplFileInfo($filename)]);
+			// TODO: Still confirm the extension/etc
+			return LazyCollection::make($filename)
+				->map(function($filename){
+					return new SplFileInfo($filename);
+				});
 		}
 		
 		return LazyCollection::make(
@@ -102,10 +106,15 @@ class LintCommand extends Command
 	
 	protected function getPrinter() : Printer
 	{
-		if ('phpcs' === $this->option('printer')) {
-			return new PHP_CodeSniffer($this->getOutput());
+		switch ($this->option('printer')) {
+			case 'phpcs':
+				return new PHP_CodeSniffer($this->getOutput());
+			
+			case 'compact':
+				return new CompactPrinter($this->getOutput());
+				
+			default:
+				return new ConsolePrinter($this->getOutput());
 		}
-		
-		return new ConsolePrinter($this->getOutput());
 	}
 }

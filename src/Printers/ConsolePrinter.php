@@ -4,7 +4,6 @@ namespace Glhd\LaraLint\Printers;
 
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
-use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Str;
 
 class ConsolePrinter extends IlluminatePrinter
