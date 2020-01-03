@@ -84,13 +84,15 @@ class OrderedNodeMatcher implements Matcher
 			return $node === $rule->node;
 		});
 		
-		foreach ($this->rules as $index => $rule) {
-			if ($index >= $exiting_index) {
-				$rule->node = null;
+		if (false !== $exiting_index) {
+			foreach ($this->rules as $index => $rule) {
+				if ($index >= $exiting_index) {
+					$rule->node = null;
+				}
 			}
+			
+			$this->current_rule_index = max(0, $exiting_index - 1);
 		}
-		
-		$this->current_rule_index = max(0, $exiting_index - 1);
 	}
 	
 	protected function currentRule() : ?stdClass

@@ -2,37 +2,53 @@
 
 namespace Glhd\LaraLint\Linters;
 
-use Glhd\LaraLint\Contracts\ConditionalLinter;
-use Glhd\LaraLint\Linters\Helpers\FlagsIndividualNodes;
-use Glhd\LaraLint\Linters\Helpers\WalksNodeTypes;
-use Glhd\LaraLint\Linters\Strategies\SimpleNodeLinter;
+use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
+use Glhd\LaraLint\Result;
+use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\Expression\CallExpression;
+use SplObjectStorage;
 
-class PreferFacadesOverHelpers extends SimpleNodeLinter implements ConditionalLinter
+class PreferFacadesOverHelpers extends MatchingLinter
 {
-	use FlagsIndividualNodes, WalksNodeTypes;
-	
 	protected const FACADE_MAP = [
 		'auth' => 'Auth', // TODO
 	];
 	
-	public function enterNode(Node $node) : void
+	/**
+	 * @var \SplObjectStorage
+	 */
+	protected $node_map;
+	
+	protected function matcher() : Matcher
 	{
-		$name = ltrim($node->callableExpression->getText(), '\\');
+		$this->node_map = new SplObjectStorage();
 		
-		foreach (static::FACADE_MAP as $helper => $facade) {
-			if ($name === $helper) {
-				$this->flagNode($node, "Use the {$facade} facade rather than the {$helper}() helper.");
-				return;
-			}
-		}
+		return $this->orderedMatcher()
+			->withChild(function(CallExpression $node) {
+				$name = $node->callableExpression->getText();
+				
+				foreach (static::FACADE_MAP as $helper => $facade) {
+					if ($name === $helper) {
+						$this->node_map[$node] = $helper;
+						return true;
+					}
+				}
+				
+				return false;
+			});
 	}
 	
-	protected function walkNodeTypes() : array
+	protected function onMatch(Collection $nodes) : ?Result
 	{
-		return [
-			CallExpression::class,
-		];
+		$node = $nodes->first();
+		$helper = $this->node_map[$node];
+		$facade = static::FACADE_MAP[$helper];
+		
+		return new Result(
+			$node, 
+			"Use the {$facade} facade rather than the {$helper}() helper."
+		);
 	}
 }

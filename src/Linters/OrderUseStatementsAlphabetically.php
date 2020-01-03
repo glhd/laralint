@@ -2,28 +2,20 @@
 
 namespace Glhd\LaraLint\Linters;
 
-use Glhd\LaraLint\Contracts\ConditionalLinter;
-use Glhd\LaraLint\Linters\Helpers\WalksNodeTypes;
-use Glhd\LaraLint\Linters\Strategies\SimpleNodeLinter;
+use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\Statement\NamespaceUseDeclaration;
 
-class OrderUseStatementsAlphabetically extends SimpleNodeLinter implements ConditionalLinter
+class OrderUseStatementsAlphabetically extends MatchingLinter
 {
-	use WalksNodeTypes;
-	
 	/**
 	 * @var NamespaceUseDeclaration[]
 	 */
 	protected $collected_nodes = [];
-	
-	public function enterNode(Node $node) : void
-	{
-		$this->collected_nodes[] = $node;
-	}
 	
 	public function lint() : ResultCollection
 	{
@@ -44,10 +36,15 @@ class OrderUseStatementsAlphabetically extends SimpleNodeLinter implements Condi
 		return new ResultCollection([]);
 	}
 	
-	protected function walkNodeTypes() : array
+	protected function matcher() : Matcher
 	{
-		return [
-			NamespaceUseDeclaration::class,
-		];
+		return $this->orderedMatcher()->withChild(NamespaceUseDeclaration::class);
+	}
+	
+	protected function onMatch(Collection $nodes) : ?Result
+	{
+		$this->collected_nodes[] = $nodes->first();
+		
+		return null;
 	}
 }

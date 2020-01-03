@@ -3,36 +3,43 @@
 namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\FilenameAwareLinter;
-use Glhd\LaraLint\Linters\Helpers\FlagsNodesByRuleset;
-use Glhd\LaraLint\Linters\Strategies\ClassMethodLinter;
+use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
+use Glhd\LaraLint\Result;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 use Microsoft\PhpParser\TokenKind;
 
-class PrefixTestsWithTest extends ClassMethodLinter implements FilenameAwareLinter
+class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 {
-	use FlagsNodesByRuleset;
-	
 	protected $active = true;
 	
 	public function setFilename(string $filename) : void
 	{
-		$this->active = false !== strpos($filename, base_path('tests'));
+		$this->active = false !== strpos($filename, 'tests/');
 	}
 	
-	protected function shouldWalkClass(ClassDeclaration $node) : bool
+	protected function matcher() : Matcher
 	{
-		return $this->active
-			&& preg_match('/Test$/', $node->getNamespacedName()->getFullyQualifiedNameText());
+		return $this->classMatcher()
+			->withChild(function(ClassDeclaration $node) {
+				return $this->active && Str::endsWith($node->getNamespacedName(), 'Test');
+			})
+			->withChild(function(MethodDeclaration $node) {
+				return false === $node->isStatic()
+					&& false === $node->hasModifier(TokenKind::ProtectedKeyword)
+					&& false === $node->hasModifier(TokenKind::PrivateKeyword)
+					&& 0 !== strpos($node->getName(), 'test_');
+			});
 	}
 	
-	protected function enterMethod(MethodDeclaration $node) : void
+	protected function onMatch(Collection $nodes) : ?Result
 	{
-		$this->flagNodeIfAllRulesMatch($node, 'Test methods must start with test_', [
-			false === $node->isStatic(),
-			false === $node->hasModifier(TokenKind::ProtectedKeyword),
-			false === $node->hasModifier(TokenKind::PrivateKeyword),
-			0 !== strpos($node->getName(), 'test_'),
-		]);
+		return new Result(
+			$nodes->last(),
+			'Test methods must start with test_'
+		);
 	}
 }
