@@ -24,7 +24,7 @@ class InstallCommand extends Command
 		$filename = base_path('laralint-phpcs');
 		
 		$template = "#!/usr/bin/env bash\n\n"
-			. "php artisan laralint:lint \"$@\" --printer=phpcs\n";
+			. "php artisan laralint:lint \"$1\" --printer=phpcs\n";
 		
 		file_put_contents($filename, $template);
 		chmod($filename, 0777);

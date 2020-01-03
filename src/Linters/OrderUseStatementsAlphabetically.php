@@ -20,10 +20,6 @@ class OrderUseStatementsAlphabetically extends SimpleNodeLinter implements Condi
 	 */
 	protected $collected_nodes = [];
 	
-	protected $walk_node_types = [
-		NamespaceUseDeclaration::class,
-	];
-	
 	public function enterNode(Node $node) : void
 	{
 		$this->collected_nodes[] = $node;
@@ -44,5 +40,12 @@ class OrderUseStatementsAlphabetically extends SimpleNodeLinter implements Condi
 		}
 		
 		return new ResultCollection([]);
+	}
+	
+	protected function walkNodeTypes() : array
+	{
+		return [
+			NamespaceUseDeclaration::class,
+		];
 	}
 }

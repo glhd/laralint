@@ -17,10 +17,6 @@ class PreferFacadesOverHelpers extends SimpleNodeLinter implements ConditionalLi
 		'auth' => 'Auth', // TODO
 	];
 	
-	protected $walk_node_types = [
-		CallExpression::class,
-	];
-	
 	public function enterNode(Node $node) : void
 	{
 		$name = ltrim($node->callableExpression->getText(), '\\');
@@ -31,5 +27,12 @@ class PreferFacadesOverHelpers extends SimpleNodeLinter implements ConditionalLi
 				return;
 			}
 		}
+	}
+	
+	protected function walkNodeTypes() : array
+	{
+		return [
+			CallExpression::class,
+		];
 	}
 }
