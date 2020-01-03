@@ -2,6 +2,7 @@
 
 namespace Glhd\LaraLint\Linters;
 
+use Glhd\LaraLint\Linters\Matchers\OrderedNodeMatcher;
 use Glhd\LaraLint\Linters\Strategies\RuleBuilderLinter;
 use Glhd\LaraLint\Result;
 use Microsoft\PhpParser\Node\ClassBaseClause;
@@ -10,9 +11,9 @@ use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 
 class DoNotApplyMiddlewareInControllers extends RuleBuilderLinter
 {
-	protected function buildRules() : RuleBuilder
+	protected function buildRules() : OrderedNodeMatcher
 	{
-		return RuleBuilder::startingWithNode(ClassDeclaration::class)
+		return OrderedNodeMatcher::startingWithNode(ClassDeclaration::class)
 			->withBaseClass(function(ClassBaseClause $node) {
 				return preg_match('/Controller$/', $node->baseClass->getText());
 			})

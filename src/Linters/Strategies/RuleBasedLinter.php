@@ -13,12 +13,7 @@ use RuntimeException;
 
 class RuleBasedLinter extends SimpleNodeLinter
 {
-	/**
-	 * @var \Illuminate\Support\Collection
-	 */
-	protected $rules;
 	
-	protected $current_rule = 0;
 	
 	/**
 	 * @var callable
@@ -36,15 +31,10 @@ class RuleBasedLinter extends SimpleNodeLinter
 			return $this->parseRule($rule);
 		}, $rules));
 		
-		$this->matched_nodes = new Collection();
+		
 	}
 	
-	public function addRule($rule) : self
-	{
-		$this->rules->push($this->parseRule($rule));
-		
-		return $this;
-	}
+	
 	
 	public function onMatch(callable $callback) : self
 	{
@@ -53,13 +43,7 @@ class RuleBasedLinter extends SimpleNodeLinter
 		return $this;
 	}
 	
-	public function enterNode(Node $node) : void
-	{
-		if ($this->nodeMatchesCurrentRule($node)) {
-			$this->current_rule++;
-			$this->matched_nodes[] = $node;
-		}
-	}
+	
 	
 	public function lint() : ResultCollection
 	{
@@ -86,54 +70,7 @@ class RuleBasedLinter extends SimpleNodeLinter
 		throw new RuntimeException('The closure provided to RuleBasedLinter::onMatch must return a Result or ResultCollection.');
 	}
 	
-	protected function nodeMatchesCurrentRule(Node $node) : bool 
-	{
-		return isset($this->rules[$this->current_rule])
-			&& call_user_func($this->rules[$this->current_rule], $node);
-	}
 	
-	protected function parseRule(array $rule) : Closure
-	{
-		// Parse the rule arguments into a signature for easier matching
-		$signature = Collection::make($rule)
-			->map(function($argument) {
-				$type = gettype($argument);
-				return 'object' === $type
-					? class_basename($argument)
-					: $type;
-			})
-			->implode(', ');
-		
-		// Match based on the signature
-		switch ($signature) {
-			case 'string':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $rule[0];
-				};
-			
-			case 'Closure':
-				// FIXME: Better error handling
-				$reflect = new ReflectionFunction($rule[0]);
-				$type_hint = (string) $reflect->getParameters()[0]->getType();
-				return function(Node $node) use ($rule, $type_hint) {
-					return get_class($node) === $type_hint
-						&& (bool) $rule[0]($node);
-				};
-			
-			case 'string, string':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $rule[0]
-						&& $node->getText() === $rule[1];
-				};
-			
-			case 'string, Closure':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $rule[0]
-						&& $rule[1]($node);
-				};
-				
-			default:
-				throw new InvalidArgumentException("Unknown rule signature: '$signature'");
-		}
-	}
+	
+	
 }

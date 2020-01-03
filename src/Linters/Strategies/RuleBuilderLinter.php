@@ -3,7 +3,7 @@
 namespace Glhd\LaraLint\Linters\Strategies;
 
 use Glhd\LaraLint\Contracts\Linter;
-use Glhd\LaraLint\Linters\RuleBuilder;
+use Glhd\LaraLint\Linters\Matchers\OrderedNodeMatcher;
 use Glhd\LaraLint\ResultCollection;
 use Microsoft\PhpParser\Node;
 
@@ -32,5 +32,5 @@ abstract class RuleBuilderLinter implements Linter
 		return $this->builder->getLinter()->lint();
 	}
 	
-	abstract protected function buildRules() : RuleBuilder;
+	abstract protected function buildRules() : OrderedNodeMatcher;
 }
