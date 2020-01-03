@@ -34,6 +34,9 @@ class PHP_CodeSniffer extends IlluminatePrinter
 	
 	public function fileResults(string $filename, ResultCollection $results) : void
 	{
+		// TODO: Someday provide diff support:
+		// https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Fixer.php#L227
+		
 		$this->writeln(sprintf(
 			'  <file name="%s" errors="%d" warnings="0" fixable="0">',
 			$filename,
