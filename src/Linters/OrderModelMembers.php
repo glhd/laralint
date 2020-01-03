@@ -2,49 +2,37 @@
 
 namespace Glhd\LaraLint\Linters;
 
+use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Strategies\MatchOrderingLinter;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Microsoft\PhpParser\Node;
+use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\MethodDeclaration;
+use Microsoft\PhpParser\ResolvedName;
 use Throwable;
 
-class OrderModelMembers extends MatchOrderingLinter
+class OrderModelMembers extends MatchOrderingLinter implements ConditionalLinter
 {
 	use EvaluatesNodes;
 	
-	protected const RELATIONSHIP_HELPERS = [
-		'return $this->hasOne(',
-		'return $this->hasOneThrough(',
-		'return $this->morphOne(',
-		'return $this->belongsTo(',
-		'return $this->morphTo(',
-		'return $this->hasMany(',
-		'return $this->hasManyThrough(',
-		'return $this->morphMany(',
-		'return $this->belongsToMany(',
-		'return $this->morphToMany(',
-		'return $this->morphedByMany(',
-	];
+	protected $active = false;
 	
-	protected const RELATIONSHIP_CLASSES = [
-		'Illuminate\\Database\\Eloquent\\Relations\\BelongsTo',
-		'Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany',
-		'Illuminate\\Database\\Eloquent\\Relations\\HasMany',
-		'Illuminate\\Database\\Eloquent\\Relations\\HasManyThrough',
-		'Illuminate\\Database\\Eloquent\\Relations\\HasOne',
-		'Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany',
-		'Illuminate\\Database\\Eloquent\\Relations\\HasOneThrough',
-		'Illuminate\\Database\\Eloquent\\Relations\\MorphMany',
-		'Illuminate\\Database\\Eloquent\\Relations\\MorphOne',
-		'Illuminate\\Database\\Eloquent\\Relations\\MorphOneOrMany',
-		'Illuminate\\Database\\Eloquent\\Relations\\MorphPivot',
-		'Illuminate\\Database\\Eloquent\\Relations\\MorphTo',
-		'Illuminate\\Database\\Eloquent\\Relations\\MorphToMany',
-		'Illuminate\\Database\\Eloquent\\Relations\\Pivot',
-	];
-	
-	// FIXME: NEEDS TO BE SCOPED TO CONTROLLERS
+	public function shouldWalkNode(Node $node) : bool
+	{
+		if ($node instanceof ClassBaseClause && $node->baseClass) {
+			$resolved = $node->baseClass->getResolvedName();
+			$extends = $resolved instanceof ResolvedName
+				? $resolved->getFullyQualifiedNameText()
+				: (string) $resolved;
+			
+			$this->active = in_array($extends, Config::get('laralint.models', []));
+		}
+		
+		return $this->active;
+	}
 	
 	protected function matchers() : Collection
 	{
@@ -69,7 +57,8 @@ class OrderModelMembers extends MatchOrderingLinter
 					
 					// First check if a relationship return type has been declared
 					if ($node->returnType) {
-						foreach (static::RELATIONSHIP_CLASSES as $class_name) {
+						$relationships = Config::get('laralint.relationships', []);
+						foreach ($relationships as $class_name) {
 							try {
 								$qualified_return_type = $node->returnType->getResolvedName()->getFullyQualifiedNameText();
 								
@@ -84,7 +73,7 @@ class OrderModelMembers extends MatchOrderingLinter
 					
 					// If not, check to see if a relationship method was called
 					// inside of the method body
-					return Str::contains($node->getText(), static::RELATIONSHIP_HELPERS);
+					return Str::contains($node->getText(), Config::get('laralint.relationship_helpers', []));
 				}),
 			
 			'scope' => $this->orderedMatcher()
@@ -93,5 +82,4 @@ class OrderModelMembers extends MatchOrderingLinter
 				}),
 		]);
 	}
-	
 }
