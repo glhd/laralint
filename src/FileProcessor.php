@@ -3,6 +3,7 @@
 namespace Glhd\LaraLint;
 
 use Glhd\LaraLint\Contracts\ConditionalLinter;
+use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Linter;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
@@ -28,7 +29,15 @@ class FileProcessor
 	public function __construct(SplFileInfo $file, Collection $linters)
 	{
 		$this->file = $file;
-		$this->linters = $linters;
+		$this->linters = $linters->map(function(string $class_name) {
+			$linter = new $class_name();
+			
+			if ($linter instanceof FilenameAwareLinter) {
+				$linter->setFilename($this->file->getRealPath());
+			}
+			
+			return $linter;
+		});
 	}
 	
 	public static function make(SplFileInfo $file, Collection $linters) : self
