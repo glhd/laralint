@@ -53,11 +53,11 @@ class ConsolePrinter extends IlluminatePrinter
 		
 		$this->table(
 			['Line', 'Char', 'Message'],
-			$results->toBase()->map(function(Result $result) {
+			$results->toBase()->map(function(Result $result) use ($filename) {
 				return [
-					$result->getLine(),
+					"<href=phpstorm://open?file={$filename}&line={$result->getLine()}>{$result->getLine()}</>",
 					$result->getCharacter(),
-					$result->getMessage(),
+					"<href=phpstorm://open?file={$filename}&line={$result->getLine()}>{$result->getMessage()}</>",
 				];
 			})->toArray()
 		);
