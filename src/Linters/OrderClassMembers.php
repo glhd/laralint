@@ -83,7 +83,7 @@ class OrderClassMembers extends MatchOrderingLinter
 				}),
 			
 			'protected static method' => $this->orderedMatcher()
-				->withChild(function(PMethodDeclaration $node) {
+				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& $this->isStatic($node);
 				}),
@@ -98,27 +98,29 @@ class OrderClassMembers extends MatchOrderingLinter
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node)
-						&& 0 !== stripos($node->getName(), '__');
+						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
 			'protected method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node)
-						&& 0 !== stripos($node->getName(), '__');
+						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
 			'private method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node)
-						&& 0 !== stripos($node->getName(), '__');
+						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
 			'magic method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
+					$name = $node->getName();
 					return false === $this->isStatic($node)
-						&& 0 === stripos($node->getName(), '__');
+						&& '__construct' !== $name
+						&& 0 === strpos($name, '__');
 				}),
 		]);
 	}
