@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
 use ReflectionFunction;
+use stdClass;
 use Throwable;
 
 class OrderedNodeMatcher implements Matcher
@@ -24,14 +25,7 @@ class OrderedNodeMatcher implements Matcher
 	 *
 	 * @var int
 	 */
-	protected $current_rule = 0;
-	
-	/**
-	 * This holds all the nodes that we've matched during this iteration
-	 *
-	 * @var \Illuminate\Support\Collection
-	 */
-	protected $matched_nodes;
+	protected $current_rule_index = 0;
 	
 	/**
 	 * This is the callback that gets triggered when all rules have been matched
@@ -43,7 +37,6 @@ class OrderedNodeMatcher implements Matcher
 	public function __construct()
 	{
 		$this->rules = new Collection();
-		$this->matched_nodes = new Collection();
 	}
 	
 	public function withChild($matcher) : self
@@ -64,33 +57,60 @@ class OrderedNodeMatcher implements Matcher
 			return;
 		}
 		
-		$this->current_rule++;
-		$this->matched_nodes->push($node);
+		// Update current rule before incrementing
+		$this->currentRule()->node = $node;
+		
+		// Then increment current rule
+		$this->current_rule_index++;
 		
 		// If we've matched all rules, call the callback
-		if ($this->current_rule >= $this->rules->count()) {
-			call_user_func($this->on_match_callback, $this->matched_nodes);
+		if ($this->current_rule_index >= $this->rules->count()) {
+			call_user_func($this->on_match_callback, $this->rules->map->node);
 			
 			// Once we've called the "on match" callback, reset the matcher
-			$this->current_rule = 0;
-			$this->matched_nodes = new Collection();
+			$this->current_rule_index = 0;
+			
+			// Reset all our rules
+			$this->rules = $this->rules->map(function(stdClass $rule) {
+				$rule->node = null;
+				return $rule;
+			});
 		}
 	}
 	
 	public function exitNode(Node $node) : void
 	{
-		// We don't need to worry about exiting a node in this matcher
+		$exiting_index = $this->rules->search(function($rule) use ($node) {
+			return $node === $rule->node;
+		});
+		
+		foreach ($this->rules as $index => $rule) {
+			if ($index >= $exiting_index) {
+				$rule->node = null;
+			}
+		}
+		
+		$this->current_rule_index = max(0, $exiting_index - 1);
+	}
+	
+	protected function currentRule() : ?stdClass
+	{
+		return $this->rules->get($this->current_rule_index);
 	}
 	
 	protected function nodeMatchesCurrentRule(Node $node) : bool
 	{
-		return $this->rules->has($this->current_rule)
-			&& call_user_func($this->rules[$this->current_rule], $node);
+		return ($current_rule = $this->currentRule())
+			&& call_user_func($current_rule->callback, $node);
 	}
 	
 	protected function parseAndAddRule(array $rule) : self
 	{
-		$this->rules->push($this->parseRule($rule));
+		$this->rules->push((object) [
+			'node' => null,
+			'depth' => 0,
+			'callback' => $this->parseRule($rule),
+		]);
 		
 		return $this;
 	}
