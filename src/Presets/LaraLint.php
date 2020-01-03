@@ -3,6 +3,8 @@
 namespace Glhd\LaraLint\Presets;
 
 use Glhd\LaraLint\Contracts\Preset;
+use Glhd\LaraLint\Linters\AvoidViewCompact;
+use Glhd\LaraLint\Linters\AvoidViewWith;
 use Glhd\LaraLint\Linters\DoNotApplyMiddlewareInControllers;
 use Glhd\LaraLint\Linters\OrderUseStatementsAlphabetically;
 use Glhd\LaraLint\Linters\PreferFacadesOverHelpers;
@@ -18,6 +20,8 @@ class LaraLint implements Preset
 			PreferFacadesOverHelpers::class,
 			OrderUseStatementsAlphabetically::class,
 			DoNotApplyMiddlewareInControllers::class,
+			AvoidViewWith::class,
+			AvoidViewCompact::class,
 		]);
 	}
 }

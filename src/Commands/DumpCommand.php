@@ -5,7 +5,9 @@ namespace Glhd\LaraLint\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
+use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Parser;
+use Microsoft\PhpParser\Token;
 
 class DumpCommand extends Command
 {
@@ -21,7 +23,7 @@ class DumpCommand extends Command
 		$ast = (new Parser())->parseSourceFile(file_get_contents($filename));
 		
 		$this->getOutput()->newLine();
-		$this->walk($ast->getChildNodes());
+		$this->walk($ast->getChildNodesAndTokens());
 		$this->getOutput()->newLine();
 	}
 	
@@ -32,9 +34,17 @@ class DumpCommand extends Command
 		$indent = str_repeat('┃   ', $this->depth);
 		
 		foreach ($nodes as $i => $node) {
-			$node_kind_length = strlen($node->getNodeKindName());
+			if ($node instanceof Node) {
+				$node_name = $node->getNodeKindName().' (Node)';
+			} else if ($node instanceof Token) {
+				$node_name = Token::getTokenKindNameFromValue($node->kind).' (Token)';
+			} else {
+				$node_name = get_class($node);
+			}
 			
-			$code_lines = Collection::make(explode("\n", $node->getText()))
+			$node_kind_length = strlen($node_name);
+			
+			$code_lines = Collection::make(explode("\n", "\n".trim($node->getText(), "\n\r")."\n"))
 				->map(function($line) {
 					return str_replace("\t", '  ', rtrim($line)).'  ';
 				});
@@ -48,10 +58,7 @@ class DumpCommand extends Command
 			$dashes = $longest_line > ($node_kind_length + 5)
 				? str_repeat('━', $longest_line - $node_kind_length - 5)
 				: '';
-			$this->writeln("{$indent}┏━━ <info>{$node->getNodeKindName()}</info> ━━{$dashes}┓");
-			
-			// $this->writeln("{$indent}┃");
-			// $this->writeln("{$indent}┃ longest: {$longest_line}, len: {$node_kind_length}");
+			$this->writeln("{$indent}┏━━ <info>{$node_name}</info> ━━{$dashes}┓");
 			
 			$this->writeln(
 				$code_lines->map(function($line) use ($indent, $longest_line, $node_kind_length) {
@@ -60,9 +67,9 @@ class DumpCommand extends Command
 				})
 			);
 			
-			// $this->writeln("{$indent}┃");
-			
-			$this->walk($node->getChildNodes());
+			if ($node instanceof Node) {
+				$this->walk($node->getChildNodes());
+			}
 			
 			$dashes = str_repeat('━', max($node_kind_length + 4, $longest_line));
 			$this->writeln("{$indent}┗━━{$dashes}┛");
