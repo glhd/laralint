@@ -2,17 +2,18 @@
 
 namespace Glhd\LaraLint\Linters;
 
+use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Strategies\MatchOrderingLinter;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node\ClassConstDeclaration;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\PropertyDeclaration;
 use Microsoft\PhpParser\Node\TraitUseClause;
-use Microsoft\PhpParser\Token;
-use Microsoft\PhpParser\TokenKind;
 
 class OrderClassMembers extends MatchOrderingLinter
 {
+	use EvaluatesNodes;
+	
 	protected function matchers() : Collection
 	{
 		return new Collection([
@@ -120,34 +121,5 @@ class OrderClassMembers extends MatchOrderingLinter
 						&& 0 === stripos($node->getName(), '__');
 				}),
 		]);
-	}
-	
-	protected function isStatic($node) : bool
-	{
-		return $this->hasModifier($node, TokenKind::StaticKeyword);
-	}
-	
-	protected function isPublic($node) : bool
-	{
-		return false === $this->hasModifier($node, TokenKind::ProtectedKeyword)
-			&& false === $this->hasModifier($node, TokenKind::PrivateKeyword);
-	}
-	
-	protected function isProtected($node) : bool
-	{
-		return $this->hasModifier($node, TokenKind::ProtectedKeyword);
-	}
-	
-	protected function isPrivate($node) : bool
-	{
-		return $this->hasModifier($node, TokenKind::PrivateKeyword);
-	}
-	
-	protected function hasModifier($node, $kind) : bool
-	{
-		return Collection::make($node->modifiers)
-			->contains(function(Token $modifier) use ($kind) {
-				return $modifier->kind === $kind;
-			});
 	}
 }

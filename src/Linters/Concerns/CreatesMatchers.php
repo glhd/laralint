@@ -1,6 +1,6 @@
 <?php
 
-namespace Glhd\LaraLint\Linters\Strategies\Concerns;
+namespace Glhd\LaraLint\Linters\Concerns;
 
 use Glhd\LaraLint\Linters\Matchers\ClassMemberMatcher;
 use Glhd\LaraLint\Linters\Matchers\OrderedNodeMatcher;

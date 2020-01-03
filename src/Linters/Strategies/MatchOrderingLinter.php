@@ -3,9 +3,9 @@
 namespace Glhd\LaraLint\Linters\Strategies;
 
 use Glhd\LaraLint\Contracts\Linter;
+use Glhd\LaraLint\Linters\Concerns\CreatesMatchers;
 use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Matchers\OrderedNodeMatcher;
-use Glhd\LaraLint\Linters\Strategies\Concerns\CreatesMatchers;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
