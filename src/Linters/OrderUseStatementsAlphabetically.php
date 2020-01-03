@@ -28,7 +28,9 @@ class OrderUseStatementsAlphabetically extends SimpleNodeLinter implements Condi
 	public function lint() : ResultCollection
 	{
 		$all_nodes = new Collection($this->collected_nodes);
-		$all_statements = $all_nodes->map->getText();
+		$all_statements = $all_nodes->map(function(Node $node) {
+			return strtolower($node->getText());
+		});
 		$ordered_statements = $all_statements->sort();
 		
 		if ($all_statements->implode(' ') !== $ordered_statements->implode(' ')) {
