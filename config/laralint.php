@@ -3,13 +3,55 @@
 use Glhd\LaraLint\Presets\LaraLint;
 
 return [
+	/*
+	|--------------------------------------------------------------------------
+	| LaraLint Preset
+	|--------------------------------------------------------------------------
+	|
+	| This is the preset that you'd like to use. If one of the provided presets
+	| does not suit your needs, simply write your own that implements the
+	| Glhd\LaraLint\Contracts\Preset interface.
+	|
+	*/
 	'preset' => LaraLint::class,
 	
+	/*
+	|--------------------------------------------------------------------------
+	| Maximum Allowed Non-RESTful Methods Inside a RESTful Controller
+	|--------------------------------------------------------------------------
+	|
+	| The PreferFullyRestfulControllers linter will flag controllers that
+	| combine both RESTful and non-RESTful methods. Set this to the number of
+	| non-RESTful methods you will allow inside a controller that has at least
+	| one RESTful method (index/create/store/show/etc).
+	|
+	*/
+	'max_non_restful_methods' => 1,
+	
+	/*
+	|--------------------------------------------------------------------------
+	| Model Class Names
+	|--------------------------------------------------------------------------
+	|
+	| Some linters should only run on models. If you have additional classes
+	| that should be considered models, add them here.
+	|
+	*/
 	'models' => [
 		'App\\Model',
 		'Illuminate\\Database\\Eloquent\\Model',
 	],
 	
+	/*
+	|--------------------------------------------------------------------------
+	| Relationship Class Names
+	|--------------------------------------------------------------------------
+	|
+	| Some linters determine whether a model method is a relationship by
+	| checking its return type. If you have custom relationship classes, add
+	| them here.
+	|
+	*/
 	'relationships' => [
 		'Illuminate\\Database\\Eloquent\\Relations\\BelongsTo',
 		'Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany',
@@ -27,7 +69,17 @@ return [
 		'Illuminate\\Database\\Eloquent\\Relations\\Pivot',
 	],
 	
-	'relationship_helpers' => [
+	/*
+	|--------------------------------------------------------------------------
+	| Relationship Heuristics
+	|--------------------------------------------------------------------------
+	|
+	| Some linters determine whether a model method is a relationship by
+	| looking for certain strings inside the method's body. If you have custom
+	| helper methods or would like to add additional heuristics, do so here. 
+	|
+	*/
+	'relationship_heuristics' => [
 		'return $this->hasOne(',
 		'return $this->hasOneThrough(',
 		'return $this->morphOne(',

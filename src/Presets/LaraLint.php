@@ -12,6 +12,7 @@ use Glhd\LaraLint\Linters\OrderModelMembers;
 use Glhd\LaraLint\Linters\OrderUseStatementsAlphabetically;
 use Glhd\LaraLint\Linters\PreferAuthId;
 use Glhd\LaraLint\Linters\PreferFacadesOverHelpers;
+use Glhd\LaraLint\Linters\PreferFullyRestfulControllers;
 use Glhd\LaraLint\Linters\PrefixTestsWithTest;
 use Illuminate\Support\Collection;
 
@@ -30,6 +31,7 @@ class LaraLint implements Preset
 			AvoidGlobalFacadeAliases::class,
 			OrderClassMembers::class,
 			OrderModelMembers::class,
+			PreferFullyRestfulControllers::class,
 		]);
 	}
 }

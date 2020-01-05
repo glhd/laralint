@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Linters\Matchers;
 
 use Closure;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Matchers\Concerns\HasOnMatchCallbacks;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
@@ -11,8 +12,10 @@ use ReflectionFunction;
 use stdClass;
 use Throwable;
 
-class OrderedNodeMatcher implements Matcher
+class TreeMatcher implements Matcher
 {
+	use HasOnMatchCallbacks;
+	
 	/**
 	 * This holds all the parsed rules that we're matching against
 	 *
@@ -27,13 +30,6 @@ class OrderedNodeMatcher implements Matcher
 	 */
 	protected $current_rule_index = 0;
 	
-	/**
-	 * This is the callback that gets triggered when all rules have been matched
-	 *
-	 * @var callable
-	 */
-	protected $on_match_callback;
-	
 	public function __construct()
 	{
 		$this->rules = new Collection();
@@ -42,13 +38,6 @@ class OrderedNodeMatcher implements Matcher
 	public function withChild($matcher) : self
 	{
 		$this->parseAndAddRule(func_get_args());
-		
-		return $this;
-	}
-	
-	public function onMatch(callable $callback) : self
-	{
-		$this->on_match_callback = $callback;
 		
 		return $this;
 	}
@@ -65,14 +54,14 @@ class OrderedNodeMatcher implements Matcher
 		// Then increment current rule
 		$this->current_rule_index++;
 		
-		// If we've matched all rules, call the callback
-		if ($this->current_rule_index >= $this->rules->count()) {
-			call_user_func($this->on_match_callback, $this->rules->map->node);
+		// If we have no more rule, then we have a match
+		if (null === $this->currentRule()) {
+			$this->triggerMatch($this->rules->map->node);
 			
-			// Once we've called the "on match" callback, reset the matcher
+			// Once we've called the "on match" callbacks, reset the matcher
 			$this->current_rule_index = 0;
 			
-			// Reset all our rules
+			// And reset all our rules
 			$this->rules = $this->rules->map(function(stdClass $rule) {
 				$rule->node = null;
 				return $rule;

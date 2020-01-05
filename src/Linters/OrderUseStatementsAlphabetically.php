@@ -3,13 +3,13 @@
 namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\Matcher;
-use Glhd\LaraLint\Linters\Strategies\MatchCollectingLinter;
+use Glhd\LaraLint\Linters\Strategies\CollectingLinter;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node\Statement\NamespaceUseDeclaration;
 
-class OrderUseStatementsAlphabetically extends MatchCollectingLinter
+class OrderUseStatementsAlphabetically extends CollectingLinter
 {
 	public function lintCollectedNodes(Collection $all_nodes) : ResultCollection
 	{

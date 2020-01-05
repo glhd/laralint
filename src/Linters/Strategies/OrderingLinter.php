@@ -3,15 +3,18 @@
 namespace Glhd\LaraLint\Linters\Strategies;
 
 use Glhd\LaraLint\Contracts\Linter;
+use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Concerns\CreatesMatchers;
 use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
-use Glhd\LaraLint\Linters\Matchers\OrderedNodeMatcher;
+use Glhd\LaraLint\Linters\Matchers\FirstMatchAggregateMatcher;
+use Glhd\LaraLint\Linters\Matchers\TreeMatcher;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
 
-abstract class MatchOrderingLinter implements Linter
+abstract class OrderingLinter implements Linter
 {
 	use CreatesMatchers;
 	
@@ -31,11 +34,11 @@ abstract class MatchOrderingLinter implements Linter
 		$this->results = new Collection();
 		
 		$matchers = $this->matchers()
-			->map(function(OrderedNodeMatcher $matcher, $name) {
-				return $matcher->onMatch(function(Collection $nodes) use ($name) {
+			->each(function(Matcher $matcher, $name) {
+				$matcher->onMatch(function(Collection $nodes) use ($name) {
 					$this->results->push((object) [
 						'name' => $name,
-						'node' => $nodes->first(),
+						'node' => $nodes->last(),
 						'all_nodes' => $nodes,
 					]);
 				});
@@ -43,7 +46,7 @@ abstract class MatchOrderingLinter implements Linter
 		
 		$this->expected_order = $matchers->keys()->flip();
 		
-		$this->matcher = new AggregateMatcher(...$matchers->values()->toArray());
+		$this->matcher = new FirstMatchAggregateMatcher(...$matchers->values()->toArray());
 	}
 	
 	public function lint() : ResultCollection
@@ -66,9 +69,12 @@ abstract class MatchOrderingLinter implements Linter
 				return $result->flagged;
 			})
 			->map(function($result) {
+				$node_article = $this->getArticle($result->name);
+				$expected_article = $this->getArticle($result->expected);
+				
 				return new Result(
 					$result->node,
-					"A {$result->name} should not come after a {$result->expected}."
+					ucfirst(trim("{$node_article} {$result->name} should not come after {$expected_article} {$result->expected}."))
 				);
 			});
 		
@@ -83,6 +89,21 @@ abstract class MatchOrderingLinter implements Linter
 	public function exitNode(Node $node) : void
 	{
 		$this->matcher->exitNode($node);
+	}
+	
+	protected function getArticle($word) : string 
+	{
+		if (0 === stripos($word, 'the ')) {
+			return '';
+		}
+		
+		// This is imperfect but better than nothing
+		$vowels = ['a', 'e', 'i', 'o', 'u'];
+		if (in_array(strtolower(substr($word, 0, 1)), $vowels)) {
+			return 'an';
+		}
+		
+		return 'a';
 	}
 	
 	abstract protected function matchers() : Collection;

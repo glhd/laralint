@@ -4,7 +4,7 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
-use Glhd\LaraLint\Linters\Strategies\MatchOrderingLinter;
+use Glhd\LaraLint\Linters\Strategies\OrderingLinter;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
@@ -14,7 +14,7 @@ use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\ResolvedName;
 use Throwable;
 
-class OrderModelMembers extends MatchOrderingLinter implements ConditionalLinter
+class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 {
 	use EvaluatesNodes;
 	
@@ -37,19 +37,19 @@ class OrderModelMembers extends MatchOrderingLinter implements ConditionalLinter
 	protected function matchers() : Collection
 	{
 		return new Collection([
-			'boot method' => $this->orderedMatcher()
+			'the boot method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return 'boot' === $node->getName()
 						&& $this->isStatic($node);
 				}),
 			
-			'mutator' => $this->orderedMatcher()
+			'a mutator' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return Str::startsWith($node->getName(), ['get', 'set'])
 						&& Str::endsWith($node->getName(), 'Attribute');
 				}),
 			
-			'relationship' => $this->orderedMatcher()
+			'a relationship' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					if (!$this->isPublic($node)) {
 						return false;
@@ -73,10 +73,10 @@ class OrderModelMembers extends MatchOrderingLinter implements ConditionalLinter
 					
 					// If not, check to see if a relationship method was called
 					// inside of the method body
-					return Str::contains($node->getText(), Config::get('laralint.relationship_helpers', []));
+					return Str::contains($node->getText(), Config::get('laralint.relationship_heuristics', []));
 				}),
 			
-			'scope' => $this->orderedMatcher()
+			'a scope' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return 0 === strpos($node->getName(), 'scope');
 				}),

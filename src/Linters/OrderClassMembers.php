@@ -3,124 +3,139 @@
 namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
-use Glhd\LaraLint\Linters\Strategies\MatchOrderingLinter;
+use Glhd\LaraLint\Linters\Strategies\OrderingLinter;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node\ClassConstDeclaration;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\PropertyDeclaration;
+use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 use Microsoft\PhpParser\Node\TraitUseClause;
 
-class OrderClassMembers extends MatchOrderingLinter
+class OrderClassMembers extends OrderingLinter
 {
 	use EvaluatesNodes;
 	
 	protected function matchers() : Collection
 	{
 		return new Collection([
-			'trait use' => $this->orderedMatcher()
+			'a trait' => $this->orderedMatcher()
 				->withChild(TraitUseClause::class),
 			
-			'public constant' => $this->orderedMatcher()
+			'a public constant' => $this->orderedMatcher()
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isPublic($node);
 				}),
 			
-			'protected constant' => $this->orderedMatcher()
+			'a protected constant' => $this->orderedMatcher()
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isProtected($node);
 				}),
 			
-			'private constant' => $this->orderedMatcher()
+			'a private constant' => $this->orderedMatcher()
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isPrivate($node);
 				}),
 			
-			'public static property' => $this->orderedMatcher()
+			'a public static property' => $this->orderedMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPublic($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'protected static property' => $this->orderedMatcher()
+			'a protected static property' => $this->orderedMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isProtected($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'private static property' => $this->orderedMatcher()
+			'a private static property' => $this->orderedMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'public property' => $this->orderedMatcher()
+			'a public property' => $this->orderedMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node);
 				}),
 			
-			'protected property' => $this->orderedMatcher()
+			'a protected property' => $this->orderedMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node);
 				}),
 			
-			'private property' => $this->orderedMatcher()
+			'a private property' => $this->orderedMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node);
 				}),
 			
-			'constructor' => $this->orderedMatcher()
+			'a public static method' => $this->orderedMatcher()
+				->withChild(function(MethodDeclaration $node) {
+					return $this->isPublic($node)
+						&& $this->isStatic($node);
+				}),
+			
+			'a protected static method' => $this->orderedMatcher()
+				->withChild(function(MethodDeclaration $node) {
+					return $this->isProtected($node)
+						&& $this->isStatic($node);
+				}),
+			
+			'a private static method' => $this->orderedMatcher()
+				->withChild(function(MethodDeclaration $node) {
+					return $this->isPrivate($node)
+						&& $this->isStatic($node);
+				}),
+			
+			'the constructor' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return '__construct' === $node->getName();
 				}),
 			
-			'public static method' => $this->orderedMatcher()
+			'the setUp method' => $this->orderedMatcher()
+				->withChild(function(ClassDeclaration $node) {
+					return Str::endsWith($node->getNamespacedName(), 'Test');
+				})
 				->withChild(function(MethodDeclaration $node) {
-					return $this->isPublic($node)
-						&& $this->isStatic($node);
+					return 'setUp' === $node->getName();
 				}),
 			
-			'protected static method' => $this->orderedMatcher()
+			'the tearDown method' => $this->orderedMatcher()
+				->withChild(function(ClassDeclaration $node) {
+					return Str::endsWith($node->getNamespacedName(), 'Test');
+				})
 				->withChild(function(MethodDeclaration $node) {
-					return $this->isProtected($node)
-						&& $this->isStatic($node);
+					return 'tearDown' === $node->getName();
 				}),
 			
-			'private static method' => $this->orderedMatcher()
-				->withChild(function(MethodDeclaration $node) {
-					return $this->isPrivate($node)
-						&& $this->isStatic($node);
-				}),
-			
-			'public method' => $this->orderedMatcher()
+			'a public method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node)
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'protected method' => $this->orderedMatcher()
+			'a protected method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node)
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'private method' => $this->orderedMatcher()
+			'a private method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node)
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'magic method' => $this->orderedMatcher()
+			'a magic method' => $this->orderedMatcher()
 				->withChild(function(MethodDeclaration $node) {
-					$name = $node->getName();
-					return false === $this->isStatic($node)
-						&& '__construct' !== $name
-						&& 0 === strpos($name, '__');
+					return 0 === strpos($node->getName(), '__');
 				}),
 		]);
 	}

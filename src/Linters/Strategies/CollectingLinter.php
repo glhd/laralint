@@ -7,7 +7,7 @@ use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 
-abstract class MatchCollectingLinter extends MatchingLinter
+abstract class CollectingLinter extends MatchingLinter
 {
 	protected $collected_nodes;
 	

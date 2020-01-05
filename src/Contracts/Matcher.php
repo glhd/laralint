@@ -9,4 +9,6 @@ interface Matcher
 	public function enterNode(Node $node) : void;
 	
 	public function exitNode(Node $node) : void;
+	
+	public function onMatch(callable $callback);
 }

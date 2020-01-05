@@ -6,7 +6,7 @@ use Closure;
 use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 
-class ClassMemberMatcher extends OrderedNodeMatcher
+class ClassMemberMatcher extends TreeMatcher
 {
 	public function withChildMethod($matcher = null) : self
 	{

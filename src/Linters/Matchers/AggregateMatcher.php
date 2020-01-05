@@ -2,22 +2,25 @@
 
 namespace Glhd\LaraLint\Linters\Matchers;
 
-use Closure;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Matchers\Concerns\HasOnMatchCallbacks;
 use Illuminate\Support\Collection;
-use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
-use ReflectionFunction;
-use stdClass;
-use Throwable;
 
 class AggregateMatcher implements Matcher
 {
+	use HasOnMatchCallbacks;
+	
 	protected $matchers;
 	
 	public function __construct(Matcher ...$matcher)
 	{
-		$this->matchers = Collection::make($matcher);
+		$this->matchers = Collection::make($matcher)
+			->each(function(Matcher $matcher) {
+				$matcher->onMatch(function(Collection $nodes) {
+					$this->triggerMatch($nodes);
+				});
+			});
 	}
 	
 	public function enterNode(Node $node) : void

@@ -18,6 +18,7 @@ class DoNotApplyMiddlewareInControllers extends MatchingLinter
 		return $this->classMatcher()
 			->withChild(ClassDeclaration::class)
 			->withBaseClass(function(ClassBaseClause $node) {
+				// FIXME: Let's use a filename-aware strategy instead
 				return preg_match('/Controller$/', $node->baseClass->getText());
 			})
 			->withChildMethod('__construct')
