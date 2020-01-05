@@ -81,7 +81,7 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements FilenameAwareLi
 	
 	protected function matcher() : Matcher
 	{
-		return $this->orderedMatcher()
+		return $this->treeMatcher()
 			->withChild(ScopedPropertyAccessExpression::class)
 			->withChild(function(QualifiedName $node) {
 				if (!$resolved_name = $node->getResolvedName()) {

@@ -32,6 +32,6 @@ class OrderUseStatementsAlphabetically extends CollectingLinter
 	
 	protected function matcher() : Matcher
 	{
-		return $this->orderedMatcher()->withChild(NamespaceUseDeclaration::class);
+		return $this->treeMatcher()->withChild(NamespaceUseDeclaration::class);
 	}
 }

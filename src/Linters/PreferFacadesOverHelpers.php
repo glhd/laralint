@@ -25,7 +25,7 @@ class PreferFacadesOverHelpers extends MatchingLinter
 	{
 		$this->node_map = new SplObjectStorage();
 		
-		return $this->orderedMatcher()
+		return $this->treeMatcher()
 			->withChild(function(CallExpression $node) {
 				$name = $node->callableExpression->getText();
 				

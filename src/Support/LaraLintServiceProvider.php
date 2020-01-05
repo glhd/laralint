@@ -16,11 +16,13 @@ class LaraLintServiceProvider extends ServiceProvider
 
     public function boot()
     {
-	    $this->publishes([
-		    __DIR__.'/../../config/laralint.php' => config_path('laralint.php'),
-	    ]);
-    	
         if ($this->app->runningInConsole()) {
+	        if (method_exists($this->app, 'configPath')) {
+		        $this->publishes([
+			        __DIR__.'/../../config/laralint.php' => config_path('laralint.php'),
+		        ], ['laralint', 'laralint-config']);
+	        }
+        	
             $this->commands([
                 LintCommand::class,
                 InstallCommand::class,

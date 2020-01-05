@@ -17,7 +17,7 @@ class PreferAuthId extends MatchingLinter
 {
 	protected function matcher() : Matcher
 	{
-		return $this->orderedMatcher()
+		return $this->treeMatcher()
 			->withChild(function(MemberAccessExpression $node) {
 				return Str::endsWith($node->getText(), '->id');
 			})

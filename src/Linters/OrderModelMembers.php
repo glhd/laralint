@@ -37,19 +37,19 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 	protected function matchers() : Collection
 	{
 		return new Collection([
-			'the boot method' => $this->orderedMatcher()
+			'the boot method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return 'boot' === $node->getName()
 						&& $this->isStatic($node);
 				}),
 			
-			'a mutator' => $this->orderedMatcher()
+			'a mutator' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return Str::startsWith($node->getName(), ['get', 'set'])
 						&& Str::endsWith($node->getName(), 'Attribute');
 				}),
 			
-			'a relationship' => $this->orderedMatcher()
+			'a relationship' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					if (!$this->isPublic($node)) {
 						return false;
@@ -76,7 +76,7 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 					return Str::contains($node->getText(), Config::get('laralint.relationship_heuristics', []));
 				}),
 			
-			'a scope' => $this->orderedMatcher()
+			'a scope' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return 0 === strpos($node->getName(), 'scope');
 				}),

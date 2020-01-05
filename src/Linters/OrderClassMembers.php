@@ -19,84 +19,84 @@ class OrderClassMembers extends OrderingLinter
 	protected function matchers() : Collection
 	{
 		return new Collection([
-			'a trait' => $this->orderedMatcher()
+			'a trait' => $this->treeMatcher()
 				->withChild(TraitUseClause::class),
 			
-			'a public constant' => $this->orderedMatcher()
+			'a public constant' => $this->treeMatcher()
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isPublic($node);
 				}),
 			
-			'a protected constant' => $this->orderedMatcher()
+			'a protected constant' => $this->treeMatcher()
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isProtected($node);
 				}),
 			
-			'a private constant' => $this->orderedMatcher()
+			'a private constant' => $this->treeMatcher()
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isPrivate($node);
 				}),
 			
-			'a public static property' => $this->orderedMatcher()
+			'a public static property' => $this->treeMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPublic($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'a protected static property' => $this->orderedMatcher()
+			'a protected static property' => $this->treeMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isProtected($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'a private static property' => $this->orderedMatcher()
+			'a private static property' => $this->treeMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'a public property' => $this->orderedMatcher()
+			'a public property' => $this->treeMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node);
 				}),
 			
-			'a protected property' => $this->orderedMatcher()
+			'a protected property' => $this->treeMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node);
 				}),
 			
-			'a private property' => $this->orderedMatcher()
+			'a private property' => $this->treeMatcher()
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node);
 				}),
 			
-			'a public static method' => $this->orderedMatcher()
+			'a public static method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'a protected static method' => $this->orderedMatcher()
+			'a protected static method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'a private static method' => $this->orderedMatcher()
+			'a private static method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& $this->isStatic($node);
 				}),
 			
-			'the constructor' => $this->orderedMatcher()
+			'the constructor' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return '__construct' === $node->getName();
 				}),
 			
-			'the setUp method' => $this->orderedMatcher()
+			'the setUp method' => $this->treeMatcher()
 				->withChild(function(ClassDeclaration $node) {
 					return Str::endsWith($node->getNamespacedName(), 'Test');
 				})
@@ -104,7 +104,7 @@ class OrderClassMembers extends OrderingLinter
 					return 'setUp' === $node->getName();
 				}),
 			
-			'the tearDown method' => $this->orderedMatcher()
+			'the tearDown method' => $this->treeMatcher()
 				->withChild(function(ClassDeclaration $node) {
 					return Str::endsWith($node->getNamespacedName(), 'Test');
 				})
@@ -112,28 +112,28 @@ class OrderClassMembers extends OrderingLinter
 					return 'tearDown' === $node->getName();
 				}),
 			
-			'a public method' => $this->orderedMatcher()
+			'a public method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node)
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'a protected method' => $this->orderedMatcher()
+			'a protected method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node)
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'a private method' => $this->orderedMatcher()
+			'a private method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node)
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'a magic method' => $this->orderedMatcher()
+			'a magic method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return 0 === strpos($node->getName(), '__');
 				}),

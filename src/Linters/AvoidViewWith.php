@@ -13,7 +13,7 @@ class AvoidViewWith extends MatchingLinter
 {
 	protected function matcher() : Matcher
 	{
-		return $this->orderedMatcher()
+		return $this->treeMatcher()
 			->withChild(function(CallExpression $node) {
 				return false !== stripos($node->getText(), '->with(');
 			})

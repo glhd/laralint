@@ -93,13 +93,13 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		return Collection::make(static::RESTFUL_METHOD_NAMES)
 			->mapWithKeys(function($method_name) {
 				return [
-					"the {$method_name} method" => $this->orderedMatcher()
+					"the {$method_name} method" => $this->treeMatcher()
 						->withChild(function(MethodDeclaration $node) use ($method_name) {
 							return $method_name === $node->getName();
 						}),
 				];
 			})
-			->put(static::NON_RESTFUL_NAME, $this->orderedMatcher()
+			->put(static::NON_RESTFUL_NAME, $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& !in_array($node->getName(), array_merge(

@@ -23,7 +23,7 @@ class DumpCommand extends Command
 		$ast = (new Parser())->parseSourceFile(file_get_contents($filename));
 		
 		$this->getOutput()->newLine();
-		$this->walk($ast->getChildNodesAndTokens());
+		$this->walk($ast->getChildNodes());
 		$this->getOutput()->newLine();
 	}
 	
@@ -34,14 +34,7 @@ class DumpCommand extends Command
 		$indent = str_repeat('┃   ', $this->depth);
 		
 		foreach ($nodes as $i => $node) {
-			if ($node instanceof Node) {
-				$node_name = $node->getNodeKindName().' (Node)';
-			} else if ($node instanceof Token) {
-				$node_name = Token::getTokenKindNameFromValue($node->kind).' (Token)';
-			} else {
-				$node_name = get_class($node);
-			}
-			
+			$node_name = $node->getNodeKindName();
 			$node_kind_length = strlen($node_name);
 			
 			$code_lines = Collection::make(explode("\n", "\n".trim($node->getText(), "\n\r")."\n"))

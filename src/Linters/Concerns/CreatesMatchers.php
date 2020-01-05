@@ -7,7 +7,7 @@ use Glhd\LaraLint\Linters\Matchers\TreeMatcher;
 
 trait CreatesMatchers
 {
-	protected function orderedMatcher() : TreeMatcher
+	protected function treeMatcher() : TreeMatcher
 	{
 		return new TreeMatcher();
 	}

@@ -12,7 +12,7 @@ class AvoidViewCompact extends MatchingLinter
 {
 	protected function matcher() : Matcher
 	{
-		return $this->orderedMatcher()
+		return $this->treeMatcher()
 			->withChild(function(CallExpression $node) {
 				return 0 === strcasecmp($node->callableExpression->getText(), 'view')
 					&& false !== stripos($node->getText(), 'compact(');
