@@ -6,12 +6,6 @@
 		"lint",
 		"linting"
 	],
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/inxilpro/microsoft-php-parser-fork"
-		}
-	],
 	"authors": [
 		{
 			"name": "Chris Morrell",
@@ -20,7 +14,7 @@
 	],
 	"license": "MIT",
 	"require": {
-		"microsoft/tolerant-php-parser": "dev-MethodDeclarationModifierGetters",
+		"microsoft/tolerant-php-parser": "^0.0.19",
 		"illuminate/support": "^5.7|^6.0",
 		"illuminate/console": "^5.7|^6.0"
 	},
