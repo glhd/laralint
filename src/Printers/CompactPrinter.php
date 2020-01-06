@@ -2,6 +2,7 @@
 
 namespace Glhd\LaraLint\Printers;
 
+use Glhd\LaraLint\Printers\Concerns\NormalizesFilenames;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Console\OutputStyle;
@@ -9,6 +10,8 @@ use Illuminate\Support\Str;
 
 class CompactPrinter extends IlluminatePrinter
 {
+	use NormalizesFilenames;
+	
 	public function opening() : void
 	{
 		$this->writeln(' ');
@@ -36,8 +39,7 @@ class CompactPrinter extends IlluminatePrinter
 		}
 		
 		$this->newLine();
-		
-		$this->writeln($filename);
+		$this->writeln($this->normalizeFilename($filename));
 		
 		$results->each(function(Result $result) {
 			$this->writeln("Line {$result->getLine()}: {$result->getMessage()}");

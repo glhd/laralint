@@ -2,12 +2,15 @@
 
 namespace Glhd\LaraLint\Printers;
 
+use Glhd\LaraLint\Printers\Concerns\NormalizesFilenames;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Str;
 
 class ConsolePrinter extends IlluminatePrinter
 {
+	use NormalizesFilenames;
+	
 	protected $file_count = 0;
 	
 	protected $result_count = 0;
@@ -36,7 +39,8 @@ class ConsolePrinter extends IlluminatePrinter
 	
 	public function startFile(string $filename) : void
 	{
-		$this->section("\n$filename");
+		$this->newLine();
+		$this->section($this->normalizeFilename($filename));
 		
 		$this->file_count++;
 	}
@@ -44,7 +48,7 @@ class ConsolePrinter extends IlluminatePrinter
 	public function fileResults(string $filename, ResultCollection $results) : void
 	{
 		if ($results->isEmpty()) {
-			$this->writeln("<info>No issues.\n</info>");
+			$this->writeln("<info>✓ No issues found.\n</info>");
 			return;
 		}
 		
@@ -63,4 +67,5 @@ class ConsolePrinter extends IlluminatePrinter
 		
 		$this->newLine();
 	}
+	
 }
