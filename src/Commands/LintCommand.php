@@ -142,9 +142,11 @@ class LintCommand extends Command
 		
 		if ($directories->isNotEmpty()) {
 			// If we were provided a list of directories to lint, use that
-			$finder->in($directories->map(function(SplFileInfo $directory) {
-				return $directory->getRealPath();
-			}));
+			$finder->in(
+				$directories->map(function(SplFileInfo $directory) {
+					return $directory->getRealPath();
+				})->toArray()
+			);
 		} else {
 			// Otherwise, just use the default configuration
 			$finder->in(base_path())
