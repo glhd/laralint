@@ -2,6 +2,7 @@
 
 namespace Glhd\LaraLint\Commands;
 
+use AppendIterator;
 use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
@@ -22,10 +23,10 @@ class LintCommand extends Command
 	protected $signature = '
 		laralint:lint
 		
-		{ filename?*  : List of filename(s) to lint }
+		{ targets?*   : Filenames and/or directories to lint }
 		{ --diff      : Only lint uncommitted git changes }
-		{ --only=     : Only apply these linters (comma separated) }
-		{ --except=   : Do not apply these linters (comma separated) }
+		{ --only=*    : Only apply these linter(s) }
+		{ --except=*  : Do not apply these linter(s) }
 		{ --printer=  : Use a custom printer }
 		{ --step      : Step through results (stopping after each issue) }
 		{ --step-all  : Step through results (stopping after each file, regardless of whether an issue was found) }
@@ -37,8 +38,7 @@ class LintCommand extends Command
 	{
 		$linters = (new LaraLint())->linters();
 		
-		$linters = $this->applyOnly($linters);
-		$linters = $this->applyExcept($linters);
+		$linters = $this->applyOnly($this->applyExcept($linters));
 		
 		$printer = $this->getPrinter();
 		$printer->opening();
@@ -66,7 +66,7 @@ class LintCommand extends Command
 	
 	protected function applyOnly(Collection $linters) : Collection
 	{
-		if ($only = $this->optionArray('only')) {
+		if (!empty($only = $this->option('only'))) {
 			return $linters->filter(function($linter) use ($only) {
 				foreach ($only as $class_name) {
 					if (Str::endsWith($linter, $class_name)) {
@@ -83,7 +83,7 @@ class LintCommand extends Command
 	
 	protected function applyExcept(Collection $linters) : Collection
 	{
-		if ($except = $this->optionArray('except')) {
+		if (!empty($except = $this->option('except'))) {
 			return $linters->filter(function($linter) use ($except) {
 				foreach ($except as $class_name) {
 					if (Str::endsWith($linter, $class_name)) {
@@ -113,31 +113,56 @@ class LintCommand extends Command
 	
 	protected function files() : LazyCollection
 	{
+		// If we were asked for git changes, just return those
 		if ($this->option('diff')) {
 			return $this->gitDiffFiles();
 		}
 		
-		if ($filename = $this->argument('filename')) {
-			// FIXME: We still want to pass this to the finder to apply
-			// FIXME: exclusions and pattern matching/etc. 
-			return LazyCollection::make($filename)
-				->map(function($filename) {
-					return new SplFileInfo($filename);
-				});
+		// Parse 'targets' argument into a list of files and directories
+		$targets = Collection::make($this->argument('targets'))
+			->map(function($target) {
+				return new SplFileInfo($target);
+			});
+		
+		$files = $targets->filter->isFile();
+		$directories = $targets->filter->isDir();
+		
+		// If we were provided a list of target files, just return that list 
+		if ($files->isNotEmpty() && $directories->isEmpty()) {
+			return LazyCollection::make($files);
 		}
 		
-		return LazyCollection::make(
-			Finder::create()
-				->files()
-				->name('*.php')
+		// Set up base finder
+		$finder = Finder::create()
+			->files()
+			->name('*.php');
+		
+		if ($directories->isNotEmpty()) {
+			// If we were provided a list of directories to lint, use that
+			$finder->in($directories->map->getRealPath()->values()->toArray());
+		} else {
+			// Otherwise, just use the default configuration
+			$finder->in(base_path())
 				->exclude([ // FIXME: Make configurable
 					base_path('bootstrap/'),
 					base_path('vendor/'),
 					base_path('public/'),
 					base_path('storage/'),
-				])
-				->in(base_path('app'))
-		);
+				]);
+		}
+		
+		// If we have filenames + directories to lint, then iterate over both, starting with files
+		if ($files->isNotEmpty()) {
+			return LazyCollection::make(
+				tap(new AppendIterator(), function(AppendIterator $iterator) use ($finder, $files) {
+					$iterator->append($files->getIterator());
+					$iterator->append($finder->getIterator());
+				})
+			);
+		}
+		
+		// Otherwise, just iterate over our finder
+		return LazyCollection::make($finder);
 	}
 	
 	protected function gitDiffFiles() : LazyCollection
@@ -170,18 +195,5 @@ class LintCommand extends Command
 			default:
 				return new ConsolePrinter($this->getOutput());
 		}
-	}
-	
-	protected function optionArray(string $option) : ?Collection
-	{
-		$options = Collection::make(explode(',', $this->option($option)))
-			->map(function($value) {
-				return trim($value);
-			})
-			->filter();
-		
-		return $options->isEmpty()
-			? null
-			: $options;
 	}
 }
