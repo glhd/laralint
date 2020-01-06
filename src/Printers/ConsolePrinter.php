@@ -64,8 +64,6 @@ class ConsolePrinter extends IlluminatePrinter
 				];
 			})->toArray()
 		);
-		
-		$this->newLine();
 	}
 	
 }

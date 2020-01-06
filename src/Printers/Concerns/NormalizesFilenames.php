@@ -11,7 +11,7 @@ trait NormalizesFilenames
 	protected function normalizeFilename(string $filename) : string
 	{
 		if (null === $this->base_path) {
-			$this->base_path = App::basePath();
+			$this->base_path = App::basePath().DIRECTORY_SEPARATOR;
 		}
 		
 		if (0 === strpos($filename, $this->base_path)) {
