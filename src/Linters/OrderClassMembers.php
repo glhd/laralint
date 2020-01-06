@@ -133,10 +133,11 @@ class OrderClassMembers extends OrderingLinter
 						&& 0 !== strpos($node->getName(), '__');
 				}),
 			
-			'a magic method' => $this->treeMatcher()
-				->withChild(function(MethodDeclaration $node) {
-					return 0 === strpos($node->getName(), '__');
-				}),
+			// TODO: Not so sure about this rule
+			// 'a magic method' => $this->treeMatcher()
+			// 	->withChild(function(MethodDeclaration $node) {
+			// 		return 0 === strpos($node->getName(), '__');
+			// 	}),
 		]);
 	}
 }

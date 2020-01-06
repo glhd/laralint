@@ -69,12 +69,9 @@ abstract class OrderingLinter implements Linter
 				return $result->flagged;
 			})
 			->map(function($result) {
-				$node_article = $this->getArticle($result->name);
-				$expected_article = $this->getArticle($result->expected);
-				
 				return new Result(
 					$result->node,
-					ucfirst(trim("{$node_article} {$result->name} should not come after {$expected_article} {$result->expected}."))
+					ucfirst(trim("{$result->name} should not come after {$result->expected}."))
 				);
 			});
 		
@@ -89,21 +86,6 @@ abstract class OrderingLinter implements Linter
 	public function exitNode(Node $node) : void
 	{
 		$this->matcher->exitNode($node);
-	}
-	
-	protected function getArticle($word) : string 
-	{
-		if (0 === stripos($word, 'the ')) {
-			return '';
-		}
-		
-		// This is imperfect but better than nothing
-		$vowels = ['a', 'e', 'i', 'o', 'u'];
-		if (in_array(strtolower(substr($word, 0, 1)), $vowels)) {
-			return 'an';
-		}
-		
-		return 'a';
 	}
 	
 	abstract protected function matchers() : Collection;
