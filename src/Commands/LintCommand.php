@@ -177,7 +177,8 @@ class LintCommand extends Command
 		$options = Collection::make(explode(',', $this->option($option)))
 			->map(function($value) {
 				return trim($value);
-			});
+			})
+			->filter();
 		
 		return $options->isEmpty()
 			? null
