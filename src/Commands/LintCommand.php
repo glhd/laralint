@@ -9,7 +9,9 @@ use Glhd\LaraLint\Printers\CompactPrinter;
 use Glhd\LaraLint\Printers\ConsolePrinter;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Str;
 use RuntimeException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -17,14 +19,26 @@ use Symfony\Component\Process\Process;
 
 class LintCommand extends Command
 {
-	protected $signature = 'laralint:lint {filename?*} {--diff} {--printer=} {--step} {--step-all}';
+	protected $signature = '
+		laralint:lint
+		
+		{ filename?*  : List of filename(s) to lint }
+		{ --diff      : Only lint uncommitted git changes }
+		{ --only=     : Only apply these linters (comma separated) }
+		{ --except=   : Do not apply these linters (comma separated) }
+		{ --printer=  : Use a custom printer }
+		{ --step      : Step through results (stopping after each issue) }
+		{ --step-all  : Step through results (stopping after each file, regardless of whether an issue was found) }
+	';
 	
 	protected $description = 'Run LaraLint on your project';
 	
 	public function handle()
 	{
-		// TODO: Load configuration/etc
 		$linters = (new LaraLint())->linters();
+		
+		$linters = $this->applyOnly($linters);
+		$linters = $this->applyExcept($linters);
 		
 		$printer = $this->getPrinter();
 		$printer->opening();
@@ -40,22 +54,61 @@ class LintCommand extends Command
 				
 				$printer->fileResults($file->getRealPath(), $results);
 				
-				if (
-					(
-						($this->option('step') && $results->isNotEmpty())
-						|| $this->option('step-all')
-					)
-					&& false === $this->confirm('Continue?', true)
-				) {
+				if ($this->shouldStopIterating($results->isNotEmpty())) {
 					return false;
 				}
 			});
 		
 		$printer->closing();
 		
-		return $flag_count > 0
-			? 1
-			: 0;
+		return $flag_count > 0 ? 1 : 0;
+	}
+	
+	protected function applyOnly(Collection $linters) : Collection
+	{
+		if ($only = $this->optionArray('only')) {
+			return $linters->filter(function($linter) use ($only) {
+				foreach ($only as $class_name) {
+					if (Str::endsWith($linter, $class_name)) {
+						return true;
+					}
+				}
+				
+				return false;
+			});
+		}
+		
+		return $linters;
+	}
+	
+	protected function applyExcept(Collection $linters) : Collection
+	{
+		if ($except = $this->optionArray('except')) {
+			return $linters->filter(function($linter) use ($except) {
+				foreach ($except as $class_name) {
+					if (Str::endsWith($linter, $class_name)) {
+						return false;
+					}
+				}
+				
+				return true;
+			});
+		}
+		
+		return $linters;
+	}
+	
+	protected function shouldStopIterating(bool $last_file_had_results) : bool
+	{
+		if ($last_file_had_results && $this->option('step')) {
+			return false === $this->confirm('Continue to next result?', true);
+		}
+		
+		if ($this->option('step-all')) {
+			return false === $this->confirm('Continue to next file?', true);
+		}
+		
+		return false;
 	}
 	
 	protected function files() : LazyCollection
@@ -65,9 +118,10 @@ class LintCommand extends Command
 		}
 		
 		if ($filename = $this->argument('filename')) {
-			// TODO: Still confirm the extension/etc
+			// FIXME: We still want to pass this to the finder to apply
+			// FIXME: exclusions and pattern matching/etc. 
 			return LazyCollection::make($filename)
-				->map(function($filename){
+				->map(function($filename) {
 					return new SplFileInfo($filename);
 				});
 		}
@@ -112,9 +166,21 @@ class LintCommand extends Command
 			
 			case 'compact':
 				return new CompactPrinter($this->getOutput());
-				
+			
 			default:
 				return new ConsolePrinter($this->getOutput());
 		}
+	}
+	
+	protected function optionArray(string $option) : ?Collection
+	{
+		$options = Collection::make(explode(',', $this->option($option)))
+			->map(function($value) {
+				return trim($value);
+			});
+		
+		return $options->isEmpty()
+			? null
+			: $options;
 	}
 }
