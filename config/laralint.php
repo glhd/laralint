@@ -17,6 +17,22 @@ return [
 	
 	/*
 	|--------------------------------------------------------------------------
+	| Excluded Directories
+	|--------------------------------------------------------------------------
+	|
+	| Unless overridden via the command line, LaraLint will not lint files in
+	| these excluded directories.
+	|
+	*/
+	'excluded_directories' => [
+		base_path('bootstrap/'),
+		base_path('vendor/'),
+		base_path('public/'),
+		base_path('storage/'),
+	],
+	
+	/*
+	|--------------------------------------------------------------------------
 	| Maximum Allowed Non-RESTful Methods Inside a RESTful Controller
 	|--------------------------------------------------------------------------
 	|

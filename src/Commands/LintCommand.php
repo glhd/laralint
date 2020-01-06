@@ -3,6 +3,7 @@
 namespace Glhd\LaraLint\Commands;
 
 use AppendIterator;
+use Glhd\LaraLint\Contracts\Preset;
 use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
@@ -11,6 +12,7 @@ use Glhd\LaraLint\Printers\ConsolePrinter;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -18,6 +20,8 @@ use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
+// TODO: This command needs major work. Right now it's just a quick-and-dirty tool
+// to get LaraLint running. Eventually it'll need to refactoring and improved configuration/etc.
 class LintCommand extends Command
 {
 	protected $signature = '
@@ -36,13 +40,10 @@ class LintCommand extends Command
 	
 	public function handle()
 	{
-		$linters = (new LaraLint())->linters();
+		$linters = $this->linters();
+		$printer = $this->printer();
 		
-		$linters = $this->applyOnly($this->applyExcept($linters));
-		
-		$printer = $this->getPrinter();
 		$printer->opening();
-		
 		$flag_count = 0;
 		
 		$this->files()
@@ -64,34 +65,31 @@ class LintCommand extends Command
 		return $flag_count > 0 ? 1 : 0;
 	}
 	
-	protected function applyOnly(Collection $linters) : Collection
+	protected function preset() : Preset
 	{
+		$preset_contract = Preset::class;
+		$preset = Config::get('laralint.preset', LaraLint::class);
+		
+		if (!is_subclass_of($preset, $preset_contract, true)) {
+			throw new RuntimeException("'{$preset}' should implement the '{$preset_contract}' interface.");
+		}
+		
+		return new $preset();
+	}
+	
+	protected function linters() : Collection
+	{
+		$linters = $this->preset()->linters();
+		
 		if (!empty($only = $this->option('only'))) {
-			return $linters->filter(function($linter) use ($only) {
-				foreach ($only as $class_name) {
-					if (Str::endsWith($linter, $class_name)) {
-						return true;
-					}
-				}
-				
-				return false;
+			$linters = $linters->filter(function(string $linter) use ($only) {
+				return Str::endsWith($linter, $only);
 			});
 		}
 		
-		return $linters;
-	}
-	
-	protected function applyExcept(Collection $linters) : Collection
-	{
 		if (!empty($except = $this->option('except'))) {
-			return $linters->filter(function($linter) use ($except) {
-				foreach ($except as $class_name) {
-					if (Str::endsWith($linter, $class_name)) {
-						return false;
-					}
-				}
-				
-				return true;
+			$linters = $linters->reject(function(string $linter) use ($except) {
+				return Str::endsWith($linter, $except);
 			});
 		}
 		
@@ -124,8 +122,13 @@ class LintCommand extends Command
 				return new SplFileInfo($target);
 			});
 		
-		$files = $targets->filter->isFile();
-		$directories = $targets->filter->isDir();
+		$files = $targets->filter(function(SplFileInfo $file) {
+			return $file->isFile();
+		});
+		
+		$directories = $targets->filter(function(SplFileInfo $file) {
+			return $file->isDir();
+		});
 		
 		// If we were provided a list of target files, just return that list 
 		if ($files->isNotEmpty() && $directories->isEmpty()) {
@@ -139,16 +142,13 @@ class LintCommand extends Command
 		
 		if ($directories->isNotEmpty()) {
 			// If we were provided a list of directories to lint, use that
-			$finder->in($directories->map->getRealPath()->values()->toArray());
+			$finder->in($directories->map(function(SplFileInfo $directory) {
+				return $directory->getRealPath();
+			}));
 		} else {
 			// Otherwise, just use the default configuration
 			$finder->in(base_path())
-				->exclude([ // FIXME: Make configurable
-					base_path('bootstrap/'),
-					base_path('vendor/'),
-					base_path('public/'),
-					base_path('storage/'),
-				]);
+				->exclude(Config::get('laralint.excluded_directories', [base_path('vendor/')]));
 		}
 		
 		// If we have filenames + directories to lint, then iterate over both, starting with files
@@ -183,7 +183,7 @@ class LintCommand extends Command
 			});
 	}
 	
-	protected function getPrinter() : Printer
+	protected function printer() : Printer
 	{
 		switch ($this->option('printer')) {
 			case 'phpcs':
