@@ -35,6 +35,7 @@ class TreeMatcher implements Matcher
 		$this->rules = new Collection();
 	}
 	
+	// FIXME: Add withDirectChild and maybe add a depth argument to the end
 	public function withChild($matcher) : self
 	{
 		$this->parseAndAddRule(func_get_args());

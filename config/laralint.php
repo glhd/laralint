@@ -25,10 +25,24 @@ return [
 	|
 	*/
 	'excluded_directories' => [
-		base_path('bootstrap/'),
-		base_path('vendor/'),
-		base_path('public/'),
-		base_path('storage/'),
+		'bootstrap',
+		'vendor',
+		'public',
+		'storage',
+		'node_modules',
+	],
+	
+	/*
+	|--------------------------------------------------------------------------
+	| Excluded Files
+	|--------------------------------------------------------------------------
+	|
+	| Unless overridden via the command line, LaraLint will not lint files 
+	| with these excluded names.
+	|
+	*/
+	'excluded_files' => [
+		'_ide_helper.php',
 	],
 	
 	/*

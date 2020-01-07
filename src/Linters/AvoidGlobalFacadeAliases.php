@@ -3,19 +3,18 @@
 namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\ConditionalLinter;
-use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\Expression\ScopedPropertyAccessExpression;
 use Microsoft\PhpParser\Node\QualifiedName;
+use Microsoft\PhpParser\Node\Statement\NamespaceDefinition;
 use SplObjectStorage;
 
-class AvoidGlobalFacadeAliases extends MatchingLinter implements FilenameAwareLinter, ConditionalLinter
+class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLinter
 {
 	protected const DEFAULT_ALIASES = [
 		'App' => 'Illuminate\\Support\\Facades\\App',
@@ -59,7 +58,7 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements FilenameAwareLi
 	
 	protected $node_map;
 	
-	protected $filename;
+	protected $active = false;
 	
 	public function __construct()
 	{
@@ -69,14 +68,13 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements FilenameAwareLi
 		$this->node_map = new SplObjectStorage();
 	}
 	
-	public function setFilename(string $filename) : void
-	{
-		$this->filename = $filename;
-	}
-	
 	public function shouldWalkNode(Node $node) : bool
 	{
-		return false === Str::endsWith($this->filename, '.blade.php');
+		if (false === $this->active && $node instanceof NamespaceDefinition) {
+			$this->active = true;
+		}
+		
+		return $this->active;
 	}
 	
 	protected function matcher() : Matcher

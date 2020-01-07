@@ -12,6 +12,7 @@ use Glhd\LaraLint\Printers\ConsolePrinter;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
@@ -111,47 +112,39 @@ class LintCommand extends Command
 	
 	protected function files() : LazyCollection
 	{
-		// If we were asked for git changes, just return those
-		if ($this->option('diff')) {
-			return $this->gitDiffFiles();
-		}
-		
-		// Parse 'targets' argument into a list of files and directories
-		$targets = Collection::make($this->argument('targets'))
-			->map(function($target) {
-				return new SplFileInfo($target);
-			});
-		
-		$files = $targets->filter(function(SplFileInfo $file) {
-			return $file->isFile();
-		});
-		
-		$directories = $targets->filter(function(SplFileInfo $file) {
-			return $file->isDir();
-		});
+		[$files, $directories] = $this->targets();
 		
 		// If we were provided a list of target files, just return that list 
 		if ($files->isNotEmpty() && $directories->isEmpty()) {
 			return LazyCollection::make($files);
 		}
 		
+		// If no directories were provided, then just use the base path
+		if ($directories->isEmpty()) {
+			$directories = new Collection(new SplFileInfo(App::basePath()));
+		}
+		
+		// FIXME: Excluded filenames
+		
+		// Get excluded directories, overriding if they're
+		// explicitly whitelisted in the targets argument
+		$exclude = Collection::make(Config::get('laralint.excluded_directories', []))
+			->reject(function($path) use ($directories) {
+				foreach ($directories as $directory_path) {
+					if ($directory_path === $path) {
+						return true;
+					}
+				}
+				return false;
+			})
+			->toArray();
+		
 		// Set up base finder
 		$finder = Finder::create()
 			->files()
-			->name('*.php');
-		
-		if ($directories->isNotEmpty()) {
-			// If we were provided a list of directories to lint, use that
-			$finder->in(
-				$directories->map(function(SplFileInfo $directory) {
-					return $directory->getRealPath();
-				})->toArray()
-			);
-		} else {
-			// Otherwise, just use the default configuration
-			$finder->in(base_path())
-				->exclude(Config::get('laralint.excluded_directories', [base_path('vendor/')]));
-		}
+			->exclude($exclude)
+			->name('*.php')
+			->in($directories->map->getRealPath()->toArray());
 		
 		// If we have filenames + directories to lint, then iterate over both, starting with files
 		if ($files->isNotEmpty()) {
@@ -167,7 +160,34 @@ class LintCommand extends Command
 		return LazyCollection::make($finder);
 	}
 	
-	protected function gitDiffFiles() : LazyCollection
+	/**
+	 * @return Collection[]
+	 */
+	protected function targets() : array
+	{
+		// If we were asked for git changes, just return those
+		if ($this->option('diff')) {
+			return [$this->gitDiffFiles(), new Collection()];
+		}
+		
+		// Otherwise, split the targets into files and directories
+		$targets = Collection::make($this->argument('targets'))
+			->map(function($target) {
+				return new SplFileInfo($target);
+			});
+		
+		$files = $targets->filter(function(SplFileInfo $file) {
+			return $file->isFile();
+		});
+		
+		$directories = $targets->filter(function(SplFileInfo $file) {
+			return $file->isDir();
+		});
+		
+		return [$files, $directories];
+	}
+	
+	protected function gitDiffFiles() : Collection
 	{
 		$proc = new Process(['git', 'diff', '--name-only'], base_path());
 		$proc->run();
@@ -176,7 +196,7 @@ class LintCommand extends Command
 			throw new RuntimeException($proc->getErrorOutput());
 		}
 		
-		return LazyCollection::make(explode("\n", trim($proc->getOutput())))
+		return Collection::make(explode("\n", trim($proc->getOutput())))
 			->filter(function($filename) {
 				return preg_match('/\.php$/i', $filename);
 			})
