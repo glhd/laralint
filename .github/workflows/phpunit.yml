@@ -9,15 +9,9 @@ jobs:
     strategy:
       matrix:
         php: [7.4, 7.3]
-        laravel: [6.*, 5.8.*]
         dependency-version: [prefer-lowest, prefer-stable]
-        include:
-          - laravel: 6.*
-            testbench: 4.*
-          - laravel: 5.8.*
-            testbench: 3.8.*
 
-    name: PHP ${{ matrix.php }} w/ Laravel ${{ matrix.laravel }} (${{ matrix.dependency-version }})
+    name: PHP ${{ matrix.php }} (${{ matrix.dependency-version }})
 
     steps:
       - name: Checkout code
@@ -31,9 +25,7 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+        run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
       - name: Execute tests
         run: vendor/bin/phpunit
