@@ -39,6 +39,9 @@
 		}
 	},
 	"minimum-stability": "stable",
+	"scripts": {
+		"test": "phpunit"
+	},
 	"extra": {
 		"laravel": {
 			"providers": [

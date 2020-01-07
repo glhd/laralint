@@ -39,6 +39,11 @@ class LintCommand extends Command
 	
 	protected $description = 'Run LaraLint on your project';
 	
+	/**
+	 * @var \Glhd\LaraLint\Contracts\Printer
+	 */
+	protected $printer;
+	
 	public function handle()
 	{
 		$linters = $this->linters();
@@ -64,6 +69,13 @@ class LintCommand extends Command
 		$printer->closing();
 		
 		return $flag_count > 0 ? 1 : 0;
+	}
+	
+	public function setPrinter(Printer $printer) : self
+	{
+		$this->printer = $printer;
+		
+		return $this;
 	}
 	
 	protected function preset() : Preset
@@ -121,7 +133,7 @@ class LintCommand extends Command
 		
 		// If no directories were provided, then just use the base path
 		if ($directories->isEmpty()) {
-			$directories = new Collection(new SplFileInfo(App::basePath()));
+			$directories = new Collection([new SplFileInfo(App::basePath())]);
 		}
 		
 		// FIXME: Excluded filenames
@@ -173,6 +185,10 @@ class LintCommand extends Command
 		// Otherwise, split the targets into files and directories
 		$targets = Collection::make($this->argument('targets'))
 			->map(function($target) {
+				if (!file_exists($target)) {
+					$target = getcwd().DIRECTORY_SEPARATOR.ltrim($target, DIRECTORY_SEPARATOR);
+				}
+				
 				return new SplFileInfo($target);
 			});
 		
@@ -207,15 +223,22 @@ class LintCommand extends Command
 	
 	protected function printer() : Printer
 	{
-		switch ($this->option('printer')) {
-			case 'phpcs':
-				return new PHP_CodeSniffer($this->getOutput());
-			
-			case 'compact':
-				return new CompactPrinter($this->getOutput());
-			
-			default:
-				return new ConsolePrinter($this->getOutput());
+		if (null === $this->printer) {
+			switch ($this->option('printer')) {
+				case 'phpcs':
+					$this->printer = new PHP_CodeSniffer($this->getOutput());
+					break;
+				
+				case 'compact':
+					$this->printer = new CompactPrinter($this->getOutput());
+					break;
+				
+				default:
+					$this->printer = new ConsolePrinter($this->getOutput());
+					break;
+			}
 		}
+		
+		return $this->printer;
 	}
 }
