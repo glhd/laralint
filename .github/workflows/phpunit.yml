@@ -1,4 +1,4 @@
-name: Run PHPUnit Tests
+name: Tests
 
 on: [push]
 
@@ -25,7 +25,7 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        run: composer update --${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
       - name: Execute tests
         run: vendor/bin/phpunit

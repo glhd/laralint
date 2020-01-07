@@ -6,7 +6,6 @@ use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\ResultCollection;
 use Glhd\LaraLint\Tests\Constraints\LintingDidNotStart;
-use Glhd\LaraLint\Tests\Constraints\LintingHasNotStarted;
 use Glhd\LaraLint\Tests\Constraints\LintingStarted;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
