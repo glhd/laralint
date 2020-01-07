@@ -51,6 +51,10 @@ abstract class TestCase extends Orchestra
 			$filename = Str::slug(class_basename($this->linter)).'_test.php';
 		}
 		
+		if (false === strpos($source, '<?php')) {
+			$source = "<?php\n{$source}";
+		}
+		
 		$this->results = (new StringRunner($filename, $source))
 			->run(new Collection([$this->linter]));
 		
