@@ -1,6 +1,6 @@
 # LaraLint
 
-![GitHub Workflow Status](https://github.com/glhd/laralint/workflows/Run%20PHPUnit%20Tests/badge.svg)
+[![GitHub Workflow Status](https://github.com/glhd/laralint/workflows/Tests/badge.svg)](https://github.com/glhd/laralint/actions?query=workflow%3ATests)
 
 This is a **very early** work-in-progress linter for Laravel projects.
 It’s different from other PHP linters in that it focuses on building
