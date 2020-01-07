@@ -47,6 +47,7 @@ class PreferFacadesOverHelpers extends MatchingLinter
 		$facade = static::FACADE_MAP[$helper];
 		
 		return new Result(
+			$this,
 			$node, 
 			"Use the {$facade} facade rather than the {$helper}() helper."
 		);

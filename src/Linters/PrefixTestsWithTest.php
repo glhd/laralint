@@ -38,6 +38,7 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 	protected function onMatch(Collection $nodes) : ?Result
 	{
 		return new Result(
+			$this,
 			$nodes->last(),
 			'Test methods must start with test_'
 		);

@@ -34,6 +34,7 @@ class PreferAuthId extends MatchingLinter
 	protected function onMatch(Collection $nodes) : ?Result
 	{
 		return new Result(
+			$this,
 			$nodes->first(),
 			'Please use Auth::id() rather than Auth::user()->id.'
 		);

@@ -2,16 +2,7 @@
 
 namespace Glhd\LaraLint\Commands;
 
-use Glhd\LaraLint\Contracts\Printer;
-use Glhd\LaraLint\FileProcessor;
-use Glhd\LaraLint\Presets\LaraLint;
-use Glhd\LaraLint\Printers\PHP_CodeSniffer;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
-use RuntimeException;
-use SplFileInfo;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 
 class InstallCommand extends Command
 {

@@ -5,11 +5,11 @@ namespace Glhd\LaraLint\Commands;
 use AppendIterator;
 use Glhd\LaraLint\Contracts\Preset;
 use Glhd\LaraLint\Contracts\Printer;
-use Glhd\LaraLint\FileProcessor;
 use Glhd\LaraLint\Presets\LaraLint;
 use Glhd\LaraLint\Printers\CompactPrinter;
 use Glhd\LaraLint\Printers\ConsolePrinter;
 use Glhd\LaraLint\Printers\PHP_CodeSniffer;
+use Glhd\LaraLint\Runners\SplFileInfoRunner;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -56,7 +56,7 @@ class LintCommand extends Command
 			->each(function(SplFileInfo $file) use ($printer, $linters, &$flag_count) {
 				$printer->startFile($file->getRealPath());
 				
-				$results = FileProcessor::make($file, $linters)->lint();
+				$results = SplFileInfoRunner::file($file)->run($linters);
 				$flag_count += $results->count();
 				
 				$printer->fileResults($file->getRealPath(), $results);

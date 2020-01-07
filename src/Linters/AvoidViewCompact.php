@@ -21,6 +21,6 @@ class AvoidViewCompact extends MatchingLinter
 	
 	protected function onMatch(Collection $nodes) : ?Result
 	{
-		return new Result($nodes->first(), 'Provide an array to the view rather than using compact().');
+		return new Result($this, $nodes->first(), 'Provide an array to the view rather than using compact().');
 	}
 }

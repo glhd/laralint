@@ -32,6 +32,7 @@ class DoNotApplyMiddlewareInControllers extends MatchingLinter
 		});
 		
 		return new Result(
+			$this,
 			$method_call,
 			'Do not apply middleware in a Controller\'s constructor (use route middleware instead).'
 		);

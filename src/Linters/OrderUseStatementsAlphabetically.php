@@ -20,7 +20,7 @@ class OrderUseStatementsAlphabetically extends CollectingLinter
 			$statement = strtolower($node->getText());
 			
 			if ($i > 0 && $last_statement > $statement) {
-				$results->push(new Result($node, 'Use statements should be ordered alphabetically.'));
+				$results->push(new Result($this, $node, 'Use statements should be ordered alphabetically.'));
 				break;
 			}
 			

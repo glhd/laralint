@@ -2,6 +2,7 @@
 
 namespace Glhd\LaraLint;
 
+use Glhd\LaraLint\Contracts\Linter;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\PositionUtilities;
 
@@ -32,8 +33,14 @@ class Result
 	 */
 	public $end;
 	
-	public function __construct(Node $node, string $message)
+	/**
+	 * @var \Glhd\LaraLint\Contracts\Linter
+	 */
+	protected $linter;
+	
+	public function __construct(Linter $linter, Node $node, string $message)
 	{
+		$this->linter = $linter;
 		$this->node = $node;
 		$this->message = $message;
 		
@@ -44,6 +51,11 @@ class Result
 		
 		$this->line = $position->line + 1;
 		$this->character = $position->character;
+	}
+	
+	public function getLinter() : Linter
+	{
+		return $this->linter;
 	}
 	
 	public function getLine() : int 

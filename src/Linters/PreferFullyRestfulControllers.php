@@ -78,6 +78,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 				$grouped_nodes['non_restful']->splice(1)
 					->map(function($result) {
 						return new Result(
+							$this,
 							$result->node,
 							"A RESTful controller should not contain more than {$this->max_non_restful_methods} non-RESTful ".Str::plural('method', $this->max_non_restful_methods).'.'
 						);

@@ -111,6 +111,7 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLint
 		$qualified = $this->aliases[$alias];
 		
 		return new Result(
+			$this,
 			$node,
 			"Please use '$qualified' rather than the $alias alias."
 		);

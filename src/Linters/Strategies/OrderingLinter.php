@@ -70,6 +70,7 @@ abstract class OrderingLinter implements Linter
 			})
 			->map(function($result) {
 				return new Result(
+					$this,
 					$result->node,
 					ucfirst(trim("{$result->name} should not come after {$result->expected}."))
 				);
