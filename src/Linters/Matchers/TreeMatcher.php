@@ -132,8 +132,9 @@ class TreeMatcher implements Matcher
 				};
 			
 			case 'Closure':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $this->getExpectedNodeType($rule[0])
+				$expected = $this->getExpectedNodeType($rule[0]);
+				return function(Node $node) use ($rule, $expected) {
+					return $node instanceof $expected
 						&& (bool) $rule[0]($node);
 				};
 			

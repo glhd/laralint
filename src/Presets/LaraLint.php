@@ -14,6 +14,7 @@ use Glhd\LaraLint\Linters\PreferAuthId;
 use Glhd\LaraLint\Linters\PreferFacadesOverHelpers;
 use Glhd\LaraLint\Linters\PreferFullyRestfulControllers;
 use Glhd\LaraLint\Linters\PrefixTestsWithTest;
+use Glhd\LaraLint\Linters\SpaceAtBeginningOfComment;
 use Illuminate\Support\Collection;
 
 class LaraLint implements Preset
@@ -32,6 +33,7 @@ class LaraLint implements Preset
 			OrderClassMembers::class,
 			OrderModelMembers::class,
 			PreferFullyRestfulControllers::class,
+			SpaceAtBeginningOfComment::class,
 		]);
 	}
 }
