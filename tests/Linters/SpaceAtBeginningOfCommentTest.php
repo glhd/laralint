@@ -80,4 +80,30 @@ class SpaceAtBeginningOfCommentTest extends TestCase
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
+	
+	public function test_it_does_not_flag_doc_blocks() : void
+	{
+		$source = <<<'END_SOURCE'
+		/**
+		 * Hello world
+		 */
+		END_SOURCE;
+		
+		$this->withLinter(SpaceAtBeginningOfComment::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+	
+	public function test_it_does_not_flag_bordered_doc_blocks() : void
+	{
+		$source = <<<'END_SOURCE'
+		/***************
+		 * Hello world *
+		 ***************/
+		END_SOURCE;
+		
+		$this->withLinter(SpaceAtBeginningOfComment::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
 }
