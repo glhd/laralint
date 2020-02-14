@@ -3,11 +3,7 @@
 namespace Glhd\LaraLint\Tests\Linters;
 
 use Galahad\LaraLint\Tests\TestCase;
-use Glhd\LaraLint\Linters\AvoidGlobalFacadeAliases;
-use Glhd\LaraLint\Linters\AvoidViewCompact;
-use Glhd\LaraLint\Linters\AvoidViewWith;
 use Glhd\LaraLint\Linters\SpaceAtBeginningOfComment;
-use Illuminate\Support\Facades\Auth;
 
 class SpaceAtBeginningOfCommentTest extends TestCase
 {
@@ -67,6 +63,17 @@ class SpaceAtBeginningOfCommentTest extends TestCase
 		/*
 		 * hello world
 		 */
+		END_SOURCE;
+		
+		$this->withLinter(SpaceAtBeginningOfComment::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+	
+	public function test_it_does_not_flag_urls_inside_comments() : void
+	{
+		$source = <<<'END_SOURCE'
+		// LaraLint: https://github.com/glhd/laralint
 		END_SOURCE;
 		
 		$this->withLinter(SpaceAtBeginningOfComment::class)

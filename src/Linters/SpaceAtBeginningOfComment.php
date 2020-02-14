@@ -15,7 +15,7 @@ class SpaceAtBeginningOfComment extends MatchingLinter
 		return $this->treeMatcher()
 			->withChild(function(Node $node) {
 				$comment = $node->getLeadingCommentAndWhitespaceText();
-				return preg_match('/(?:^\s*(?:\/\/\S|\/\*\S)|^\s*\/\*.*\S\*\/\s*$)/m', $comment);
+				return preg_match('/(?:^\s*(?:\/\/\S|\/\*\S)|^\s*\/\*.*\S\*\/\s*$)/ms', $comment);
 			});
 	}
 	
