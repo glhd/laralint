@@ -73,6 +73,11 @@ class OrderClassMembers extends OrderingLinter
 						&& false === $this->isStatic($node);
 				}),
 			
+			'an abstract method' => $this->treeMatcher()
+				->withChild(function(MethodDeclaration $node) {
+					return $this->isAbstract($node);
+				}),
+			
 			'a public static method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)

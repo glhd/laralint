@@ -30,6 +30,11 @@ trait EvaluatesNodes
 		return $this->hasModifier($node, TokenKind::StaticKeyword);
 	}
 	
+	protected function isAbstract($node) : bool
+	{
+		return $this->hasModifier($node, TokenKind::AbstractKeyword);
+	}
+	
 	protected function hasModifier($node, $kind) : bool
 	{
 		return Collection::make($node->modifiers)
