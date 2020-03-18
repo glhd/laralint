@@ -14,6 +14,11 @@ class LintingResultCount extends Constraint
 	 */
 	protected $count;
 	
+	/**
+	 * @var int
+	 */
+	protected $other_count;
+	
 	public function __construct(int $count)
 	{
 		$this->count = $count;
@@ -25,7 +30,9 @@ class LintingResultCount extends Constraint
 	 */
 	protected function matches($other): bool
 	{
-		return $other->count() === $this->count;
+		$this->other_count = $other->count();
+		
+		return $this->other_count === $this->count;
 	}
 	
 	public function toString() : string
@@ -34,12 +41,16 @@ class LintingResultCount extends Constraint
 			return 'no linting results were triggered';
 		}
 		
+		$were = 1 === $this->count ? 'was' : 'were';
 		$results = Str::plural('result', $this->count);
-		return "{$this->count} linting {$results} were triggered";
+		return "{$this->count} linting {$results} {$were} triggered";
 	}
 	
 	protected function failureDescription($other): string
 	{
-		return $this->toString();
+		$were = 1 === $this->other_count ? 'was' : 'were';
+		$results = Str::plural('result', $this->other_count);
+		
+		return $this->toString()." ({$this->other_count} {$results} {$were} triggered)";
 	}
 }

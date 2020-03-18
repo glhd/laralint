@@ -20,83 +20,98 @@ class OrderClassMembers extends OrderingLinter
 	{
 		return new Collection([
 			'a trait' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(TraitUseClause::class),
 			
 			'a public constant' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isPublic($node);
 				}),
 			
 			'a protected constant' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isProtected($node);
 				}),
 			
 			'a private constant' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(ClassConstDeclaration $node) {
 					return $this->isPrivate($node);
 				}),
 			
 			'a public static property' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPublic($node)
 						&& $this->isStatic($node);
 				}),
 			
 			'a protected static property' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isProtected($node)
 						&& $this->isStatic($node);
 				}),
 			
 			'a private static property' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& $this->isStatic($node);
 				}),
 			
 			'a public property' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node);
 				}),
 			
 			'a protected property' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node);
 				}),
 			
 			'a private property' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node);
 				}),
 			
 			'an abstract method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isAbstract($node);
 				}),
 			
 			'a public static method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& $this->isStatic($node);
 				}),
 			
 			'a protected static method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& $this->isStatic($node);
 				}),
 			
 			'a private static method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& $this->isStatic($node);
 				}),
 			
 			'the constructor' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return '__construct' === $node->getName();
 				}),
@@ -118,6 +133,7 @@ class OrderClassMembers extends OrderingLinter
 				}),
 			
 			'a public method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node)
@@ -125,6 +141,7 @@ class OrderClassMembers extends OrderingLinter
 				}),
 			
 			'a protected method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node)
@@ -132,6 +149,7 @@ class OrderClassMembers extends OrderingLinter
 				}),
 			
 			'a private method' => $this->treeMatcher()
+				->withChild(ClassDeclaration::class)
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node)
