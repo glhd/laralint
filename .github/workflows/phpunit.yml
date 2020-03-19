@@ -12,7 +12,7 @@ jobs:
         laravel: [6, 7]
         dependency-version: [lowest, stable]
 
-    name: ${{ matrix.laravel }} - PHP ${{ matrix.php }} (${{ matrix.dependency-version }})
+    name: ${{ matrix.laravel }}.x on PHP ${{ matrix.php }} (prefer ${{ matrix.dependency-version }})
 
     steps:
       - name: Checkout code

@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Microsoft\PhpParser\Node;
 use ReflectionFunction;
+use ReflectionNamedType;
 use stdClass;
 use Throwable;
 
@@ -169,7 +170,10 @@ class TreeMatcher implements Matcher
 		if ($reflect->getNumberOfParameters() > 0) {
 			$parameter = $reflect->getParameters()[0];
 			if ($parameter->hasType()) {
-				return (string) $parameter->getType();
+				$parameter_type = $parameter->getType();
+				if ($parameter_type instanceof ReflectionNamedType) {
+					return $parameter_type->getName();
+				}
 			}
 		}
 		
