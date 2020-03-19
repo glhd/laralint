@@ -16,6 +16,7 @@ class ResultCollection extends Collection
 		});
 	}
 	
+	// FIXME: This is incompatible with a change in Laravel's push() signature depending on version
 	// public function push($item)
 	// {
 	// 	$this->validateItemType($item);
