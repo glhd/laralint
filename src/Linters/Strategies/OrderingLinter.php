@@ -10,7 +10,6 @@ use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
-use RuntimeException;
 use stdClass;
 
 abstract class OrderingLinter implements Linter
@@ -27,8 +26,8 @@ abstract class OrderingLinter implements Linter
 	
 	/**
 	 * This is the index of our current context in the stack
-	 * 
-	 * @var int 
+	 *
+	 * @var int
 	 */
 	protected $current_context;
 	
@@ -85,7 +84,7 @@ abstract class OrderingLinter implements Linter
 				
 				// Only return the result if it was flagged, so that we can filter
 				// out non-issues in the next process
-				return $flagged 
+				return $flagged
 					? $result
 					: null;
 			})
