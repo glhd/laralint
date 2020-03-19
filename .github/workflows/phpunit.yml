@@ -11,23 +11,17 @@ jobs:
         php: [7.4, 7.3]
         laravel: [6, 7]
         dependency-version: [lowest, stable]
+        include:
+          - laravel: 7
+            testbench: 5
+          - laravel: 6
+            testbench: 4
 
-    name: ${{ matrix.laravel }}.x on PHP ${{ matrix.php }} (prefer ${{ matrix.dependency-version }})
+    name: ${{ matrix.laravel }}.x on ${{ matrix.php }} (${{ matrix.dependency-version }} deps)
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
-
-#      - name: Get Composer Cache Directory
-#        id: composer-cache
-#        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-#        
-#      - name: Cache dependencies
-#        uses: actions/cache@v1
-#        with:
-#          path: ${{ steps.composer-cache.outputs.dir }}
-#          key: ${{ runner.os }}-${{ matrix.php}}-composer-${{ hashFiles('**/composer.lock') }}
-#          restore-keys: ${{ runner.os }}-composer-
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v1
@@ -40,7 +34,7 @@ jobs:
         run: composer update --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
         
       - name: Set Laravel version
-        run: "composer require laravel/framework:^${{ matrix.laravel }}.0 --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist"
+        run: "composer require laravel/framework:^${{ matrix.laravel }}.0 orchestra/testbench:^${{ matrix.testbench }}.0 --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist"
 
       - name: Execute tests
         run: vendor/bin/phpunit
