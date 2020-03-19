@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         php: [7.4, 7.3]
-        laravel: [6.0, 7.0]
+        laravel: [6, 7]
         dependency-version: [lowest, stable]
 
     name: ${{ matrix.laravel }} - PHP ${{ matrix.php }} (${{ matrix.dependency-version }})
@@ -40,7 +40,7 @@ jobs:
         run: composer update --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
         
       - name: Set Laravel version
-        run: "composer require laravel/framework:^${{ matrix.laravel }} --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist"
+        run: "composer require laravel/framework:^${{ matrix.laravel }}.0 --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist"
 
       - name: Execute tests
         run: vendor/bin/phpunit
