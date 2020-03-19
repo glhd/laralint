@@ -164,15 +164,13 @@ class TreeMatcher implements Matcher
 	 */
 	protected function getExpectedNodeType(Closure $matcher) : string
 	{
-		try {
-			$reflect = new ReflectionFunction($matcher);
-			if ($reflect->getNumberOfParameters() > 0) {
-				$parameter = $reflect->getParameters()[0];
-				if ($parameter->hasType()) {
-					return (string) $parameter->getType();
-				}
+		$reflect = new ReflectionFunction($matcher);
+		
+		if ($reflect->getNumberOfParameters() > 0) {
+			$parameter = $reflect->getParameters()[0];
+			if ($parameter->hasType()) {
+				return (string) $parameter->getType();
 			}
-		} catch (Throwable $exception) {
 		}
 		
 		return Node::class;
