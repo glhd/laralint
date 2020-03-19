@@ -64,7 +64,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 	{
 		$results = parent::lint();
 		
-		$grouped_nodes = $this->results->groupBy(function($result) {
+		$grouped_nodes = $this->currentContext()->results->groupBy(function($result) {
 			return static::NON_RESTFUL_NAME === $result->name
 				? 'non_restful'
 				: 'restful';
