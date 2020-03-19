@@ -2,25 +2,25 @@
 
 namespace Glhd\LaraLint\Linters;
 
+use Glhd\LaraLint\Contracts\ConditionalLinter;
+use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Concerns\LintsControllers;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
-use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\Expression\MemberAccessExpression;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 
-class DoNotApplyMiddlewareInControllers extends MatchingLinter
+class DoNotApplyMiddlewareInControllers extends MatchingLinter implements ConditionalLinter, FilenameAwareLinter
 {
+	use LintsControllers;
+	
 	protected function matcher() : Matcher
 	{
 		return $this->classMatcher()
 			->withChild(ClassDeclaration::class)
-			->withBaseClass(function(ClassBaseClause $node) {
-				// FIXME: Let's use a filename-aware strategy instead
-				return preg_match('/Controller$/', $node->baseClass->getText());
-			})
 			->withChildMethod('__construct')
 			->withChild(MemberAccessExpression::class, '$this->middleware');
 	}

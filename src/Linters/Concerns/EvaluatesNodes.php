@@ -3,11 +3,24 @@
 namespace Glhd\LaraLint\Linters\Concerns;
 
 use Illuminate\Support\Collection;
+use Microsoft\PhpParser\Node\Expression\ObjectCreationExpression;
+use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 use Microsoft\PhpParser\Token;
 use Microsoft\PhpParser\TokenKind;
 
 trait EvaluatesNodes
 {
+	protected function isClassDeclarationOrAnonymousClass($node) : bool 
+	{
+		return $node instanceof ClassDeclaration || $this->isAnonymousClassExpression($node);
+	}
+	
+	protected function isAnonymousClassExpression($node) : bool
+	{
+		return $node instanceof ObjectCreationExpression
+			&& $node->classTypeDesignator instanceof Token
+			&& TokenKind::ClassKeyword === $node->classTypeDesignator->kind;
+	}
 	
 	protected function isPublic($node) : bool
 	{

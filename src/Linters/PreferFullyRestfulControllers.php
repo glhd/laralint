@@ -5,18 +5,19 @@ namespace Glhd\LaraLint\Linters;
 use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
+use Glhd\LaraLint\Linters\Concerns\LintsControllers;
 use Glhd\LaraLint\Linters\Strategies\OrderingLinter;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
-use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 
 class PreferFullyRestfulControllers extends OrderingLinter implements ConditionalLinter, FilenameAwareLinter
 {
 	use EvaluatesNodes;
+	use LintsControllers;
 	
 	protected const RESTFUL_METHOD_NAMES = [
 		'index',
@@ -38,8 +39,6 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 	
 	protected $max_non_restful_methods = 1;
 	
-	protected $active = false;
-	
 	public function __construct()
 	{
 		parent::__construct();
@@ -48,16 +47,6 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 			'laralint.max_non_restful_methods',
 			$this->max_non_restful_methods
 		);
-	}
-	
-	public function shouldWalkNode(Node $node) : bool
-	{
-		return $this->active;
-	}
-	
-	public function setFilename(string $filename) : void
-	{
-		$this->active = false !== strpos($filename, 'Controllers/');
 	}
 	
 	public function lint() : ResultCollection
