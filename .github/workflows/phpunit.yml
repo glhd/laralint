@@ -28,7 +28,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, libxml, mbstring
-          coverage: none
+          coverage: pcov
 
       - name: Install dependencies
         run: composer update --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
@@ -37,4 +37,14 @@ jobs:
         run: "composer require laravel/framework:^${{ matrix.laravel }}.0 orchestra/testbench:^${{ matrix.testbench }}.0 --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist"
 
       - name: Execute tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --coverage-clover ${{ github.workspace }}/clover.xml
+
+      - name: Publish code coverage
+        uses: paambaati/codeclimate-action@v2.4.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: echo "ok"
+          debug: true
+          coverageLocations:
+            "${{github.workspace}}/clover.xml:clover"
