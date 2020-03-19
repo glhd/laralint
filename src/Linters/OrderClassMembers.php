@@ -29,6 +29,10 @@ class OrderClassMembers extends OrderingLinter
 		// of these nodes and handle that case specially, but it feels like there's got
 		// to be a better way to determine if we're inside a 'class definition' context
 		// regardless of whether it's anonymous or not.
+		//
+		// We could just create a new context each time we hit a new "class members" node,
+		// but that means that our matchers no longer have access to the parent class 
+		// definition for linting, which we use for the `setUp` and `tearDown` linters.
 		if ($node instanceof Node\ClassMembersNode) {
 			$this->class_members_count++;
 			if ($this->class_members_count > 1) {
