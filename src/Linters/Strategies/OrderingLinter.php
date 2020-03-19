@@ -5,75 +5,49 @@ namespace Glhd\LaraLint\Linters\Strategies;
 use Glhd\LaraLint\Contracts\Linter;
 use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Concerns\CreatesMatchers;
-use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Matchers\FirstMatchAggregateMatcher;
-use Glhd\LaraLint\Linters\Matchers\TreeMatcher;
 use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
+use stdClass;
 
 abstract class OrderingLinter implements Linter
 {
 	use CreatesMatchers;
 	
 	/**
-	 * The Matcher object to check nodes against
+	 * This holds a stack of matching contexts. Depending on the implementation,
+	 * we may need to push new contexts to the stack to handle nested matching.
 	 *
-	 * @var \Glhd\LaraLint\Contracts\Matcher
+	 * @var array
 	 */
-	protected $matcher;
+	protected $contexts = [];
 	
+	/**
+	 * This is the index of our current context in the stack
+	 * 
+	 * @var int 
+	 */
+	protected $current_context;
+	
+	/**
+	 * This is the order that the matchers are expected to fire in
+	 *
+	 * @var \Illuminate\Support\Collection
+	 */
 	protected $expected_order;
-	
-	protected $results;
 	
 	public function __construct()
 	{
-		$this->results = new Collection();
-		
-		$matchers = $this->matchers()
-			->each(function(Matcher $matcher, $name) {
-				$matcher->onMatch(function(Collection $nodes) use ($name) {
-					$this->results->push((object) [
-						'name' => $name,
-						'node' => $nodes->last(),
-						'all_nodes' => $nodes,
-					]);
-				});
-			});
-		
-		$this->expected_order = $matchers->keys()->flip();
-		
-		$this->matcher = new FirstMatchAggregateMatcher(...$matchers->values()->toArray());
+		$this->expected_order = $this->matchers()->keys()->flip();
 	}
 	
 	public function lint() : ResultCollection
 	{
-		$current_index = 0;
-		
-		$flags = $this->results
-			->map(function($result) use (&$current_index) {
-				$result->expected_index = $this->expected_order[$result->name];
-				$result->flagged = $result->expected_index < $current_index;
-				$result->expected = $this->expected_order->search($current_index);
-				
-				if ($result->expected_index > $current_index) {
-					$current_index = $result->expected_index;
-				}
-				
-				return $result;
-			})
-			->filter(function($result) {
-				return $result->flagged;
-			})
-			->map(function($result) {
-				return new Result(
-					$this,
-					$result->node,
-					ucfirst(trim("{$result->name} should not come after {$result->expected}."))
-				);
+		$flags = Collection::make($this->contexts)
+			->flatMap(function(stdClass $context) {
+				return $this->evaluateAndFlagResults($context->results);
 			});
 		
 		return new ResultCollection($flags);
@@ -81,12 +55,92 @@ abstract class OrderingLinter implements Linter
 	
 	public function enterNode(Node $node) : void
 	{
-		$this->matcher->enterNode($node);
+		$this->currentMatcher()->enterNode($node);
 	}
 	
 	public function exitNode(Node $node) : void
 	{
-		$this->matcher->exitNode($node);
+		$this->currentMatcher()->exitNode($node);
+	}
+	
+	protected function evaluateAndFlagResults(Collection $results) : Collection
+	{
+		$current_index = 0;
+		
+		return $results
+			->map(function($result) use (&$current_index) {
+				// Determine where we expect this result to be in the order
+				// and flag it if it's not in the correct place
+				$expected_index = $this->expected_order[$result->name];
+				$flagged = $expected_index < $current_index;
+				
+				// Now compute what we *did* expect to be next
+				$result->expected = $this->expected_order->search($current_index);
+				
+				// If the ordering has changed, update our current index
+				if ($expected_index > $current_index) {
+					$current_index = $expected_index;
+				}
+				
+				// Only return the result if it was flagged, so that we can filter
+				// out non-issues in the next process
+				return $flagged 
+					? $result
+					: null;
+			})
+			->filter()
+			->map(function($result) {
+				$message = ucfirst(trim("{$result->name} should not come after {$result->expected}."));
+				return new Result($this, $result->node, $message);
+			});
+	}
+	
+	protected function currentContext() : stdClass
+	{
+		if (empty($this->contexts)) {
+			$this->createNewContext();
+		}
+		
+		return $this->contexts[$this->current_context];
+	}
+	
+	protected function currentMatcher() : Matcher
+	{
+		return $this->currentContext()->matcher;
+	}
+	
+	protected function createNewContext() : stdClass
+	{
+		$context = (object) [
+			'results' => new Collection(),
+		];
+		
+		$matchers = $this->matchers()
+			->each(function(Matcher $matcher, $name) use (&$context) {
+				$matcher->onMatch(function(Collection $nodes) use ($name, &$context) {
+					$context->results->push((object) [
+						'name' => $name,
+						'node' => $nodes->last(),
+						'all_nodes' => $nodes,
+					]);
+				});
+			});
+		
+		$context->matcher = new FirstMatchAggregateMatcher(...$matchers->values()->toArray());
+		
+		$this->contexts[] = $context;
+		$this->current_context = array_key_last($this->contexts);
+		
+		return $context;
+	}
+	
+	protected function exitCurrentContext() : int
+	{
+		$exiting_context = $this->current_context;
+		
+		$this->current_context--;
+		
+		return $exiting_context;
 	}
 	
 	abstract protected function matchers() : Collection;

@@ -99,7 +99,7 @@ class OrderClassMembersTest extends TestCase
 		$source = <<<'END_SOURCE'
 		class Foo
 		{
-			public function first()
+			protected function first()
 			{
 			}
 			
@@ -111,6 +111,33 @@ class OrderClassMembersTest extends TestCase
 						return true;
 					}
 				};
+			}
+		}
+		END_SOURCE;
+		
+		$this->withLinter(OrderClassMembers::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+	
+	public function test_it_handles_two_class_definitions_in_the_same_file() : void
+	{
+		$source = <<<'END_SOURCE'
+		class A
+		{
+			public function first()
+			{
+			}
+			
+			protected function second()
+			{
+			}
+		}
+		
+		class B
+		{
+			public function first()
+			{
 			}
 		}
 		END_SOURCE;
