@@ -16,12 +16,12 @@ class ResultCollection extends Collection
 		});
 	}
 	
-	public function push($item)
-	{
-		$this->validateItemType($item);
-		
-		return parent::push($item);
-	}
+	// public function push($item)
+	// {
+	// 	$this->validateItemType($item);
+	//	
+	// 	return parent::push($item);
+	// }
 	
 	protected function validateItemType($item) : void
 	{
