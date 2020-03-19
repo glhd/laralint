@@ -101,6 +101,7 @@ class OrderClassMembersTest extends TestCase
 		{
 			protected function first()
 			{
+				$j = new Foo();
 			}
 			
 			protected function second()

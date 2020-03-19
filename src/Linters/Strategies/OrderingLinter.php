@@ -10,6 +10,7 @@ use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
+use RuntimeException;
 use stdClass;
 
 abstract class OrderingLinter implements Linter
@@ -134,13 +135,11 @@ abstract class OrderingLinter implements Linter
 		return $context;
 	}
 	
-	protected function exitCurrentContext() : int
+	protected function exitCurrentContext() : void
 	{
-		$exiting_context = $this->current_context;
-		
+		// TODO: This may cause issues if the indexes get out of sync. Probably
+		// won't be an issue, but worth considering.
 		$this->current_context--;
-		
-		return $exiting_context;
 	}
 	
 	abstract protected function matchers() : Collection;

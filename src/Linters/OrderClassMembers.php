@@ -17,6 +17,41 @@ class OrderClassMembers extends OrderingLinter
 {
 	use EvaluatesNodes;
 	
+	protected $class_members_count = 0;
+	
+	public function enterNode(Node $node) : void
+	{
+		// This is an ugly hack because the parser doesn't identify anonymous
+		// classes as a specific node type, but does identify a new "class members"
+		// node when an anonymous class is instantiated. That means that if we're inside
+		// an existing class and instantiate a new anonymous class, we'll have encountered
+		// *two* "class members" nodes. For the time-being I'm going to just track the count
+		// of these nodes and handle that case specially, but it feels like there's got
+		// to be a better way to determine if we're inside a 'class definition' context
+		// regardless of whether it's anonymous or not.
+		if ($node instanceof Node\ClassMembersNode) {
+			$this->class_members_count++;
+			if ($this->class_members_count > 1) {
+				$this->createNewContext();
+			}
+		}
+		
+		parent::enterNode($node);
+	}
+	
+	public function exitNode(Node $node) : void
+	{
+		parent::exitNode($node);
+		
+		// See note in enterNode for explanation of why this is necessary
+		if ($node instanceof Node\ClassMembersNode) {
+			if ($this->class_members_count > 1) {
+				$this->class_members_count--;
+				$this->exitCurrentContext();
+			}
+		}
+	}
+	
 	protected function matchers() : Collection
 	{
 		return new Collection([
@@ -145,23 +180,5 @@ class OrderClassMembers extends OrderingLinter
 			// 		return 0 === strpos($node->getName(), '__');
 			// 	}),
 		]);
-	}
-	
-	public function enterNode(Node $node) : void
-	{
-		if ($node instanceof Node\ClassMembersNode) {
-			$this->createNewContext();
-		}
-		
-		parent::enterNode($node);
-	}
-	
-	public function exitNode(Node $node) : void
-	{
-		parent::exitNode($node);
-		
-		if ($node instanceof Node\ClassMembersNode) {
-			$this->exitCurrentContext();
-		}
 	}
 }
