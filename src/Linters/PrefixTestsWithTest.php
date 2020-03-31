@@ -16,6 +16,8 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 {
 	protected $active = true;
 	
+	protected $data_providers = [];
+	
 	public function setFilename(string $filename) : void
 	{
 		$this->active = false !== strpos($filename, 'tests/');
@@ -25,13 +27,21 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 	{
 		return $this->classMatcher()
 			->withChild(function(ClassDeclaration $node) {
-				return $this->active && Str::endsWith($node->getNamespacedName(), 'Test');
+				if ($this->active && Str::endsWith($node->getNamespacedName(), 'Test')) {
+					// Parse all @dataProvider annotations to whitelist as allowed public methods
+					preg_match_all('/@data[Pp]rovider\s*([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)/m', $node->getFullText(), $matches);
+					$this->data_providers = $matches[1] ?? [];
+					return true;
+				}
+				
+				return false;
 			})
 			->withChild(function(MethodDeclaration $node) {
 				return false === $node->isStatic()
 					&& false === $node->hasModifier(TokenKind::ProtectedKeyword)
 					&& false === $node->hasModifier(TokenKind::PrivateKeyword)
-					&& 0 !== strpos($node->getName(), 'test_');
+					&& 0 !== strpos($node->getName(), 'test_')
+					&& !in_array($node->getName(), $this->data_providers);
 			});
 	}
 	

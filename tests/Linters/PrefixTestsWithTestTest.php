@@ -77,4 +77,25 @@ class PrefixTestsWithTestTest extends TestCase
 			->lintSource($source, 'tests/LinterTest.php')
 			->assertNoLintingResults();
 	}
+	
+	public function test_it_does_not_flag_a_data_provider() : void
+	{
+		$source = <<<'END_SOURCE'
+		class LinterTest
+		{
+			/** @dataProvider foo */
+			public function test_it_does_something()
+			{
+			}
+			
+			public function foo()
+			{
+			}
+		}	
+		END_SOURCE;
+		
+		$this->withLinter(PrefixTestsWithTest::class)
+			->lintSource($source, 'tests/LinterTest.php')
+			->assertNoLintingResults();
+	}
 }
