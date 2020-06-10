@@ -98,4 +98,26 @@ class PrefixTestsWithTestTest extends TestCase
 			->lintSource($source, 'tests/LinterTest.php')
 			->assertNoLintingResults();
 	}
+	
+	public function test_it_does_not_flag_a_function_inside_an_anonymous_class_within_a_test() : void
+	{
+		$source = <<<'END_SOURCE'
+		class LinterTest
+		{
+			public function test_it_does_something()
+			{
+				$foo = new class {
+					public function bar()
+					{
+						return 'ok';
+					}
+				};
+			}
+		}	
+		END_SOURCE;
+		
+		$this->withLinter(PrefixTestsWithTest::class)
+			->lintSource($source, 'tests/LinterTest.php')
+			->assertNoLintingResults();
+	}
 }

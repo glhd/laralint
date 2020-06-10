@@ -2,7 +2,6 @@
 
 namespace Glhd\LaraLint\Tests\Constraints;
 
-use Glhd\LaraLint\Contracts\Linter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Constraint\Constraint;
@@ -15,24 +14,13 @@ class LintingResultCount extends Constraint
 	protected $count;
 	
 	/**
-	 * @var int
+	 * @var \Glhd\LaraLint\ResultCollection
 	 */
-	protected $other_count;
+	protected $other;
 	
 	public function __construct(int $count)
 	{
 		$this->count = $count;
-	}
-	
-	/**
-	 * @param \Glhd\LaraLint\ResultCollection $other
-	 * @return bool
-	 */
-	protected function matches($other): bool
-	{
-		$this->other_count = $other->count();
-		
-		return $this->other_count === $this->count;
 	}
 	
 	public function toString() : string
@@ -41,16 +29,40 @@ class LintingResultCount extends Constraint
 			return 'no linting results were triggered';
 		}
 		
-		$were = 1 === $this->count ? 'was' : 'were';
+		$were = 1 === $this->count
+			? 'was'
+			: 'were';
 		$results = Str::plural('result', $this->count);
 		return "{$this->count} linting {$results} {$were} triggered";
 	}
 	
-	protected function failureDescription($other): string
+	/**
+	 * @param \Glhd\LaraLint\ResultCollection $other
+	 * @return bool
+	 */
+	protected function matches($other) : bool
 	{
-		$were = 1 === $this->other_count ? 'was' : 'were';
-		$results = Str::plural('result', $this->other_count);
+		$this->other = $other;
 		
-		return $this->toString()." ({$this->other_count} {$results} {$were} triggered)";
+		return $this->other->count() === $this->count;
+	}
+	
+	protected function failureDescription($other) : string
+	{
+		$other_count = $this->other->count();
+		
+		$were = 1 === $other_count
+			? 'was'
+			: 'were';
+		$results = Str::plural('result', $other_count);
+		
+		$linting_messages = $this->other
+			->toBase()
+			->map(function(Result $result) {
+				return ' - "'.$result->getMessage().'" on line '.$result->getLine();
+			})
+			->implode("\n");
+		
+		return $this->toString()." ({$other_count} {$results} {$were} triggered):\n{$linting_messages}";
 	}
 }
