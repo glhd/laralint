@@ -33,6 +33,9 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		'__construct',
 		'callAction',
 		'validator',
+		'validate',
+		'validateWith',
+		'validateWithBag',
 	];
 	
 	protected const NON_RESTFUL_NAME = 'non-RESTful method';
@@ -61,6 +64,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		
 		if (
 			isset($grouped_nodes['restful'], $grouped_nodes['non_restful'])
+			&& $grouped_nodes['restful']->count() > 1
 			&& $grouped_nodes['non_restful']->count() > $this->max_non_restful_methods
 		) {
 			$results = $results->merge(

@@ -203,4 +203,28 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->lintSource($source, 'Controllers/TestController.php')
 			->assertNoLintingResults();
 	}
+	
+	public function test_it_considers_a_controller_restful_when_two_restful_methods_are_present() : void
+	{
+		$source = <<<'END_SOURCE'
+		class TestController
+		{
+			public function index()
+			{
+			}
+			
+			public function pancakes()
+			{
+			}
+			
+			public function syrup()
+			{
+			}
+		}	
+		END_SOURCE;
+		
+		$this->withLinter(PreferFullyRestfulControllers::class)
+			->lintSource($source, 'Controllers/TestController.php')
+			->assertNoLintingResults();
+	}
 }
