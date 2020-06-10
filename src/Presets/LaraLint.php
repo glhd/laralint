@@ -7,6 +7,7 @@ use Glhd\LaraLint\Linters\AvoidGlobalFacadeAliases;
 use Glhd\LaraLint\Linters\AvoidViewCompact;
 use Glhd\LaraLint\Linters\AvoidViewWith;
 use Glhd\LaraLint\Linters\DoNotApplyMiddlewareInControllers;
+use Glhd\LaraLint\Linters\NoDocBlocksOnMigrations;
 use Glhd\LaraLint\Linters\OrderClassMembers;
 use Glhd\LaraLint\Linters\OrderModelMembers;
 use Glhd\LaraLint\Linters\OrderUseStatementsAlphabetically;
@@ -34,6 +35,7 @@ class LaraLint implements Preset
 			OrderModelMembers::class,
 			PreferFullyRestfulControllers::class,
 			SpaceAtBeginningOfComment::class,
+			NoDocBlocksOnMigrations::class,
 		]);
 	}
 }
