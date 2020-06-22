@@ -2,8 +2,10 @@
 
 namespace Glhd\LaraLint\Linters\Concerns;
 
+use Exception;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node\Expression\ObjectCreationExpression;
+use Microsoft\PhpParser\Node\QualifiedName;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 use Microsoft\PhpParser\Token;
 use Microsoft\PhpParser\TokenKind;
@@ -54,5 +56,27 @@ trait EvaluatesNodes
 			->contains(function(Token $modifier) use ($kind) {
 				return $modifier->kind === $kind;
 			});
+	}
+	
+	protected function getFullyQualifiedName(QualifiedName $node): ?string 
+	{
+		try {
+			$resolved_name = $node->getResolvedName();
+			
+			$qualified_name = is_string($resolved_name)
+				? $resolved_name
+				: $resolved_name->getFullyQualifiedNameText();
+			
+			return is_string($qualified_name)
+				? $qualified_name
+				: null;
+		} catch (Exception $exception) {
+			return false;
+		}
+	}
+	
+	protected function isFullyQualifiedName(QualifiedName $node, string $target_name): bool 
+	{
+		return $this->getFullyQualifiedName($node) === $target_name;
 	}
 }

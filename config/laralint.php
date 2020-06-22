@@ -74,6 +74,20 @@ return [
 	
 	/*
 	|--------------------------------------------------------------------------
+	| Custom Implementations
+	|--------------------------------------------------------------------------
+	|
+	| If you have custom implementations of framework classes that you want to
+	| enforce the usage of, do so here.
+	|
+	*/
+	'custom_implementations' => [
+		'Illuminate\\Foundation\\Http\\FormRequest' => 'App\\Http\\Requests\\Request',
+		'Illuminate\\Routing\\Controller' => 'App\\Http\\Controllers\\Controller',
+	],
+	
+	/*
+	|--------------------------------------------------------------------------
 	| Relationship Class Names
 	|--------------------------------------------------------------------------
 	|
