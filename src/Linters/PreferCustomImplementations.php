@@ -8,7 +8,6 @@ use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
@@ -29,6 +28,16 @@ class PreferCustomImplementations extends MatchingLinter
 	protected function matcher() : Matcher
 	{
 		return $this->classMatcher()
+			->withChild(function(ClassDeclaration $node) {
+				$resolved_name = $node->getNamespacedName();
+				
+				$qualified_name = is_string($resolved_name)
+					? $resolved_name
+					: $resolved_name->getFullyQualifiedNameText();
+				
+				return $qualified_name
+					&& false === in_array($qualified_name, $this->custom_implementations);
+			})
 			->withChild(function(ClassBaseClause $node) {
 				foreach ($this->custom_implementations as $framework_name => $custom_name) {
 					if ($this->isFullyQualifiedName($node->baseClass, $framework_name)) {

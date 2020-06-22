@@ -35,18 +35,18 @@ class PreferCustomImplementationsTest extends TestCase
 			->assertNoLintingResult();
 	}
 	
-	// public function test_it_does_not_flag_base_controller() : void
-	// {
-	// 	$source = <<<'END_SOURCE'
-	// 	namespace App\Http\Controllers;
-	// 	use Illuminate\Routing\Controller as BaseController;
-	// 	class Controller extends BaseController
-	// 	{
-	// 	}
-	// 	END_SOURCE;
-	//	
-	// 	$this->withLinter(PreferCustomImplementations::class)
-	// 		->lintSource($source, 'Controller.php')
-	// 		->assertNoLintingResult();
-	// }
+	public function test_it_does_not_flag_base_controller() : void
+	{
+		$source = <<<'END_SOURCE'
+		namespace App\Http\Controllers;
+		use Illuminate\Routing\Controller as BaseController;
+		class Controller extends BaseController
+		{
+		}
+		END_SOURCE;
+		
+		$this->withLinter(PreferCustomImplementations::class)
+			->lintSource($source, 'Controller.php')
+			->assertNoLintingResult();
+	}
 }
