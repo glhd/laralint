@@ -82,7 +82,6 @@ return [
 	|
 	*/
 	'custom_implementations' => [
-		'Illuminate\\Foundation\\Http\\FormRequest' => 'App\\Http\\Requests\\Request',
 		'Illuminate\\Routing\\Controller' => 'App\\Http\\Controllers\\Controller',
 	],
 	

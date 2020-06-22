@@ -2,9 +2,6 @@
 
 namespace Glhd\LaraLint\Linters;
 
-use Closure;
-use Glhd\LaraLint\Contracts\ConditionalLinter;
-use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
@@ -14,9 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\ClassBaseClause;
-use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
-use Microsoft\PhpParser\TokenKind;
 
 class PreferCustomImplementations extends MatchingLinter
 {
