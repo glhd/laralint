@@ -44,31 +44,37 @@ class LintCommand extends Command
 	 */
 	protected $printer;
 	
-	public function handle()
+	public function handle(): int
 	{
-		$linters = $this->linters();
-		$printer = $this->printer();
-		
-		$printer->opening();
-		$flag_count = 0;
-		
-		$this->files()
-			->each(function(SplFileInfo $file) use ($printer, $linters, &$flag_count) {
-				$printer->startFile($file->getRealPath());
-				
-				$results = SplFileInfoRunner::file($file)->run($linters);
-				$flag_count += $results->count();
-				
-				$printer->fileResults($file->getRealPath(), $results);
-				
-				if ($this->shouldStopIterating($results->isNotEmpty())) {
-					return false;
-				}
-			});
-		
-		$printer->closing();
-		
-		return $flag_count > 0 ? 1 : 0;
+		try {
+			$linters = $this->linters();
+			$printer = $this->printer();
+			
+			$printer->opening();
+			$flag_count = 0;
+			
+			$this->files()
+				->each(function(SplFileInfo $file) use ($printer, $linters, &$flag_count) {
+					$printer->startFile($file->getRealPath());
+					
+					$results = SplFileInfoRunner::file($file)->run($linters);
+					$flag_count += $results->count();
+					
+					$printer->fileResults($file->getRealPath(), $results);
+					
+					if ($this->shouldStopIterating($results->isNotEmpty())) {
+						return false;
+					}
+				});
+			
+			$printer->closing();
+			
+			return $flag_count > 0
+				? 2
+				: 0;
+		} catch (\Throwable $e) {
+			return 3;
+		}
 	}
 	
 	public function setPrinter(Printer $printer) : self
