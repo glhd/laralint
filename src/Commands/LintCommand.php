@@ -28,13 +28,14 @@ class LintCommand extends Command
 	protected $signature = '
 		laralint:lint
 		
-		{ targets?*   : Filenames and/or directories to lint }
-		{ --diff      : Only lint uncommitted git changes }
-		{ --only=*    : Only apply these linter(s) }
-		{ --except=*  : Do not apply these linter(s) }
-		{ --printer=  : Use a custom printer }
-		{ --step      : Step through results (stopping after each issue) }
-		{ --step-all  : Step through results (stopping after each file, regardless of whether an issue was found) }
+		{ targets?*              : Filenames and/or directories to lint }
+		{ --diff                 : Only lint uncommitted git changes }
+		{ --only=*               : Only apply these linter(s) }
+		{ --except=*             : Do not apply these linter(s) }
+		{ --printer=             : Use a custom printer }
+		{ --step                 : Step through results (stopping after each issue) }
+		{ --step-all             : Step through results (stopping after each file, regardless of whether an issue was found) }
+		{ --ignore-parse-errors  : Fail gracefully if syntax errors are encountered }
 	';
 	
 	protected $description = 'Run LaraLint on your project';
@@ -73,7 +74,9 @@ class LintCommand extends Command
 				? 2
 				: 0;
 		} catch (\Throwable $e) {
-			return 3;
+			return $this->option('ignore-parse-errors')
+				? 0
+				: 3;
 		}
 	}
 	

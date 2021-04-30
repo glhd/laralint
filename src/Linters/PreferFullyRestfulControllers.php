@@ -27,6 +27,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		'edit',
 		'update',
 		'destroy',
+		'restore',
 	];
 	
 	protected const IGNORED_METHOD_NAMES = [
