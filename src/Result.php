@@ -45,7 +45,7 @@ class Result
 		$this->message = $message;
 		
 		$position = PositionUtilities::getLineCharacterPositionFromPosition(
-			$node->getStart(),
+			$node->getStartPosition(),
 			$node->getFileContents()
 		);
 		

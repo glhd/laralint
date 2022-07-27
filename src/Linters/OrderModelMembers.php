@@ -20,7 +20,7 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 	
 	protected $active = false;
 	
-	public function shouldWalkNode(Node $node) : bool
+	public function shouldWalkNode(Node $node): bool
 	{
 		if ($node instanceof ClassBaseClause && $node->baseClass) {
 			$resolved = $node->baseClass->getResolvedName();
@@ -34,7 +34,7 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 		return $this->active;
 	}
 	
-	protected function matchers() : Collection
+	protected function matchers(): Collection
 	{
 		return new Collection([
 			'the boot method' => $this->treeMatcher()
@@ -56,17 +56,21 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 					}
 					
 					// First check if a relationship return type has been declared
-					if ($node->returnType) {
+					if ($node->returnTypeList) {
 						$relationships = Config::get('laralint.relationships', []);
-						foreach ($relationships as $class_name) {
-							try {
-								$qualified_return_type = $node->returnType->getResolvedName()->getFullyQualifiedNameText();
-								
-								if ($class_name === $qualified_return_type) {
-									return true;
+						
+						/** @var \Microsoft\PhpParser\Node\DelimitedList\QualifiedNameList $returnType */
+						foreach ($node->returnTypeList->children as $returnType) {
+							foreach ($relationships as $class_name) {
+								try {
+									$qualified_return_type = $returnType->getResolvedName()->getFullyQualifiedNameText();
+									
+									if ($class_name === $qualified_return_type) {
+										return true;
+									}
+								} catch (Throwable $exception) {
+									// Ignore and use fallback
 								}
-							} catch (Throwable $exception) {
-								// Ignore and use fallback
 							}
 						}
 					}
