@@ -44,6 +44,8 @@ class OrderModelMembersTest extends TestCase
 	public function test_it_flags_a_model_in_with_unexpected_ordering() : void
 	{
 		$source = <<<'END_SOURCE'
+		use Illuminate\Database\Eloquent\Relations\HasOne;
+
 		class Foo extends \App\Model
 		{
 			public static function boot()
@@ -54,7 +56,7 @@ class OrderModelMembersTest extends TestCase
 			{
 			}
 			
-			public function bar()
+			public function bar(): HasOne
 			{
 				return $this->hasOne(Bar::class);
 			}
