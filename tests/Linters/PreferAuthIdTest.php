@@ -55,12 +55,15 @@ class PreferAuthIdTest extends TestCase
 	
 	public function test_it_does_not_flag_similar_looking_signatures() : void
 	{
-		$source = <<<'END_SOURCE'
-		$id = API::user()->id;
-		END_SOURCE;
-		
-		$this->withLinter(PreferAuthId::class)
-			->lintSource($source)
-			->assertNoLintingResults();
+		$sources = [
+			'$id = API::user()->id',
+			'$id = Auth::user()->relationship->id',
+		];
+
+		foreach($sources as $source) {
+			$this->withLinter(PreferAuthId::class)
+				->lintSource($source)
+				->assertNoLintingResults();
+		}
 	}
 }
