@@ -19,7 +19,7 @@ class PreferAuthId extends MatchingLinter
 	{
 		return $this->treeMatcher()
 			->withChild(function(MemberAccessExpression $node) {
-				return Str::endsWith($node->getText(), '->id');
+				return Str::endsWith($node->getText(), '::user()->id');
 			})
 			->withChild(function(CallExpression $node) {
 				return Str::endsWith($node->callableExpression->getText(), '::user');
