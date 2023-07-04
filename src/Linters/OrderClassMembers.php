@@ -40,6 +40,18 @@ class OrderClassMembers extends OrderingLinter
 	protected function matchers() : Collection
 	{
 		return new Collection([
+			'match dataproviders' => $this->treeMatcher()
+				->withChild(function(ClassDeclaration $node) {
+					$expression = '/(?:#\[(?:\\\\?PHPUnit\\\\Framework\\\\Attributes\\\\DataProvider\\\\)?DataProvider\s*\([\'"](?<attribute>[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)[\'"]\)\]|@data[Pp]rovider\s*(?<docblock>[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*))/m';
+					
+					preg_match_all($expression, $node->getFullText(), $matches);
+					
+					$this->currentContext()->data_providers = collect($matches['attribute'])
+						->union($matches['docblock'])
+						->filter()
+						->unique();
+				}),
+			
 			'a trait' => $this->treeMatcher()
 				->withChild(TraitUseClause::class),
 			
@@ -102,7 +114,8 @@ class OrderClassMembers extends OrderingLinter
 			'a public static method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
-						&& $this->isStatic($node);
+						&& $this->isStatic($node)
+						&& ! $this->currentContext()->data_providers->contains($node->getName());
 				}),
 			
 			'a protected static method' => $this->treeMatcher()
