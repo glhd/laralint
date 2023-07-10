@@ -88,7 +88,7 @@ class PrefixTestsWithTestTest extends TestCase
 			{
 			}
 			
-			public function foo()
+			public static function foo()
 			{
 			}
 		}	
