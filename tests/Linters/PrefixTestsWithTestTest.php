@@ -91,6 +91,15 @@ class PrefixTestsWithTestTest extends TestCase
 			public static function foo()
 			{
 			}
+			
+			#[DataProvider('bar')]
+			public function test_it_does_something_else()
+			{
+			}
+			
+			public static function bar()
+			{
+			}
 		}	
 		END_SOURCE;
 		
