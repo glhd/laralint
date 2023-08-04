@@ -54,6 +54,10 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 	protected function matcher() : Matcher
 	{
 		return $this->classMatcher()
+			->withChild(function(ClassDeclaration $node) {
+				return $this->active 
+					&& Str::endsWith($node->getNamespacedName(), 'Test');
+			})
 			->withChild(function(MethodDeclaration $node) {
 				return false === $node->isStatic()
 					&& false === $node->hasModifier(TokenKind::ProtectedKeyword)
