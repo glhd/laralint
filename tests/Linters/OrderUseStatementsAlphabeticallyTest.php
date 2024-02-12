@@ -13,6 +13,7 @@ class OrderUseStatementsAlphabeticallyTest extends TestCase
 		use A;
 		use Aa;
 		use B;
+		use function c;
 		END_SOURCE;
 		
 		$this->withLinter(OrderUseStatementsAlphabetically::class)
@@ -24,8 +25,9 @@ class OrderUseStatementsAlphabeticallyTest extends TestCase
 	{
 		$source = <<<'END_SOURCE'
 		use A;
-		use B;
 		use Aa;
+		use B;
+		use function a;
 		END_SOURCE;
 		
 		$this->withLinter(OrderUseStatementsAlphabetically::class)
