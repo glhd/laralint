@@ -16,13 +16,13 @@
 	"require": {
 		"php": ">=7.3.0",
 		"microsoft/tolerant-php-parser": "dev-main",
-		"illuminate/support": "^6.0|^7.0|^8.0|^9.0|10.*",
-		"illuminate/console": "^6.0|^7.0|^8.0|^9.0|10.*"
+		"illuminate/support": "^6.0|^7.0|^8.0|^9.0|10.*|^11.0",
+		"illuminate/console": "^6.0|^7.0|^8.0|^9.0|10.*|^11.0"
 	},
 	"require-dev": {
-		"laravel/framework": "^6.0|^7.0|^8.0|^9.0|10.*",
-		"orchestra/testbench": "^4.0|^5.0|^7.0|^8.0",
-		"phpunit/phpunit": "^9.0"
+		"laravel/framework": "^6.0|^7.0|^8.0|^9.0|10.*|^11.0",
+		"orchestra/testbench": "^4.0|^5.0|^7.0|^8.0|^9.0",
+		"phpunit/phpunit": "^9.0|^10.0"
 	},
 	"autoload": {
 		"psr-4": {
