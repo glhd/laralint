@@ -115,6 +115,7 @@ class OrderClassMembers extends OrderingLinter
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& $this->isStatic($node)
+						&& property_exists($this->currentContext(), 'data_providers')
 						&& ! $this->currentContext()->data_providers->contains($node->getName());
 				}),
 			

@@ -69,7 +69,26 @@ class OrderClassMembersTest extends TestCase
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-	
+
+	public function test_it_allows_enums() : void
+	{
+		$source = <<<'END_SOURCE'
+		enum Foo: string
+		{
+			case bar = 'bar';
+
+			public static function staticFoo()
+			{
+				return static::$static_foo;
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(OrderClassMembers::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+
 	public function test_it_gives_special_consideration_to_setUp_and_tearDown_methods_in_tests() : void
 	{
 		$source = <<<'END_SOURCE'
