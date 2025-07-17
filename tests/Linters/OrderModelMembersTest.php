@@ -13,6 +13,11 @@ class OrderModelMembersTest extends TestCase
 		$source = <<<'END_SOURCE'
 		class Foo extends \App\Model
 		{
+			protected function casts(): array
+			{
+				return [];
+			}
+		    
 			public static function boot()
 			{
 			}
@@ -33,6 +38,11 @@ class OrderModelMembersTest extends TestCase
 			public function scopeBar($query)
 			{
 			}
+			
+			#[\Illuminate\Database\Eloquent\Attributes\Scope]
+			public function baz($query)
+			{
+			}
 		}
 		END_SOURCE;
 		
@@ -48,6 +58,12 @@ class OrderModelMembersTest extends TestCase
 
 		class Foo extends \App\Model
 		{
+					
+			#[\Illuminate\Database\Eloquent\Attributes\Scope]
+			public function baz($query)
+			{
+			}
+			
 			public static function boot()
 			{
 			}
@@ -68,11 +84,17 @@ class OrderModelMembersTest extends TestCase
 			public function setFooAttribute()
 			{
 			}
+			
+			protected function casts(): array
+			{
+				return [];
+			}    
 		}
 		END_SOURCE;
 		
 		$this->withLinter(OrderModelMembers::class)
 			->lintSource($source)
-			->assertLintingResult();
+			->assertLintingResult()
+			->assertLintingResultCount(5);
 	}
 }
