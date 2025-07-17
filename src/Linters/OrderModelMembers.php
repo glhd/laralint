@@ -37,6 +37,11 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 	protected function matchers(): Collection
 	{
 		return new Collection([
+			'cast method' => $this->treeMatcher()
+				->withChild(function(MethodDeclaration $node) {
+					return 'casts' === $node->getName()
+						&& $this->isProtected($node);
+				}),
 			'boot methods' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return in_array($node->getName(), ['booting', 'boot', 'booted'])
@@ -82,7 +87,11 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 			
 			'a scope' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
-					return 0 === strpos($node->getName(), 'scope');
+					if (0 === strpos($node->getName(), 'scope')) {
+						return true;
+					}
+
+					return $this->hasAttribute($node, 'Illuminate\\Database\\Eloquent\\Attributes\\Scope');
 				}),
 		]);
 	}
