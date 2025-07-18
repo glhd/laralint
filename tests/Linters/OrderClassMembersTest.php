@@ -112,7 +112,50 @@ class OrderClassMembersTest extends TestCase
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-	
+
+	public function test_it_gives_special_consideration_to_casts_and_boot_methods_in_models() : void
+	{
+		$source = <<<'END_SOURCE'
+		class Foo extends \App\Model
+		{
+			protected function casts(): array
+			{
+				return [];
+			}
+		    
+			protected static function boot()
+			{
+			}
+			
+			public function getFooAttribute()
+			{
+			}
+			
+			public function setFooAttribute()
+			{
+			}
+			
+			public function bar()
+			{
+				return $this->hasOne(Bar::class);
+			}
+			
+			public function scopeBar($query)
+			{
+			}
+			
+			#[\Illuminate\Database\Eloquent\Attributes\Scope]
+			public function baz($query)
+			{
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(OrderClassMembers::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+
 	public function test_it_handles_anonymous_classes_with_their_own_ordering() : void
 	{
 		$source = <<<'END_SOURCE'

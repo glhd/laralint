@@ -1,6 +1,6 @@
 name: Tests
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   phpunit:
@@ -41,14 +41,11 @@ jobs:
         run: "composer require --dev laravel/framework:^${{ matrix.laravel }}.0 orchestra/testbench:^${{ matrix.testbench }}.0 --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist"
 
       - name: Execute tests
-        run: vendor/bin/phpunit --coverage-clover ${{ github.workspace }}/clover.xml
+        run: vendor/bin/phpunit --coverage-html "${{ github.workspace }}/code-coverage"
 
       - name: Publish code coverage
-        uses: paambaati/codeclimate-action@v2.4.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        if: matrix.laravel == 12 && matrix.dependency-version == 'stable'
+        uses: actions/upload-artifact@v4
         with:
-          coverageCommand: echo "ok"
-          debug: true
-          coverageLocations:
-            "${{github.workspace}}/clover.xml:clover"
+          name: code-coverage
+          path: "${{github.workspace}}/code-coverage"

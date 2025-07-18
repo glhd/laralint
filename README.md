@@ -1,6 +1,6 @@
 # LaraLint
 
-[![GitHub Workflow Status](https://github.com/glhd/laralint/workflows/Tests/badge.svg)](https://github.com/glhd/laralint/actions?query=workflow%3ATests) [![Test Coverage](https://api.codeclimate.com/v1/badges/a2394b6b2d0b1e212fc1/test_coverage)](https://codeclimate.com/github/glhd/laralint/test_coverage)
+[![GitHub Workflow Status](https://github.com/glhd/laralint/workflows/Tests/badge.svg)](https://github.com/glhd/laralint/actions?query=workflow%3ATests)
 
 This is a **very early** work-in-progress linter for Laravel projects.
 It’s different from other PHP linters in that it focuses on building

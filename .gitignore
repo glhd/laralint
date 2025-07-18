@@ -2,4 +2,6 @@
 /vendor/
 composer.lock
 .phpunit.result.cache
+/.phpunit.cache
+/code-coverage
 .DS_Store
