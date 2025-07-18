@@ -5,6 +5,7 @@ namespace Glhd\LaraLint\Linters;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Strategies\OrderingLinter;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\ClassConstDeclaration;
@@ -12,6 +13,7 @@ use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\PropertyDeclaration;
 use Microsoft\PhpParser\Node\Statement\ClassDeclaration;
 use Microsoft\PhpParser\Node\TraitUseClause;
+use Microsoft\PhpParser\ResolvedName;
 
 class OrderClassMembers extends OrderingLinter
 {
@@ -104,6 +106,33 @@ class OrderClassMembers extends OrderingLinter
 				->withChild(function(PropertyDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node);
+				}),
+
+			'the casts method' => $this->treeMatcher()
+				->withChild(function(ClassDeclaration $node) {
+					$resolved = $node->classBaseClause->baseClass->getResolvedName();
+					$extends = $resolved instanceof ResolvedName
+						? $resolved->getFullyQualifiedNameText()
+  						: (string) $resolved;
+
+					return  in_array($extends, Config::get('laralint.models', []));
+				})
+				->withChild(function(MethodDeclaration $node) {
+					return 'casts' === $node->getName();
+				}),
+
+			'the boot method' => $this->treeMatcher()
+				->withChild(function(ClassDeclaration $node) {
+					$resolved = $node->classBaseClause->baseClass->getResolvedName();
+					$extends = $resolved instanceof ResolvedName
+						? $resolved->getFullyQualifiedNameText()
+						: (string) $resolved;
+
+					return  in_array($extends, Config::get('laralint.models', []));
+				})
+				->withChild(function(MethodDeclaration $node) {
+					return in_array($node->getName(), ['booting', 'boot', 'booted'])
+					&& $this->isStatic($node);
 				}),
 			
 			'an abstract method' => $this->treeMatcher()
