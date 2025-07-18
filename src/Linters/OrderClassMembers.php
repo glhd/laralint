@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node;
+use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\ClassConstDeclaration;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\PropertyDeclaration;
@@ -110,6 +111,10 @@ class OrderClassMembers extends OrderingLinter
 
 			'the casts method' => $this->treeMatcher()
 				->withChild(function(ClassDeclaration $node) {
+					if (!$node->classBaseClause instanceof ClassBaseClause) {
+						return false;
+					}
+
 					$resolved = $node->classBaseClause->baseClass->getResolvedName();
 					$extends = $resolved instanceof ResolvedName
 						? $resolved->getFullyQualifiedNameText()
@@ -123,6 +128,10 @@ class OrderClassMembers extends OrderingLinter
 
 			'the boot method' => $this->treeMatcher()
 				->withChild(function(ClassDeclaration $node) {
+					if (!$node->classBaseClause instanceof ClassBaseClause) {
+						return false;
+					}
+
 					$resolved = $node->classBaseClause->baseClass->getResolvedName();
 					$extends = $resolved instanceof ResolvedName
 						? $resolved->getFullyQualifiedNameText()
