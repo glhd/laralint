@@ -97,6 +97,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 			->put(static::NON_RESTFUL_NAME, $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
+						&& !$this->isStatic($node)
 						&& !in_array($node->getName(), array_merge(
 							static::RESTFUL_METHOD_NAMES,
 							static::IGNORED_METHOD_NAMES

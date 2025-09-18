@@ -47,6 +47,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertStarted('dir1/1b.php')
 			->assertStarted('dir2/2a.php')
 			->assertStarted('dir2/2b.php')
+			->assertDidNotStart('_ide_helper.php')
 			->assertDidNotStart('vendor/vendor.php');
 	}
 	
@@ -61,6 +62,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('dir1/1b.php')
 			->assertDidNotStart('dir2/2a.php')
 			->assertDidNotStart('dir2/2b.php')
+			->assertDidNotStart('_ide_helper.php')
 			->assertDidNotStart('vendor/vendor.php');
 	}
 	
@@ -75,6 +77,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('dir1/1b.php')
 			->assertStarted('dir2/2a.php')
 			->assertStarted('dir2/2b.php')
+			->assertDidNotStart('_ide_helper.php')
 			->assertDidNotStart('vendor/vendor.php');
 	}
 	
@@ -89,6 +92,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('dir1/1b.php')
 			->assertDidNotStart('dir2/2a.php')
 			->assertDidNotStart('dir2/2b.php')
+			->assertDidNotStart('_ide_helper.php')
 			->assertStarted('vendor/vendor.php');
 	}
 	
@@ -103,6 +107,22 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('dir1/1b.php')
 			->assertDidNotStart('dir2/2a.php')
 			->assertDidNotStart('dir2/2b.php')
+			->assertDidNotStart('_ide_helper.php')
 			->assertStarted('vendor/vendor.php');
+	}
+
+    public function test_files_in_excluded_files_can_be_explicitly_set_as_a_target() : void
+	{
+		$this->artisan(LintCommand::class, ['targets' => ['_ide_helper.php']])
+			->assertExitCode(0);
+
+		$this->printer->assertDidNotStart('a.php')
+			->assertDidNotStart('b.php')
+			->assertDidNotStart('dir1/1a.php')
+			->assertDidNotStart('dir1/1b.php')
+			->assertDidNotStart('dir2/2a.php')
+			->assertDidNotStart('dir2/2b.php')
+			->assertDidNotStart('vendor/vendor.php')
+			->assertStarted('_ide_helper.php');
 	}
 }

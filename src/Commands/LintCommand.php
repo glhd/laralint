@@ -53,9 +53,26 @@ class LintCommand extends Command
 			
 			$printer->opening();
 			$flag_count = 0;
+			$target_files = $this->targets()[0];
+			$excluded_files = Collection::make(Config::get('laralint.excluded_files', []))
+				->reject(function($file) use ($target_files) {
+					foreach ($target_files as $target_file) {
+						if ($target_file->getFilename() === $file) {
+							return true;
+						}
+					}
+					return false;
+                });
 			
 			$this->files()
-				->each(function(SplFileInfo $file) use ($printer, $linters, &$flag_count) {
+				->each(function(SplFileInfo $file) use ($printer, $linters, &$flag_count, $excluded_files) {
+					if ($excluded_files->contains(function($excluded) use ($file) {
+						return $file->getRealPath() === $excluded
+							|| $file->getFilename() === $excluded;
+					})) {
+						return;
+					}
+
 					$printer->startFile($file->getRealPath());
 					
 					$results = SplFileInfoRunner::file($file)->run($linters);
@@ -144,9 +161,7 @@ class LintCommand extends Command
 		if ($directories->isEmpty()) {
 			$directories = new Collection([new SplFileInfo(App::basePath())]);
 		}
-		
-		// FIXME: Excluded filenames
-		
+
 		// Get excluded directories, overriding if they're
 		// explicitly whitelisted in the targets argument
 		$exclude = Collection::make(Config::get('laralint.excluded_directories', []))
