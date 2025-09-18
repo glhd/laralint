@@ -118,13 +118,13 @@ class OrderClassMembersTest extends TestCase
 		$source = <<<'END_SOURCE'
 		class Foo extends \App\Model
 		{
+			protected static function boot()
+			{
+			}
+			
 			protected function casts(): array
 			{
 				return [];
-			}
-		    
-			protected static function boot()
-			{
 			}
 			
 			public function getFooAttribute()

@@ -109,23 +109,6 @@ class OrderClassMembers extends OrderingLinter
 						&& false === $this->isStatic($node);
 				}),
 
-			'the casts method' => $this->treeMatcher()
-				->withChild(function(ClassDeclaration $node) {
-					if (!$node->classBaseClause instanceof ClassBaseClause) {
-						return false;
-					}
-
-					$resolved = $node->classBaseClause->baseClass->getResolvedName();
-					$extends = $resolved instanceof ResolvedName
-						? $resolved->getFullyQualifiedNameText()
-  						: (string) $resolved;
-
-					return  in_array($extends, Config::get('laralint.models', []));
-				})
-				->withChild(function(MethodDeclaration $node) {
-					return 'casts' === $node->getName();
-				}),
-
 			'the boot method' => $this->treeMatcher()
 				->withChild(function(ClassDeclaration $node) {
 					if (!$node->classBaseClause instanceof ClassBaseClause) {
@@ -142,6 +125,23 @@ class OrderClassMembers extends OrderingLinter
 				->withChild(function(MethodDeclaration $node) {
 					return in_array($node->getName(), ['booting', 'boot', 'booted'])
 					&& $this->isStatic($node);
+				}),
+			
+			'the casts method' => $this->treeMatcher()
+				->withChild(function(ClassDeclaration $node) {
+					if (! $node->classBaseClause instanceof ClassBaseClause) {
+						return false;
+					}
+					
+					$resolved = $node->classBaseClause->baseClass->getResolvedName();
+					$extends = $resolved instanceof ResolvedName
+						? $resolved->getFullyQualifiedNameText()
+						: (string) $resolved;
+					
+					return in_array($extends, Config::get('laralint.models', []));
+				})
+				->withChild(function(MethodDeclaration $node) {
+					return 'casts' === $node->getName();
 				}),
 			
 			'an abstract method' => $this->treeMatcher()
