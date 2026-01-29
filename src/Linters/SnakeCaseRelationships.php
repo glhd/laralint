@@ -4,40 +4,22 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\Matcher;
-use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
+use Glhd\LaraLint\Linters\Concerns\LintsModelRelations;
+use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
+use Glhd\LaraLint\Linters\Concerns\WalksModels;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
-use Microsoft\PhpParser\Node;
-use Microsoft\PhpParser\Node\ClassBaseClause;
 use Microsoft\PhpParser\Node\MethodDeclaration;
-use Microsoft\PhpParser\ResolvedName;
-use Throwable;
 
 class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 {
-	use LintsStringCase;
 	use EvaluatesNodes;
-	
-	protected bool $active = false;
-	
-	public function shouldWalkNode(Node $node): bool
-	{
-		if ($node instanceof ClassBaseClause && $node->baseClass) {
-			$resolved = $node->baseClass->getResolvedName();
-			$extends = $resolved instanceof ResolvedName
-				? $resolved->getFullyQualifiedNameText()
-				: (string) $resolved;
-			
-			$this->active = in_array($extends, Config::get('laralint.models', []));
-		}
-		
-		return $this->active;
-	}
-	
+	use LintsModelRelations;
+	use LintsStringCase;
+	use WalksModels;
+
 	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
@@ -45,41 +27,18 @@ class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 				&& $this->isRelationship($node)
 				&& ! $this->isSnakeCase($node->getName()));
 	}
-	
+
 	/** @param Collection<int, MethodDeclaration> $nodes */
 	protected function onMatch(Collection $nodes): ?Result
 	{
 		$node = $nodes->last();
 		$name = $node->getName();
 		$suggested = $this->toSnakeCase($name);
-		
+
 		return new Result(
 			$this,
 			$node,
 			"Relationship method {$name}() should be {$suggested}()"
 		);
-	}
-	
-	protected function isRelationship(MethodDeclaration $node): bool
-	{
-		if ($node->returnTypeList) {
-			$relationships = Config::get('laralint.relationships', []);
-			
-			foreach ($node->returnTypeList->children as $returnType) {
-				foreach ($relationships as $class_name) {
-					try {
-						$qualified_return_type = $returnType->getResolvedName()->getFullyQualifiedNameText();
-						
-						if ($class_name === $qualified_return_type) {
-							return true;
-						}
-					} catch (Throwable $exception) {
-						// Ignore and use fallback
-					}
-				}
-			}
-		}
-		
-		return Str::contains($node->getText(), Config::get('laralint.relationship_heuristics', []));
 	}
 }
