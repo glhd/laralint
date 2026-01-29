@@ -3,6 +3,7 @@
 namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
 use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
@@ -12,6 +13,8 @@ use Microsoft\PhpParser\Node\Parameter;
 
 class SnakeCaseVariables extends MatchingLinter
 {
+	use LintsStringCase;
+
 	protected array $excluded = [
 		'this',
 		'_',
@@ -60,17 +63,5 @@ class SnakeCaseVariables extends MatchingLinter
 			$node,
 			"{$type} \${$name} should be \${$suggested}"
 		);
-	}
-
-	protected function isSnakeCase(string $name): bool
-	{
-		return (bool) preg_match('/^_?[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/', $name);
-	}
-
-	protected function toSnakeCase(string $name): string
-	{
-		$name = preg_replace('/([a-z])([A-Z])/', '$1_$2', $name);
-
-		return strtolower($name);
 	}
 }

@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
@@ -18,6 +19,7 @@ use Throwable;
 
 class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 {
+	use LintsStringCase;
 	use EvaluatesNodes;
 	
 	protected bool $active = false;
@@ -79,17 +81,5 @@ class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 		}
 		
 		return Str::contains($node->getText(), Config::get('laralint.relationship_heuristics', []));
-	}
-	
-	protected function isSnakeCase(string $name): bool
-	{
-		return (bool) preg_match('/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/', $name);
-	}
-	
-	protected function toSnakeCase(string $name): string
-	{
-		$name = preg_replace('/([a-z])([A-Z])/', '$1_$2', $name);
-		
-		return strtolower($name);
 	}
 }
