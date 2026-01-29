@@ -2,6 +2,7 @@
 
 namespace Glhd\LaraLint\Tests;
 
+use Glhd\LaraLint\ResultCollection;
 use Glhd\LaraLint\Runners\StringRunner;
 use Glhd\LaraLint\Support\LaraLintServiceProvider;
 use Glhd\LaraLint\Tests\Constraints\LintingResult;
@@ -13,9 +14,9 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
-	protected string $linter;
+	protected ?string $linter = null;
 	
-	protected ?\Glhd\LaraLint\ResultCollection $results;
+	protected ?ResultCollection $results = null;
 	
 	protected function setUp(): void
 	{
