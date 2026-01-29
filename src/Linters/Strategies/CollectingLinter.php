@@ -18,22 +18,22 @@ abstract class CollectingLinter extends MatchingLinter
 		$this->collected_nodes = new Collection();
 	}
 	
-	public function lint() : ResultCollection
+	public function lint(): ResultCollection
 	{
 		return $this->lintCollectedNodes($this->collected_nodes);
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		$this->collected_nodes->push($this->reduceMatchedNodes($nodes));
 		
 		return null;
 	}
 	
-	protected function reduceMatchedNodes(Collection $nodes) : Node
+	protected function reduceMatchedNodes(Collection $nodes): Node
 	{
 		return $nodes->first();
 	}
 	
-	abstract protected function lintCollectedNodes(Collection $nodes) : ResultCollection; 
+	abstract protected function lintCollectedNodes(Collection $nodes): ResultCollection;
 }

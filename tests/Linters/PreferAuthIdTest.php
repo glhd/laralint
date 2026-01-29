@@ -2,13 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\PreferAuthId;
-use Glhd\LaraLint\Linters\SpaceAtBeginningOfComment;
+use Glhd\LaraLint\Tests\TestCase;
 
 class PreferAuthIdTest extends TestCase
 {
-	public function test_it_flags_global_use() : void
+	public function test_it_flags_global_use(): void
 	{
 		$source = <<<'END_SOURCE'
 		$id = Auth::user()->id;
@@ -19,7 +18,7 @@ class PreferAuthIdTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_flags_fully_qualified_global_use() : void
+	public function test_it_flags_fully_qualified_global_use(): void
 	{
 		$source = <<<'END_SOURCE'
 		$id = \Auth::user()->id;
@@ -30,7 +29,7 @@ class PreferAuthIdTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_flags_imported_use() : void
+	public function test_it_flags_imported_use(): void
 	{
 		$source = <<<'END_SOURCE'
 		use Illuminate\Support\Facades\Auth;
@@ -42,7 +41,7 @@ class PreferAuthIdTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_flags_fully_qualified_use() : void
+	public function test_it_flags_fully_qualified_use(): void
 	{
 		$source = <<<'END_SOURCE'
 		$id = Illuminate\Support\Facades\Auth::user()->id;
@@ -53,14 +52,14 @@ class PreferAuthIdTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_does_not_flag_similar_looking_signatures() : void
+	public function test_it_does_not_flag_similar_looking_signatures(): void
 	{
 		$sources = [
 			'$id = API::user()->id',
 			'$id = Auth::user()->relationship->id',
 		];
-
-		foreach($sources as $source) {
+		
+		foreach ($sources as $source) {
 			$this->withLinter(PreferAuthId::class)
 				->lintSource($source)
 				->assertNoLintingResults();

@@ -53,7 +53,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		);
 	}
 	
-	public function lint() : ResultCollection
+	public function lint(): ResultCollection
 	{
 		$results = parent::lint();
 		
@@ -83,7 +83,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		return $results;
 	}
 	
-	protected function matchers() : Collection
+	protected function matchers(): Collection
 	{
 		return Collection::make(static::RESTFUL_METHOD_NAMES)
 			->mapWithKeys(function($method_name) {
@@ -97,8 +97,8 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 			->put(static::NON_RESTFUL_NAME, $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
-						&& !$this->isStatic($node)
-						&& !in_array($node->getName(), array_merge(
+						&& ! $this->isStatic($node)
+						&& ! in_array($node->getName(), array_merge(
 							static::RESTFUL_METHOD_NAMES,
 							static::IGNORED_METHOD_NAMES
 						));

@@ -2,14 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\DoNotApplyMiddlewareInControllers;
-use Glhd\LaraLint\Linters\OrderClassMembers;
-use Glhd\LaraLint\Linters\PreferFullyRestfulControllers;
+use Glhd\LaraLint\Tests\TestCase;
 
 class DoNotApplyMiddlewareInControllersTest extends TestCase
 {
-	public function test_it_does_not_flag_a_controller_with_no_middleware_calls_in_its_constructor() : void
+	public function test_it_does_not_flag_a_controller_with_no_middleware_calls_in_its_constructor(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -25,7 +23,7 @@ class DoNotApplyMiddlewareInControllersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_flags_a_controller_with_middleware_calls_in_its_constructor() : void
+	public function test_it_flags_a_controller_with_middleware_calls_in_its_constructor(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController

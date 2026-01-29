@@ -17,7 +17,7 @@ class DoNotApplyMiddlewareInControllers extends MatchingLinter implements Condit
 {
 	use LintsControllers;
 	
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->classMatcher()
 			->withChild(ClassDeclaration::class)
@@ -25,7 +25,7 @@ class DoNotApplyMiddlewareInControllers extends MatchingLinter implements Condit
 			->withChild(MemberAccessExpression::class, '$this->middleware');
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		$method_call = $nodes->first(function(Node $node) {
 			return $node instanceof MemberAccessExpression;

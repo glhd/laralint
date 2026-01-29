@@ -8,7 +8,7 @@ trait NormalizesFilenames
 {
 	protected $base_path;
 	
-	protected function normalizeFilename(string $filename) : string
+	protected function normalizeFilename(string $filename): string
 	{
 		if (null === $this->base_path) {
 			$this->base_path = App::basePath().DIRECTORY_SEPARATOR;

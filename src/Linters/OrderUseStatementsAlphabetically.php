@@ -12,7 +12,7 @@ use Microsoft\PhpParser\Node\Statement\NamespaceUseDeclaration;
 
 class OrderUseStatementsAlphabetically extends CollectingLinter
 {
-	public function lintCollectedNodes(Collection $all_nodes) : ResultCollection
+	public function lintCollectedNodes(Collection $all_nodes): ResultCollection
 	{
 		$results = new ResultCollection();
 		
@@ -34,7 +34,7 @@ class OrderUseStatementsAlphabetically extends CollectingLinter
 		return $results;
 	}
 	
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()->withChild(NamespaceUseDeclaration::class);
 	}

@@ -14,12 +14,12 @@ class StringRunner extends SourceCodeRunner
 		$this->source = $source;
 	}
 	
-	protected function source() : string
+	protected function source(): string
 	{
 		return $this->source;
 	}
 	
-	protected function filename() : string
+	protected function filename(): string
 	{
 		return $this->filename;
 	}

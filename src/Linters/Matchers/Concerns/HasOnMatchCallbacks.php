@@ -2,7 +2,6 @@
 
 namespace Glhd\LaraLint\Linters\Matchers\Concerns;
 
-use Glhd\LaraLint\Linters\Matchers\TreeMatcher;
 use Illuminate\Support\Collection;
 
 trait HasOnMatchCallbacks
@@ -29,13 +28,13 @@ trait HasOnMatchCallbacks
 		return $this;
 	}
 	
-	protected function triggerMatch(Collection $nodes) : void
+	protected function triggerMatch(Collection $nodes): void
 	{
 		if (null === $this->on_match_callbacks) {
 			return;
 		}
 		
-		foreach($this->on_match_callbacks as $callback) {
+		foreach ($this->on_match_callbacks as $callback) {
 			$callback($nodes);
 		}
 	}

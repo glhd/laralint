@@ -2,11 +2,11 @@
 
 namespace Glhd\LaraLint\Printers;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Contracts\Printer;
 use Glhd\LaraLint\ResultCollection;
 use Glhd\LaraLint\Tests\Constraints\LintingDidNotStart;
 use Glhd\LaraLint\Tests\Constraints\LintingStarted;
+use Glhd\LaraLint\Tests\TestCase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 
@@ -32,14 +32,14 @@ class TestPrinter implements Printer
 		$this->results = new Collection();
 	}
 	
-	public function isStarted(string $filename) : bool
+	public function isStarted(string $filename): bool
 	{
 		$filepath = App::basePath($filename);
 		
 		return $this->started->contains($filepath);
 	}
 	
-	public function assertStarted(string $filename) : self
+	public function assertStarted(string $filename): self
 	{
 		TestCase::assertThat(
 			$this,
@@ -49,7 +49,7 @@ class TestPrinter implements Printer
 		return $this;
 	}
 	
-	public function assertDidNotStart(string $filename) : self
+	public function assertDidNotStart(string $filename): self
 	{
 		TestCase::assertThat(
 			$this,
@@ -59,22 +59,22 @@ class TestPrinter implements Printer
 		return $this;
 	}
 	
-	public function opening() : void
+	public function opening(): void
 	{
 		$this->opened = true;
 	}
 	
-	public function closing() : void
+	public function closing(): void
 	{
 		$this->closed = true;
 	}
 	
-	public function startFile(string $filename) : void
+	public function startFile(string $filename): void
 	{
 		$this->started->push($filename);
 	}
 	
-	public function fileResults(string $filename, ResultCollection $results) : void
+	public function fileResults(string $filename, ResultCollection $results): void
 	{
 		$this->results->put($filename, $results);
 	}

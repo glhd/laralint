@@ -10,12 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Microsoft\PhpParser\Node\Expression\CallExpression;
 use Microsoft\PhpParser\Node\Expression\MemberAccessExpression;
-use Microsoft\PhpParser\Node\Expression\ScopedPropertyAccessExpression;
 use Microsoft\PhpParser\Node\QualifiedName;
 
 class PreferAuthId extends MatchingLinter
 {
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
 			->withChild(function(MemberAccessExpression $node) {
@@ -31,7 +30,7 @@ class PreferAuthId extends MatchingLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		return new Result(
 			$this,

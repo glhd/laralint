@@ -68,7 +68,7 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLint
 		$this->node_map = new SplObjectStorage();
 	}
 	
-	public function shouldWalkNode(Node $node) : bool
+	public function shouldWalkNode(Node $node): bool
 	{
 		if (false === $this->active && $node instanceof NamespaceDefinition) {
 			$this->active = true;
@@ -77,12 +77,12 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLint
 		return $this->active;
 	}
 	
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
 			->withChild(ScopedPropertyAccessExpression::class)
 			->withChild(function(QualifiedName $node) {
-				if (!$resolved_name = $node->getResolvedName()) {
+				if (! $resolved_name = $node->getResolvedName()) {
 					return false;
 				}
 				
@@ -101,7 +101,7 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLint
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		$node = $nodes->first(function($node) {
 			return $this->node_map->contains($node);

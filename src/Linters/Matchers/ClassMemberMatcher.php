@@ -8,7 +8,7 @@ use Microsoft\PhpParser\Node\MethodDeclaration;
 
 class ClassMemberMatcher extends TreeMatcher
 {
-	public function withChildMethod($matcher = null) : self
+	public function withChildMethod($matcher = null): self
 	{
 		return $this->withChild(function(MethodDeclaration $node) use ($matcher) {
 			if (null === $matcher) {
@@ -24,7 +24,7 @@ class ClassMemberMatcher extends TreeMatcher
 		});
 	}
 	
-	public function withBaseClass($matcher = null) : self
+	public function withBaseClass($matcher = null): self
 	{
 		return $this->withChild(function(ClassBaseClause $node) use ($matcher) {
 			if (null === $matcher) {

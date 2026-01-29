@@ -43,7 +43,7 @@ abstract class OrderingLinter implements Linter
 		$this->expected_order = $this->matchers()->keys()->flip();
 	}
 	
-	public function lint() : ResultCollection
+	public function lint(): ResultCollection
 	{
 		$flags = Collection::make($this->contexts)
 			->flatMap(function(stdClass $context) {
@@ -53,17 +53,17 @@ abstract class OrderingLinter implements Linter
 		return new ResultCollection($flags);
 	}
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
 		$this->currentMatcher()->enterNode($node);
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		$this->currentMatcher()->exitNode($node);
 	}
 	
-	protected function evaluateAndFlagResults(Collection $results) : Collection
+	protected function evaluateAndFlagResults(Collection $results): Collection
 	{
 		$current_index = 0;
 		
@@ -95,7 +95,7 @@ abstract class OrderingLinter implements Linter
 			});
 	}
 	
-	protected function currentContext() : stdClass
+	protected function currentContext(): stdClass
 	{
 		if (empty($this->contexts)) {
 			$this->createNewContext();
@@ -104,12 +104,12 @@ abstract class OrderingLinter implements Linter
 		return $this->contexts[$this->current_context];
 	}
 	
-	protected function currentMatcher() : Matcher
+	protected function currentMatcher(): Matcher
 	{
 		return $this->currentContext()->matcher;
 	}
 	
-	protected function createNewContext() : stdClass
+	protected function createNewContext(): stdClass
 	{
 		$context = (object) [
 			'results' => new Collection(),
@@ -134,12 +134,12 @@ abstract class OrderingLinter implements Linter
 		return $context;
 	}
 	
-	protected function exitCurrentContext() : void
+	protected function exitCurrentContext(): void
 	{
 		// TODO: This may cause issues if the indexes get out of sync. Probably
 		// won't be an issue, but worth considering.
 		$this->current_context--;
 	}
 	
-	abstract protected function matchers() : Collection;
+	abstract protected function matchers(): Collection;
 }

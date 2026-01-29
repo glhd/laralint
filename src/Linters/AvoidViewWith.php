@@ -11,7 +11,7 @@ use Microsoft\PhpParser\Node\Expression\MemberAccessExpression;
 
 class AvoidViewWith extends MatchingLinter
 {
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
 			->withChild(function(CallExpression $node) {
@@ -22,7 +22,7 @@ class AvoidViewWith extends MatchingLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		return new Result(
 			$this,

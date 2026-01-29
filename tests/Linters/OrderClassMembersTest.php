@@ -2,12 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\OrderClassMembers;
+use Glhd\LaraLint\Tests\TestCase;
 
 class OrderClassMembersTest extends TestCase
 {
-	public function test_it_allows_code_in_the_expected_order() : void
+	public function test_it_allows_code_in_the_expected_order(): void
 	{
 		$source = <<<'END_SOURCE'
 		class Foo
@@ -69,8 +69,8 @@ class OrderClassMembersTest extends TestCase
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-
-	public function test_it_allows_enums() : void
+	
+	public function test_it_allows_enums(): void
 	{
 		$source = <<<'END_SOURCE'
 		enum Foo: string
@@ -83,13 +83,13 @@ class OrderClassMembersTest extends TestCase
 			}
 		}
 		END_SOURCE;
-
+		
 		$this->withLinter(OrderClassMembers::class)
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-
-	public function test_it_gives_special_consideration_to_setUp_and_tearDown_methods_in_tests() : void
+	
+	public function test_it_gives_special_consideration_to_setUp_and_tearDown_methods_in_tests(): void
 	{
 		$source = <<<'END_SOURCE'
 		class FooTest
@@ -112,8 +112,8 @@ class OrderClassMembersTest extends TestCase
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-
-	public function test_it_gives_special_consideration_to_casts_and_boot_methods_in_models() : void
+	
+	public function test_it_gives_special_consideration_to_casts_and_boot_methods_in_models(): void
 	{
 		$source = <<<'END_SOURCE'
 		class Foo extends \App\Model
@@ -150,13 +150,13 @@ class OrderClassMembersTest extends TestCase
 			}
 		}
 		END_SOURCE;
-
+		
 		$this->withLinter(OrderClassMembers::class)
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-
-	public function test_it_handles_anonymous_classes_with_their_own_ordering() : void
+	
+	public function test_it_handles_anonymous_classes_with_their_own_ordering(): void
 	{
 		$source = <<<'END_SOURCE'
 		class Foo
@@ -183,7 +183,7 @@ class OrderClassMembersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_handles_two_class_definitions_in_the_same_file() : void
+	public function test_it_handles_two_class_definitions_in_the_same_file(): void
 	{
 		$source = <<<'END_SOURCE'
 		class A
@@ -210,7 +210,7 @@ class OrderClassMembersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_warns_of_improper_ordering() : void
+	public function test_it_warns_of_improper_ordering(): void
 	{
 		$source = <<<'END_SOURCE'
 		class Foo

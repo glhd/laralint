@@ -2,13 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
-use Glhd\LaraLint\Linters\OrderClassMembers;
 use Glhd\LaraLint\Linters\PreferFullyRestfulControllers;
+use Glhd\LaraLint\Tests\TestCase;
 
 class PreferFullyRestfulControllersTest extends TestCase
 {
-	public function test_it_allows_a_controller_with_only_restful_methods() : void
+	public function test_it_allows_a_controller_with_only_restful_methods(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -60,7 +59,7 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_expects_restful_methods_in_a_specific_order() : void
+	public function test_it_expects_restful_methods_in_a_specific_order(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -84,7 +83,7 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_allows_one_non_restful_method() : void
+	public function test_it_allows_one_non_restful_method(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -112,7 +111,7 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_allows_protected_non_restful_methods() : void
+	public function test_it_allows_protected_non_restful_methods(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -148,7 +147,7 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_does_not_allow_more_than_one_non_restful_method() : void
+	public function test_it_does_not_allow_more_than_one_non_restful_method(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -180,7 +179,7 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_allows_a_controller_with_all_non_restful_methods() : void
+	public function test_it_allows_a_controller_with_all_non_restful_methods(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController
@@ -204,7 +203,7 @@ class PreferFullyRestfulControllersTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_considers_a_controller_restful_when_two_restful_methods_are_present() : void
+	public function test_it_considers_a_controller_restful_when_two_restful_methods_are_present(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestController

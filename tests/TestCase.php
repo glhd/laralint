@@ -1,6 +1,6 @@
 <?php
 
-namespace Galahad\LaraLint\Tests;
+namespace Glhd\LaraLint\Tests;
 
 use Glhd\LaraLint\Runners\StringRunner;
 use Glhd\LaraLint\Support\LaraLintServiceProvider;
@@ -13,17 +13,11 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
-	/**
-	 * @var string
-	 */
-	protected $linter;
+	protected string $linter;
 	
-	/**
-	 * @var \Glhd\LaraLint\ResultCollection
-	 */
-	protected $results;
+	protected ?\Glhd\LaraLint\ResultCollection $results;
 	
-	protected function setUp() : void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		
@@ -31,27 +25,27 @@ abstract class TestCase extends Orchestra
 		$this->results = null;
 	}
 	
-	protected function getPackageProviders($app) : array
+	protected function getPackageProviders($app): array
 	{
 		return [
 			LaraLintServiceProvider::class,
 		];
 	}
 	
-	protected function withLinter(string $linter) : self
+	protected function withLinter(string $linter): self
 	{
 		$this->linter = $linter;
 		
 		return $this;
 	}
 	
-	protected function lintSource(string $source, string $filename = null) : self
+	protected function lintSource(string $source, string $filename = null): self
 	{
 		if (null === $filename) {
 			$filename = Str::slug(class_basename($this->linter)).'_test.php';
 		}
 		
-		if (false === strpos($source, '<?php')) {
+		if (! str_contains($source, '<?php')) {
 			$source = "<?php\n{$source}";
 		}
 		
@@ -61,7 +55,7 @@ abstract class TestCase extends Orchestra
 		return $this;
 	}
 	
-	protected function assertLintingResult(string $message = null, bool $match_substring = false) : self 
+	protected function assertLintingResult(string $message = null, bool $match_substring = false): self
 	{
 		$this->assertThat(
 			$this->results,
@@ -71,7 +65,7 @@ abstract class TestCase extends Orchestra
 		return $this;
 	}
 	
-	protected function assertNoLintingResult(string $message = null, bool $match_substring = false) : self
+	protected function assertNoLintingResult(string $message = null, bool $match_substring = false): self
 	{
 		$this->assertThat(
 			$this->results,
@@ -81,7 +75,7 @@ abstract class TestCase extends Orchestra
 		return $this;
 	}
 	
-	protected function assertLintingResultCount(int $count) : self
+	protected function assertLintingResultCount(int $count): self
 	{
 		$this->assertThat(
 			$this->results,
@@ -91,7 +85,7 @@ abstract class TestCase extends Orchestra
 		return $this;
 	}
 	
-	protected function assertNoLintingResults() : self
+	protected function assertNoLintingResults(): self
 	{
 		$this->assertThat(
 			$this->results,

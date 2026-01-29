@@ -2,12 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\NoDocBlocksOnMigrations;
+use Glhd\LaraLint\Tests\TestCase;
 
 class NoDocBlocksOnMigrationsTest extends TestCase
 {
-	public function test_it_flags_default_docblocks() : void
+	public function test_it_flags_default_docblocks(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestMigration extends Migration
@@ -33,7 +33,7 @@ class NoDocBlocksOnMigrationsTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_does_not_flag_migrations_without_docblocks() : void
+	public function test_it_does_not_flag_migrations_without_docblocks(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestMigration extends Migration
@@ -53,7 +53,7 @@ class NoDocBlocksOnMigrationsTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_does_not_flag_custom_docblocks() : void
+	public function test_it_does_not_flag_custom_docblocks(): void
 	{
 		$source = <<<'END_SOURCE'
 		class TestMigration extends Migration

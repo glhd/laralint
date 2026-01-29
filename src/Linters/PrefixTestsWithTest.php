@@ -2,7 +2,6 @@
 
 namespace Glhd\LaraLint\Linters;
 
-use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
@@ -23,12 +22,12 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 	
 	protected $skipping_node;
 	
-	public function setFilename(string $filename) : void
+	public function setFilename(string $filename): void
 	{
 		$this->active = false !== strpos($filename, 'tests/');
 	}
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
 		if ($this->skipping_node) {
 			return;
@@ -42,7 +41,7 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 		parent::enterNode($node);
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		parent::exitNode($node);
 		
@@ -51,11 +50,11 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 		}
 	}
 	
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->classMatcher()
 			->withChild(function(ClassDeclaration $node) {
-				return $this->active 
+				return $this->active
 					&& Str::endsWith($node->getNamespacedName(), 'Test');
 			})
 			->withChild(function(MethodDeclaration $node) {
@@ -66,7 +65,7 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		return new Result(
 			$this,

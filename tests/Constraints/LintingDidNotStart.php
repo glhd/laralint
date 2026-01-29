@@ -6,11 +6,15 @@ use PHPUnit\Framework\Constraint\Constraint;
 
 class LintingDidNotStart extends Constraint
 {
-	protected $filename;
-	
-	public function __construct($filename)
+	public function __construct(
+		protected string $filename
+	)
 	{
-		$this->filename = $filename;
+	}
+	
+	public function toString(): string
+	{
+		return "linting did not start on '{$this->filename}'";
 	}
 	
 	/**
@@ -20,11 +24,6 @@ class LintingDidNotStart extends Constraint
 	protected function matches($other): bool
 	{
 		return false === $other->isStarted($this->filename);
-	}
-	
-	public function toString() : string
-	{
-		return "linting did not start on '{$this->filename}'";
 	}
 	
 	protected function failureDescription($other): string

@@ -23,12 +23,12 @@ class AggregateMatcher implements Matcher
 			});
 	}
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
 		$this->matchers->each->enterNode($node);
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		$this->matchers->each->exitNode($node);
 	}

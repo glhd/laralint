@@ -44,22 +44,22 @@ abstract class MatchingLinter implements Linter
 		}
 	}
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
 		$this->matcher->enterNode($node);
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		$this->matcher->exitNode($node);
 	}
 	
-	public function lint() : ResultCollection
+	public function lint(): ResultCollection
 	{
 		return $this->results;
 	}
 	
-	abstract protected function matcher() : Matcher;
+	abstract protected function matcher(): Matcher;
 	
-	abstract protected function onMatch(Collection $nodes) : ?Result;
+	abstract protected function onMatch(Collection $nodes): ?Result;
 }

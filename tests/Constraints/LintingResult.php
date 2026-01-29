@@ -8,28 +8,25 @@ use PHPUnit\Framework\Constraint\Constraint;
 
 class LintingResult extends Constraint
 {
-	/**
-	 * @var string
-	 */
-	protected $linter;
+	protected string $linter;
 	
-	/**
-	 * @var string
-	 */
-	protected $message;
+	public function __construct(
+		Linter|string $linter,
+		protected ?string $message = null,
+		protected bool $match_substring = false
+	) {
+		$this->linter = $linter instanceof Linter ? $linter::class : $linter;
+	}
 	
-	/**
-	 * @var bool
-	 */
-	protected $match_substring;
-	
-	public function __construct($linter, string $message = null, bool $match_substring = false)
+	public function toString(): string
 	{
-		$this->linter = $linter instanceof Linter
-			? get_class($linter)
-			: $linter;
-		$this->message = $message;
-		$this->match_substring = $match_substring;
+		$linter = class_basename($this->linter);
+		
+		if ($this->message) {
+			return "{$linter} triggered '{$this->message}'";
+		}
+		
+		return "{$linter} triggered a result";
 	}
 	
 	/**
@@ -53,17 +50,6 @@ class LintingResult extends Constraint
 			
 			return true;
 		});
-	}
-	
-	public function toString() : string
-	{
-		$linter = class_basename($this->linter);
-		
-		if ($this->message) {
-			return "{$linter} triggered '{$this->message}'";
-		}
-		
-		return "{$linter} triggered a result";
 	}
 	
 	protected function failureDescription($other): string

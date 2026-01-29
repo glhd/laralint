@@ -2,9 +2,9 @@
 
 namespace Glhd\LaraLint\Tests\Commands;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Commands\LintCommand;
 use Glhd\LaraLint\Printers\TestPrinter;
+use Glhd\LaraLint\Tests\TestCase;
 use Illuminate\Console\Application;
 use Illuminate\Support\Facades\App;
 
@@ -20,7 +20,7 @@ class LintCommandTargetsTest extends TestCase
 	 */
 	protected $command;
 	
-	protected function setUp() : void
+	protected function setUp(): void
 	{
 		parent::setUp();
 		
@@ -36,7 +36,7 @@ class LintCommandTargetsTest extends TestCase
 		chdir(realpath(__DIR__.'/../fixtures/finder'));
 	}
 	
-	public function test_it_should_apply_default_paths_without_arguments() : void
+	public function test_it_should_apply_default_paths_without_arguments(): void
 	{
 		$this->artisan(LintCommand::class)
 			->assertExitCode(0);
@@ -51,7 +51,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('vendor/vendor.php');
 	}
 	
-	public function test_it_should_only_use_provided_files_if_only_filenames_are_provided() : void
+	public function test_it_should_only_use_provided_files_if_only_filenames_are_provided(): void
 	{
 		$this->artisan(LintCommand::class, ['targets' => ['a.php', 'dir1/1a.php']])
 			->assertExitCode(0);
@@ -66,7 +66,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('vendor/vendor.php');
 	}
 	
-	public function test_files_and_dirs_can_be_passed_as_targets() : void
+	public function test_files_and_dirs_can_be_passed_as_targets(): void
 	{
 		$this->artisan(LintCommand::class, ['targets' => ['a.php', 'dir2']])
 			->assertExitCode(0);
@@ -81,7 +81,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('vendor/vendor.php');
 	}
 	
-	public function test_excluded_directories_can_be_explicitly_set_as_a_target() : void
+	public function test_excluded_directories_can_be_explicitly_set_as_a_target(): void
 	{
 		$this->artisan(LintCommand::class, ['targets' => ['vendor']])
 			->assertExitCode(0);
@@ -96,7 +96,7 @@ class LintCommandTargetsTest extends TestCase
 			->assertStarted('vendor/vendor.php');
 	}
 	
-	public function test_files_in_excluded_directories_can_be_explicitly_set_as_a_target() : void
+	public function test_files_in_excluded_directories_can_be_explicitly_set_as_a_target(): void
 	{
 		$this->artisan(LintCommand::class, ['targets' => ['vendor/vendor.php']])
 			->assertExitCode(0);
@@ -110,12 +110,12 @@ class LintCommandTargetsTest extends TestCase
 			->assertDidNotStart('_ide_helper.php')
 			->assertStarted('vendor/vendor.php');
 	}
-
-    public function test_files_in_excluded_files_can_be_explicitly_set_as_a_target() : void
+	
+	public function test_files_in_excluded_files_can_be_explicitly_set_as_a_target(): void
 	{
 		$this->artisan(LintCommand::class, ['targets' => ['_ide_helper.php']])
 			->assertExitCode(0);
-
+		
 		$this->printer->assertDidNotStart('a.php')
 			->assertDidNotStart('b.php')
 			->assertDidNotStart('dir1/1a.php')

@@ -24,12 +24,12 @@ class Result
 	public $line;
 	
 	/**
-	 * @var int 
+	 * @var int
 	 */
 	public $character;
 	
 	/**
-	 * @var int 
+	 * @var int
 	 */
 	public $end;
 	
@@ -53,27 +53,27 @@ class Result
 		$this->character = $position->character;
 	}
 	
-	public function getLinter() : Linter
+	public function getLinter(): Linter
 	{
 		return $this->linter;
 	}
 	
-	public function getLine() : int 
+	public function getLine(): int
 	{
 		return $this->line;
 	}
 	
-	public function getCharacter() : int 
+	public function getCharacter(): int
 	{
 		return $this->character;
 	}
 	
-	public function getNode() : Node
+	public function getNode(): Node
 	{
 		return $this->node;
 	}
 	
-	public function getMessage() : string
+	public function getMessage(): string
 	{
 		return $this->message;
 	}

@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
 
 class LaraLint implements Preset
 {
-	public function linters() : Collection
+	public function linters(): Collection
 	{
 		return new Collection([
 			PrefixTestsWithTest::class,

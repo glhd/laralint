@@ -10,29 +10,23 @@ class PHP_CodeSniffer extends IlluminatePrinter
 {
 	protected const PHPCS_VERSION = '3.5.3';
 	
-	// FIXME:
-	// if ($this->option('phpcs') && $this->option('version')) {
-	// 	$this->line('PHP_CodeSniffer version '.static::PHPCS_VERSION.' (stable) by Squiz. (http://www.squiz.net)');
-	// 	return;
-	// }
-	
-	public function opening() : void
+	public function opening(): void
 	{
 		$this->writeln('<?xml version="1.0" encoding="UTF-8"?>');
 		$this->writeln('<phpcs version="'.static::PHPCS_VERSION.'">');
 	}
 	
-	public function closing() : void
+	public function closing(): void
 	{
 		$this->writeln('</phpcs>');
 	}
 	
-	public function startFile(string $filename) : void
+	public function startFile(string $filename): void
 	{
 		// Do nothing
 	}
 	
-	public function fileResults(string $filename, ResultCollection $results) : void
+	public function fileResults(string $filename, ResultCollection $results): void
 	{
 		// TODO: Someday provide diff support:
 		// https://github.com/squizlabs/PHP_CodeSniffer/blob/master/src/Fixer.php#L227
@@ -57,12 +51,12 @@ class PHP_CodeSniffer extends IlluminatePrinter
 		$this->writeln('  </file>');
 	}
 	
-	protected function write($messages, bool $newline = false, int $type = OutputStyle::OUTPUT_RAW) : void
+	protected function write($messages, bool $newline = false, int $type = OutputStyle::OUTPUT_RAW): void
 	{
 		$this->output->write($messages, $newline, $type);
 	}
 	
-	protected function writeln($messages, int $type = OutputStyle::OUTPUT_RAW) : void
+	protected function writeln($messages, int $type = OutputStyle::OUTPUT_RAW): void
 	{
 		$this->output->writeln($messages, $type);
 	}

@@ -11,7 +11,6 @@ use Microsoft\PhpParser\Node;
 use ReflectionFunction;
 use ReflectionNamedType;
 use stdClass;
-use Throwable;
 
 class TreeMatcher implements Matcher
 {
@@ -37,16 +36,16 @@ class TreeMatcher implements Matcher
 	}
 	
 	// FIXME: Add withDirectChild and maybe add a depth argument to the end
-	public function withChild($matcher) : self
+	public function withChild($matcher): self
 	{
 		$this->parseAndAddRule(func_get_args());
 		
 		return $this;
 	}
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
-		if (!$this->nodeMatchesCurrentRule($node)) {
+		if (! $this->nodeMatchesCurrentRule($node)) {
 			return;
 		}
 		
@@ -71,7 +70,7 @@ class TreeMatcher implements Matcher
 		}
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		$exiting_index = $this->rules->search(function($rule) use ($node) {
 			return $node === $rule->node;
@@ -88,18 +87,18 @@ class TreeMatcher implements Matcher
 		}
 	}
 	
-	protected function currentRule() : ?stdClass
+	protected function currentRule(): ?stdClass
 	{
 		return $this->rules->get($this->current_rule_index);
 	}
 	
-	protected function nodeMatchesCurrentRule(Node $node) : bool
+	protected function nodeMatchesCurrentRule(Node $node): bool
 	{
 		return ($current_rule = $this->currentRule())
 			&& call_user_func($current_rule->callback, $node);
 	}
 	
-	protected function parseAndAddRule(array $rule) : self
+	protected function parseAndAddRule(array $rule): self
 	{
 		$this->rules->push((object) [
 			'node' => null,
@@ -110,7 +109,7 @@ class TreeMatcher implements Matcher
 		return $this;
 	}
 	
-	protected function parseRule(array $rule) : Closure
+	protected function parseRule(array $rule): Closure
 	{
 		// Parse the rule arguments into a string representation of the signature.
 		// This lets us declaratively "overload" the rule definitions based on
@@ -163,7 +162,7 @@ class TreeMatcher implements Matcher
 	 * @param \Closure $matcher
 	 * @return string
 	 */
-	protected function getExpectedNodeType(Closure $matcher) : string
+	protected function getExpectedNodeType(Closure $matcher): string
 	{
 		$reflect = new ReflectionFunction($matcher);
 		

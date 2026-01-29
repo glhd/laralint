@@ -10,7 +10,7 @@ use Microsoft\PhpParser\Node\Expression\CallExpression;
 
 class AvoidViewCompact extends MatchingLinter
 {
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
 			->withChild(function(CallExpression $node) {
@@ -19,7 +19,7 @@ class AvoidViewCompact extends MatchingLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		return new Result($this, $nodes->first(), 'Provide an array to the view rather than using compact().');
 	}

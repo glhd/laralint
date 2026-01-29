@@ -23,7 +23,7 @@ class LintingResultCount extends Constraint
 		$this->count = $count;
 	}
 	
-	public function toString() : string
+	public function toString(): string
 	{
 		if (0 === $this->count) {
 			return 'no linting results were triggered';
@@ -40,14 +40,14 @@ class LintingResultCount extends Constraint
 	 * @param \Glhd\LaraLint\ResultCollection $other
 	 * @return bool
 	 */
-	protected function matches($other) : bool
+	protected function matches($other): bool
 	{
 		$this->other = $other;
 		
 		return $this->other->count() === $this->count;
 	}
 	
-	protected function failureDescription($other) : string
+	protected function failureDescription($other): string
 	{
 		$other_count = $this->other->count();
 		

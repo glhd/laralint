@@ -7,9 +7,9 @@ use Microsoft\PhpParser\Node;
 
 interface Linter
 {
-	public function enterNode(Node $node) : void;
+	public function enterNode(Node $node): void;
 	
-	public function exitNode(Node $node) : void;
+	public function exitNode(Node $node): void;
 	
-	public function lint() : ResultCollection;
+	public function lint(): ResultCollection;
 }

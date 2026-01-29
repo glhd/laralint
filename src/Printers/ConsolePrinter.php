@@ -15,7 +15,7 @@ class ConsolePrinter extends IlluminatePrinter
 	
 	protected $result_count = 0;
 	
-	public function opening() : void
+	public function opening(): void
 	{
 		$this->newLine();
 		$this->writeln('<info>   _                        _</info>');
@@ -26,7 +26,7 @@ class ConsolePrinter extends IlluminatePrinter
 		$this->newLine();
 	}
 	
-	public function closing() : void
+	public function closing(): void
 	{
 		if ($this->result_count) {
 			$warnings = Str::plural('warning', $this->result_count);
@@ -37,7 +37,7 @@ class ConsolePrinter extends IlluminatePrinter
 		}
 	}
 	
-	public function startFile(string $filename) : void
+	public function startFile(string $filename): void
 	{
 		$this->newLine();
 		$this->section($this->normalizeFilename($filename));
@@ -45,7 +45,7 @@ class ConsolePrinter extends IlluminatePrinter
 		$this->file_count++;
 	}
 	
-	public function fileResults(string $filename, ResultCollection $results) : void
+	public function fileResults(string $filename, ResultCollection $results): void
 	{
 		if ($results->isEmpty()) {
 			$this->writeln("<info>✓ No issues found.\n</info>");

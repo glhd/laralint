@@ -10,7 +10,7 @@ use Microsoft\PhpParser\Node;
 
 class SpaceAtBeginningOfComment extends MatchingLinter
 {
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
 			->withChild(function(Node $node) {
@@ -19,7 +19,7 @@ class SpaceAtBeginningOfComment extends MatchingLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		return new Result($this, $nodes->first(), 'Please add spacing to comment.');
 	}

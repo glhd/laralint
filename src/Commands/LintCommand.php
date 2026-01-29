@@ -62,7 +62,7 @@ class LintCommand extends Command
 						}
 					}
 					return false;
-                });
+				});
 			
 			$this->files()
 				->each(function(SplFileInfo $file) use ($printer, $linters, &$flag_count, $excluded_files) {
@@ -72,7 +72,7 @@ class LintCommand extends Command
 					})) {
 						return;
 					}
-
+					
 					$printer->startFile($file->getRealPath());
 					
 					$results = SplFileInfoRunner::file($file)->run($linters);
@@ -97,36 +97,36 @@ class LintCommand extends Command
 		}
 	}
 	
-	public function setPrinter(Printer $printer) : self
+	public function setPrinter(Printer $printer): self
 	{
 		$this->printer = $printer;
 		
 		return $this;
 	}
 	
-	protected function preset() : Preset
+	protected function preset(): Preset
 	{
 		$preset_contract = Preset::class;
 		$preset = Config::get('laralint.preset', LaraLint::class);
 		
-		if (!is_subclass_of($preset, $preset_contract, true)) {
+		if (! is_subclass_of($preset, $preset_contract, true)) {
 			throw new RuntimeException("'{$preset}' should implement the '{$preset_contract}' interface.");
 		}
 		
 		return new $preset();
 	}
 	
-	protected function linters() : Collection
+	protected function linters(): Collection
 	{
 		$linters = $this->preset()->linters();
 		
-		if (!empty($only = $this->option('only'))) {
+		if (! empty($only = $this->option('only'))) {
 			$linters = $linters->filter(function(string $linter) use ($only) {
 				return Str::endsWith($linter, $only);
 			});
 		}
 		
-		if (!empty($except = $this->option('except'))) {
+		if (! empty($except = $this->option('except'))) {
 			$linters = $linters->reject(function(string $linter) use ($except) {
 				return Str::endsWith($linter, $except);
 			});
@@ -135,7 +135,7 @@ class LintCommand extends Command
 		return $linters;
 	}
 	
-	protected function shouldStopIterating(bool $last_file_had_results) : bool
+	protected function shouldStopIterating(bool $last_file_had_results): bool
 	{
 		if ($last_file_had_results && $this->option('step')) {
 			return false === $this->confirm('Continue to next result?', true);
@@ -148,7 +148,7 @@ class LintCommand extends Command
 		return false;
 	}
 	
-	protected function files() : LazyCollection
+	protected function files(): LazyCollection
 	{
 		[$files, $directories] = $this->targets();
 		
@@ -161,7 +161,7 @@ class LintCommand extends Command
 		if ($directories->isEmpty()) {
 			$directories = new Collection([new SplFileInfo(App::basePath())]);
 		}
-
+		
 		// Get excluded directories, overriding if they're
 		// explicitly whitelisted in the targets argument
 		$exclude = Collection::make(Config::get('laralint.excluded_directories', []))
@@ -199,7 +199,7 @@ class LintCommand extends Command
 	/**
 	 * @return Collection[]
 	 */
-	protected function targets() : array
+	protected function targets(): array
 	{
 		// If we were asked for git changes, just return those
 		if ($this->option('diff')) {
@@ -209,30 +209,25 @@ class LintCommand extends Command
 		// Otherwise, split the targets into files and directories
 		$targets = Collection::make($this->argument('targets'))
 			->map(function($target) {
-				if (!file_exists($target)) {
+				if (! file_exists($target)) {
 					$target = getcwd().DIRECTORY_SEPARATOR.ltrim($target, DIRECTORY_SEPARATOR);
 				}
 				
 				return new SplFileInfo($target);
 			});
 		
-		$files = $targets->filter(function(SplFileInfo $file) {
-			return $file->isFile();
-		});
-		
-		$directories = $targets->filter(function(SplFileInfo $file) {
-			return $file->isDir();
-		});
-		
-		return [$files, $directories];
+		return [
+			$targets->filter(fn(SplFileInfo $file) => $file->isFile()),
+			$targets->filter(fn(SplFileInfo $file) => $file->isDir()),
+		];
 	}
 	
-	protected function gitDiffFiles() : Collection
+	protected function gitDiffFiles(): Collection
 	{
 		$proc = new Process(['git', 'diff', '--name-only'], base_path());
 		$proc->run();
 		
-		if (!$proc->isSuccessful()) {
+		if (! $proc->isSuccessful()) {
 			throw new RuntimeException($proc->getErrorOutput());
 		}
 		
@@ -245,24 +240,12 @@ class LintCommand extends Command
 			});
 	}
 	
-	protected function printer() : Printer
+	protected function printer(): Printer
 	{
-		if (null === $this->printer) {
-			switch ($this->option('printer')) {
-				case 'phpcs':
-					$this->printer = new PHP_CodeSniffer($this->getOutput());
-					break;
-				
-				case 'compact':
-					$this->printer = new CompactPrinter($this->getOutput());
-					break;
-				
-				default:
-					$this->printer = new ConsolePrinter($this->getOutput());
-					break;
-			}
-		}
-		
-		return $this->printer;
+		return $this->printer ??= match ($this->option('printer')) {
+			'phpcs' => new PHP_CodeSniffer($this->getOutput()),
+			'compact' => new CompactPrinter($this->getOutput()),
+			default => new ConsolePrinter($this->getOutput()),
+		};
 	}
 }

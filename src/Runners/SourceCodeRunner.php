@@ -13,14 +13,11 @@ use Microsoft\PhpParser\Parser;
 
 abstract class SourceCodeRunner implements Runner
 {
-	protected $depth = -1;
+	protected int $depth = -1;
 	
-	/**
-	 * @var \Illuminate\Support\Collection
-	 */
-	protected $linters;
+	protected Collection $linters;
 	
-	public function run(Collection $linters) : ResultCollection
+	public function run(Collection $linters): ResultCollection
 	{
 		$this->setLinters($linters);
 		
@@ -31,16 +28,13 @@ abstract class SourceCodeRunner implements Runner
 		// or collection logic on all the nodes and tokens
 		$this->walk($ast->getChildNodes());
 		
-		// Then we'll run the "lint" stage on all the linters to collect
-		// all our results
+		// Then we'll run the "lint" stage on all the linters to collect all our results
 		return new ResultCollection(
-			$this->linters->flatMap(function(Linter $linter) {
-				return $linter->lint();
-			})
+			$this->linters->flatMap(fn(Linter $linter) => $linter->lint())
 		);
 	}
 	
-	protected function setLinters(Collection $linters) : self
+	protected function setLinters(Collection $linters): self
 	{
 		$this->linters = $linters->map(function(string $class_name) {
 			$linter = new $class_name();
@@ -55,7 +49,7 @@ abstract class SourceCodeRunner implements Runner
 		return $this;
 	}
 	
-	protected function walk($nodes) : void
+	protected function walk($nodes): void
 	{
 		$this->depth++;
 		
@@ -80,14 +74,14 @@ abstract class SourceCodeRunner implements Runner
 		$this->depth--;
 	}
 	
-	protected function shouldWalkNode(Node $node, Linter $linter) : bool
+	protected function shouldWalkNode(Node $node, Linter $linter): bool
 	{
 		return ($linter instanceof ConditionalLinter)
 			? $linter->shouldWalkNode($node)
 			: true;
 	}
 	
-	abstract protected function source() : string;
+	abstract protected function source(): string;
 	
-	abstract protected function filename() : string;
+	abstract protected function filename(): string;
 }

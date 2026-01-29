@@ -57,7 +57,7 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 			
 			'a relationship' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
-					if (!$this->isPublic($node)) {
+					if (! $this->isPublic($node)) {
 						return false;
 					}
 					
@@ -91,7 +91,7 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 					if (0 === strpos($node->getName(), 'scope')) {
 						return true;
 					}
-
+					
 					return $this->hasAttribute($node, 'Illuminate\\Database\\Eloquent\\Attributes\\Scope');
 				}),
 		]);

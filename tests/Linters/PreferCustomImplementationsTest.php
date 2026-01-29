@@ -2,12 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\PreferCustomImplementations;
+use Glhd\LaraLint\Tests\TestCase;
 
 class PreferCustomImplementationsTest extends TestCase
 {
-	public function test_it_flags_direct_usage_of_laravel_controller() : void
+	public function test_it_flags_direct_usage_of_laravel_controller(): void
 	{
 		$source = <<<'END_SOURCE'
 		use Illuminate\Routing\Controller;
@@ -21,7 +21,7 @@ class PreferCustomImplementationsTest extends TestCase
 			->assertLintingResult("use 'App\Http\Controllers\Controller'", true);
 	}
 	
-	public function test_it_does_not_flag_app_controller() : void
+	public function test_it_does_not_flag_app_controller(): void
 	{
 		$source = <<<'END_SOURCE'
 		use App\Http\Controllers\Controller;
@@ -35,7 +35,7 @@ class PreferCustomImplementationsTest extends TestCase
 			->assertNoLintingResult();
 	}
 	
-	public function test_it_does_not_flag_base_controller() : void
+	public function test_it_does_not_flag_base_controller(): void
 	{
 		$source = <<<'END_SOURCE'
 		namespace App\Http\Controllers;

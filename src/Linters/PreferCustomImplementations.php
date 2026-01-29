@@ -25,7 +25,7 @@ class PreferCustomImplementations extends MatchingLinter
 		$this->custom_implementations = Config::get('laralint.custom_implementations', []);
 	}
 	
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		return $this->classMatcher()
 			->withChild(function(ClassDeclaration $node) {
@@ -49,7 +49,7 @@ class PreferCustomImplementations extends MatchingLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		$node = $nodes->first(function(Node $node) {
 			return $node instanceof ClassBaseClause;

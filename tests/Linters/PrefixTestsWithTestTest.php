@@ -2,14 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
-use Glhd\LaraLint\Linters\PreferFullyRestfulControllers;
 use Glhd\LaraLint\Linters\PrefixTestsWithTest;
-use Glhd\LaraLint\Linters\SpaceAtBeginningOfComment;
+use Glhd\LaraLint\Tests\TestCase;
 
 class PrefixTestsWithTestTest extends TestCase
 {
-	public function test_it_flags_a_test_annotation() : void
+	public function test_it_flags_a_test_annotation(): void
 	{
 		$source = <<<'END_SOURCE'
 		class LinterTest
@@ -26,7 +24,7 @@ class PrefixTestsWithTestTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_flags_a_camel_case_test_name() : void
+	public function test_it_flags_a_camel_case_test_name(): void
 	{
 		$source = <<<'END_SOURCE'
 		class LinterTest
@@ -42,7 +40,7 @@ class PrefixTestsWithTestTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_does_not_flag_a_prefixed_method() : void
+	public function test_it_does_not_flag_a_prefixed_method(): void
 	{
 		$source = <<<'END_SOURCE'
 		class LinterTest
@@ -58,7 +56,7 @@ class PrefixTestsWithTestTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_does_not_flag_a_protected_method() : void
+	public function test_it_does_not_flag_a_protected_method(): void
 	{
 		$source = <<<'END_SOURCE'
 		class LinterTest
@@ -78,7 +76,7 @@ class PrefixTestsWithTestTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_does_not_flag_a_data_provider() : void
+	public function test_it_does_not_flag_a_data_provider(): void
 	{
 		$source = <<<'END_SOURCE'
 		class LinterTest
@@ -108,7 +106,7 @@ class PrefixTestsWithTestTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_does_not_flag_a_function_inside_an_anonymous_class_within_a_test() : void
+	public function test_it_does_not_flag_a_function_inside_an_anonymous_class_within_a_test(): void
 	{
 		$source = <<<'END_SOURCE'
 		class LinterTest

@@ -1,6 +1,6 @@
 name: Tests
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   phpunit:
@@ -8,8 +8,8 @@ jobs:
 
     strategy:
       matrix:
-        laravel: [10, 11, 12]
-        dependency-version: [lowest, stable]
+        laravel: [ 10, 11, 12 ]
+        dependency-version: [ lowest, stable ]
         include:
           - laravel: 10
             testbench: 8
@@ -36,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: composer update --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-        
+
       - name: Set Laravel version
         run: "composer require --dev laravel/framework:^${{ matrix.laravel }}.0 orchestra/testbench:^${{ matrix.testbench }}.0 --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist"
 

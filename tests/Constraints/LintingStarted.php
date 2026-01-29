@@ -13,6 +13,11 @@ class LintingStarted extends Constraint
 		$this->filename = $filename;
 	}
 	
+	public function toString(): string
+	{
+		return "linting started on '{$this->filename}'";
+	}
+	
 	/**
 	 * @param \Glhd\LaraLint\Printers\TestPrinter $other
 	 * @return bool
@@ -20,11 +25,6 @@ class LintingStarted extends Constraint
 	protected function matches($other): bool
 	{
 		return $other->isStarted($this->filename);
-	}
-	
-	public function toString() : string
-	{
-		return "linting started on '{$this->filename}'";
 	}
 	
 	protected function failureDescription($other): string

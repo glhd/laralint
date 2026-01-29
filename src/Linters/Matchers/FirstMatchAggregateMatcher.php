@@ -2,17 +2,11 @@
 
 namespace Glhd\LaraLint\Linters\Matchers;
 
-use Closure;
 use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Matchers\Concerns\HasOnMatchCallbacks;
 use Illuminate\Support\Collection;
-use InvalidArgumentException;
-use IteratorAggregate;
 use Microsoft\PhpParser\Node;
 use PHPUnit\Framework\MockObject\Builder\Match;
-use ReflectionFunction;
-use stdClass;
-use Throwable;
 
 /**
  * Unlike the AggregateMatcher, this will stop matching when it
@@ -39,7 +33,7 @@ class FirstMatchAggregateMatcher implements Matcher
 			});
 	}
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
 		// Before entering a node, we'll reset the aggregate state
 		$this->last_matched_matcher = null;
@@ -55,7 +49,7 @@ class FirstMatchAggregateMatcher implements Matcher
 		});
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		$this->matchers->each(function(Matcher $matcher) use ($node) {
 			// If this is the matcher that triggered the onMatch callback

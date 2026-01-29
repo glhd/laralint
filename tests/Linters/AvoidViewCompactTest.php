@@ -2,14 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
-use Glhd\LaraLint\Linters\AvoidGlobalFacadeAliases;
 use Glhd\LaraLint\Linters\AvoidViewCompact;
-use Illuminate\Support\Facades\Auth;
+use Glhd\LaraLint\Tests\TestCase;
 
 class AvoidViewCompactTest extends TestCase
 {
-	public function test_it_flags_compacted_variables_passed_to_view_helper() : void
+	public function test_it_flags_compacted_variables_passed_to_view_helper(): void
 	{
 		$source = <<<'END_SOURCE'
 		class FooController
@@ -27,7 +25,7 @@ class AvoidViewCompactTest extends TestCase
 			->assertLintingResult();
 	}
 	
-	public function test_it_does_not_flag_an_array_passed_to_view_helper() : void
+	public function test_it_does_not_flag_an_array_passed_to_view_helper(): void
 	{
 		$source = <<<'END_SOURCE'
 		class FooController
@@ -44,7 +42,7 @@ class AvoidViewCompactTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_does_not_flag_the_view_helper_with_no_second_parameter() : void
+	public function test_it_does_not_flag_the_view_helper_with_no_second_parameter(): void
 	{
 		$source = <<<'END_SOURCE'
 		class FooController

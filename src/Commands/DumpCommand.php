@@ -7,7 +7,6 @@ use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Parser;
-use Microsoft\PhpParser\Token;
 
 class DumpCommand extends Command
 {
@@ -27,7 +26,7 @@ class DumpCommand extends Command
 		$this->getOutput()->newLine();
 	}
 	
-	protected function walk($nodes) : void
+	protected function walk($nodes): void
 	{
 		$this->depth++;
 		
@@ -76,12 +75,12 @@ class DumpCommand extends Command
 		return $this->getOutput()->writeln($messages, $type);
 	}
 	
-	protected function indent() : string
+	protected function indent(): string
 	{
 		return str_repeat(static::TAB, $this->depth);
 	}
 	
-	protected function writeWithDashes($text) : void
+	protected function writeWithDashes($text): void
 	{
 		$indent = str_repeat(' ', $this->depth);
 		

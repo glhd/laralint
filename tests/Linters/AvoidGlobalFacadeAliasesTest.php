@@ -2,13 +2,13 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\AvoidGlobalFacadeAliases;
+use Glhd\LaraLint\Tests\TestCase;
 use Illuminate\Support\Facades\Auth;
 
 class AvoidGlobalFacadeAliasesTest extends TestCase
 {
-	public function test_it_flags_an_alias_when_inside_a_namespace() : void
+	public function test_it_flags_an_alias_when_inside_a_namespace(): void
 	{
 		$source = <<<'END_SOURCE'
 		<?php
@@ -23,7 +23,7 @@ class AvoidGlobalFacadeAliasesTest extends TestCase
 			->assertLintingResult("Please use '$fqcn' rather than the Auth alias.");
 	}
 	
-	public function test_it_does_not_flag_an_alias_in_a_global_namespace() : void
+	public function test_it_does_not_flag_an_alias_in_a_global_namespace(): void
 	{
 		$source = <<<'END_SOURCE'
 		<?php

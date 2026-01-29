@@ -20,7 +20,7 @@ class OrderClassMembers extends OrderingLinter
 {
 	use EvaluatesNodes;
 	
-	public function enterNode(Node $node) : void
+	public function enterNode(Node $node): void
 	{
 		// Start a new context whenever we encounter a new class (even anonymous ones)
 		if ($this->isClassDeclarationOrAnonymousClass($node)) {
@@ -30,7 +30,7 @@ class OrderClassMembers extends OrderingLinter
 		parent::enterNode($node);
 	}
 	
-	public function exitNode(Node $node) : void
+	public function exitNode(Node $node): void
 	{
 		parent::exitNode($node);
 		
@@ -40,7 +40,7 @@ class OrderClassMembers extends OrderingLinter
 		}
 	}
 	
-	protected function matchers() : Collection
+	protected function matchers(): Collection
 	{
 		return new Collection([
 			'match dataproviders' => $this->treeMatcher()
@@ -108,23 +108,23 @@ class OrderClassMembers extends OrderingLinter
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node);
 				}),
-
+			
 			'the boot method' => $this->treeMatcher()
 				->withChild(function(ClassDeclaration $node) {
-					if (!$node->classBaseClause instanceof ClassBaseClause) {
+					if (! $node->classBaseClause instanceof ClassBaseClause) {
 						return false;
 					}
-
+					
 					$resolved = $node->classBaseClause->baseClass->getResolvedName();
 					$extends = $resolved instanceof ResolvedName
 						? $resolved->getFullyQualifiedNameText()
 						: (string) $resolved;
-
-					return  in_array($extends, Config::get('laralint.models', []));
+					
+					return in_array($extends, Config::get('laralint.models', []));
 				})
 				->withChild(function(MethodDeclaration $node) {
 					return in_array($node->getName(), ['booting', 'boot', 'booted'])
-					&& $this->isStatic($node);
+						&& $this->isStatic($node);
 				}),
 			
 			'the casts method' => $this->treeMatcher()

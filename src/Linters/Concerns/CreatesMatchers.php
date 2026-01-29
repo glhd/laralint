@@ -7,12 +7,12 @@ use Glhd\LaraLint\Linters\Matchers\TreeMatcher;
 
 trait CreatesMatchers
 {
-	protected function treeMatcher() : TreeMatcher
+	protected function treeMatcher(): TreeMatcher
 	{
 		return new TreeMatcher();
 	}
 	
-	protected function classMatcher() : ClassMemberMatcher
+	protected function classMatcher(): ClassMemberMatcher
 	{
 		return new ClassMemberMatcher();
 	}

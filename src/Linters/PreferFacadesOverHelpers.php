@@ -6,7 +6,6 @@ use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
-use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Node\Expression\CallExpression;
 use SplObjectStorage;
 
@@ -21,7 +20,7 @@ class PreferFacadesOverHelpers extends MatchingLinter
 	 */
 	protected $node_map;
 	
-	protected function matcher() : Matcher
+	protected function matcher(): Matcher
 	{
 		$this->node_map = new SplObjectStorage();
 		
@@ -40,7 +39,7 @@ class PreferFacadesOverHelpers extends MatchingLinter
 			});
 	}
 	
-	protected function onMatch(Collection $nodes) : ?Result
+	protected function onMatch(Collection $nodes): ?Result
 	{
 		$node = $nodes->first();
 		$helper = $this->node_map[$node];
@@ -48,7 +47,7 @@ class PreferFacadesOverHelpers extends MatchingLinter
 		
 		return new Result(
 			$this,
-			$node, 
+			$node,
 			"Use the {$facade} facade rather than the {$helper}() helper."
 		);
 	}

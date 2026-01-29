@@ -11,7 +11,7 @@ class SplFileInfoRunner extends SourceCodeRunner
 	 */
 	protected $file;
 	
-	public static function file(SplFileInfo $file) : self
+	public static function file(SplFileInfo $file): self
 	{
 		return new static($file);
 	}
@@ -21,12 +21,12 @@ class SplFileInfoRunner extends SourceCodeRunner
 		$this->file = $file;
 	}
 	
-	protected function source() : string
+	protected function source(): string
 	{
 		return file_get_contents($this->file->getRealPath());
 	}
 	
-	protected function filename() : string
+	protected function filename(): string
 	{
 		return $this->file->getRealPath();
 	}

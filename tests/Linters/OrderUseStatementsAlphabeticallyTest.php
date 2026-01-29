@@ -2,12 +2,12 @@
 
 namespace Glhd\LaraLint\Tests\Linters;
 
-use Galahad\LaraLint\Tests\TestCase;
 use Glhd\LaraLint\Linters\OrderUseStatementsAlphabetically;
+use Glhd\LaraLint\Tests\TestCase;
 
 class OrderUseStatementsAlphabeticallyTest extends TestCase
 {
-	public function test_it_does_not_flag_use_statements_in_alpha_order() : void
+	public function test_it_does_not_flag_use_statements_in_alpha_order(): void
 	{
 		$source = <<<'END_SOURCE'
 		use A;
@@ -21,7 +21,7 @@ class OrderUseStatementsAlphabeticallyTest extends TestCase
 			->assertNoLintingResults();
 	}
 	
-	public function test_it_flags_use_statements_in_non_alpha_order() : void
+	public function test_it_flags_use_statements_in_non_alpha_order(): void
 	{
 		$source = <<<'END_SOURCE'
 		use A;

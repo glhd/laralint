@@ -16,17 +16,9 @@ class ResultCollection extends Collection
 		});
 	}
 	
-	// FIXME: This is incompatible with a change in Laravel's push() signature depending on version
-	// public function push($item)
-	// {
-	// 	$this->validateItemType($item);
-	//	
-	// 	return parent::push($item);
-	// }
-	
-	protected function validateItemType($item) : void
+	protected function validateItemType($item): void
 	{
-		if (!($item instanceof Result)) {
+		if (! ($item instanceof Result)) {
 			throw new InvalidArgumentException(__CLASS__.' can only contain '.Result::class.' objects.');
 		}
 	}
