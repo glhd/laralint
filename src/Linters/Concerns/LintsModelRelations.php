@@ -14,17 +14,15 @@ trait LintsModelRelations
 		if ($node->returnTypeList) {
 			$relationships = Config::get('laralint.relationships', []);
 
-			foreach ($node->returnTypeList->children as $returnType) {
-				foreach ($relationships as $class_name) {
-					try {
-						$qualified_return_type = $returnType->getResolvedName()->getFullyQualifiedNameText();
+			foreach ($node->returnTypeList->children as $return_type) {
+				try {
+					$qualified_return_type = $return_type->getResolvedName()->getFullyQualifiedNameText();
+				} catch (Throwable) {
+					continue;
+				}
 
-						if ($class_name === $qualified_return_type) {
-							return true;
-						}
-					} catch (Throwable $exception) {
-						// Ignore and use fallback
-					}
+				if (in_array($qualified_return_type, $relationships)) {
+					return true;
 				}
 			}
 		}
