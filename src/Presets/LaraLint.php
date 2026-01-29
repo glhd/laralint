@@ -8,6 +8,7 @@ use Glhd\LaraLint\Linters\AvoidViewCompact;
 use Glhd\LaraLint\Linters\AvoidViewWith;
 use Glhd\LaraLint\Linters\DoNotApplyMiddlewareInControllers;
 use Glhd\LaraLint\Linters\NoDocBlocksOnMigrations;
+use Glhd\LaraLint\Linters\NoGuardedOrFillable;
 use Glhd\LaraLint\Linters\OrderClassMembers;
 use Glhd\LaraLint\Linters\OrderModelMembers;
 use Glhd\LaraLint\Linters\OrderUseStatementsAlphabetically;
@@ -39,6 +40,7 @@ class LaraLint implements Preset
 			PreferFullyRestfulControllers::class,
 			SpaceAtBeginningOfComment::class,
 			NoDocBlocksOnMigrations::class,
+			NoGuardedOrFillable::class,
 			PreferCustomImplementations::class,
 			SnakeCaseVariables::class,
 			SnakeCaseRelationships::class,
