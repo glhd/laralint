@@ -16,6 +16,7 @@ use Glhd\LaraLint\Linters\PreferCustomImplementations;
 use Glhd\LaraLint\Linters\PreferFacadesOverHelpers;
 use Glhd\LaraLint\Linters\PreferFullyRestfulControllers;
 use Glhd\LaraLint\Linters\PrefixTestsWithTest;
+use Glhd\LaraLint\Linters\SnakeCaseRelationships;
 use Glhd\LaraLint\Linters\SnakeCaseVariables;
 use Glhd\LaraLint\Linters\SpaceAtBeginningOfComment;
 use Illuminate\Support\Collection;
@@ -40,6 +41,7 @@ class LaraLint implements Preset
 			NoDocBlocksOnMigrations::class,
 			PreferCustomImplementations::class,
 			SnakeCaseVariables::class,
+			SnakeCaseRelationships::class,
 		]);
 	}
 }
