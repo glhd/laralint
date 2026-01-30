@@ -6,11 +6,11 @@ use Microsoft\PhpParser\Node;
 
 trait LintsControllers
 {
-	protected $current_file_is_controller = false;
+	protected bool $current_file_is_controller = false;
 	
 	public function setFilename(string $filename): void
 	{
-		$this->current_file_is_controller = false !== strpos($filename, 'Controllers/');
+		$this->current_file_is_controller = str_contains($filename, 'Controllers/');
 	}
 	
 	public function shouldWalkNode(Node $node): bool
