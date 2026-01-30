@@ -13,11 +13,11 @@ jobs:
 
     strategy:
       matrix:
-        laravel: [ 11, 12 ]
+        laravel: [ 11.*, 12.* ]
         dependency-version: [ lowest, stable ]
         php: [ 8.3, 8.4 ]
 
-    name: ${{ matrix.laravel }}.x on ${{ matrix.php }} (${{ matrix.dependency-version }} deps)
+    name: ${{ matrix.laravel }} on ${{ matrix.php }} (${{ matrix.dependency-version }} deps)
 
     steps:
       - name: Checkout code
