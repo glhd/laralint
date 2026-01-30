@@ -2,8 +2,11 @@
 
 namespace Glhd\LaraLint\Linters;
 
+use Glhd\LaraLint\Contracts\ConditionalLinter;
+use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
 use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
+use Glhd\LaraLint\Linters\Concerns\SkipsViewComponents;
 use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
@@ -11,9 +14,10 @@ use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node\Expression\Variable;
 use Microsoft\PhpParser\Node\Parameter;
 
-class SnakeCaseVariables extends MatchingLinter
+class SnakeCaseVariables extends MatchingLinter implements ConditionalLinter, FilenameAwareLinter
 {
 	use LintsStringCase;
+	use SkipsViewComponents;
 
 	protected array $excluded = [
 		'this',

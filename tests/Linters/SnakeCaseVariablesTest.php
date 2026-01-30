@@ -215,4 +215,20 @@ class SnakeCaseVariablesTest extends TestCase
 			->lintSource($source)
 			->assertLintingResult('Parameter $camelCase should be $camel_case');
 	}
+
+	public function test_it_skips_view_components(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Alert extends Component {
+			public function __construct(
+				public $alertType,
+				public $dismissible,
+			) {}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source, 'app/View/Components/Alert.php')
+			->assertNoLintingResults();
+	}
 }
