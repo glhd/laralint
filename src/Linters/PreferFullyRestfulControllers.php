@@ -19,7 +19,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 	use EvaluatesNodes;
 	use LintsControllers;
 	
-	protected const RESTFUL_METHOD_NAMES = [
+	protected const array RESTFUL_METHOD_NAMES = [
 		'index',
 		'create',
 		'store',
@@ -30,7 +30,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		'restore',
 	];
 	
-	protected const IGNORED_METHOD_NAMES = [
+	protected const array IGNORED_METHOD_NAMES = [
 		'__construct',
 		'callAction',
 		'validator',
@@ -39,7 +39,7 @@ class PreferFullyRestfulControllers extends OrderingLinter implements Conditiona
 		'validateWithBag',
 	];
 	
-	protected const NON_RESTFUL_NAME = 'non-RESTful method';
+	protected const string NON_RESTFUL_NAME = 'non-RESTful method';
 	
 	protected $max_non_restful_methods = 1;
 	

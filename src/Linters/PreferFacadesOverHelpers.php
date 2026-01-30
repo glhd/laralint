@@ -11,7 +11,7 @@ use SplObjectStorage;
 
 class PreferFacadesOverHelpers extends MatchingLinter
 {
-	protected const FACADE_MAP = [
+	protected const array FACADE_MAP = [
 		'auth' => 'Auth', // TODO
 	];
 	

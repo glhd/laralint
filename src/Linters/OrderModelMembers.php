@@ -44,7 +44,7 @@ class OrderModelMembers extends OrderingLinter implements ConditionalLinter
 
 			'a scope' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
-					if (0 === strpos($node->getName(), 'scope')) {
+					if (str_starts_with($node->getName(), 'scope')) {
 						return true;
 					}
 

@@ -16,19 +16,10 @@ class TreeMatcher implements Matcher
 {
 	use HasOnMatchCallbacks;
 	
-	/**
-	 * This holds all the parsed rules that we're matching against
-	 *
-	 * @var \Illuminate\Support\Collection
-	 */
-	protected $rules;
+	/** @var Collection<int, object{ node: null, depth: int, callback: callable }> */
+	protected Collection $rules;
 	
-	/**
-	 * This tracks the current rule that we're matching against
-	 *
-	 * @var int
-	 */
-	protected $current_rule_index = 0;
+	protected int $current_rule_index = 0;
 	
 	public function __construct()
 	{
@@ -72,9 +63,7 @@ class TreeMatcher implements Matcher
 	
 	public function exitNode(Node $node): void
 	{
-		$exiting_index = $this->rules->search(function($rule) use ($node) {
-			return $node === $rule->node;
-		});
+		$exiting_index = $this->rules->search(fn($rule) => $node === $rule->node);
 		
 		if (false !== $exiting_index) {
 			foreach ($this->rules as $index => $rule) {
@@ -117,9 +106,7 @@ class TreeMatcher implements Matcher
 		$signature = Collection::make($rule)
 			->map(function($argument) {
 				$type = gettype($argument);
-				return 'object' === $type
-					? class_basename($argument)
-					: $type;
+				return 'object' === $type ? class_basename($argument) : $type;
 			})
 			->implode(', ');
 		
@@ -127,28 +114,17 @@ class TreeMatcher implements Matcher
 		// and arguments provided.
 		switch ($signature) {
 			case 'string':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $rule[0];
-				};
+				return fn(Node $node) => $node::class === $rule[0];
 			
 			case 'Closure':
 				$expected = $this->getExpectedNodeType($rule[0]);
-				return function(Node $node) use ($rule, $expected) {
-					return $node instanceof $expected
-						&& (bool) $rule[0]($node);
-				};
+				return fn(Node $node) => $node instanceof $expected && $rule[0]($node);
 			
 			case 'string, string':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $rule[0]
-						&& $node->getText() === $rule[1];
-				};
+				return fn(Node $node) => $node::class === $rule[0] && $node->getText() === $rule[1];
 			
 			case 'string, Closure':
-				return function(Node $node) use ($rule) {
-					return get_class($node) === $rule[0]
-						&& $rule[1]($node);
-				};
+				return fn(Node $node) => $node::class === $rule[0] && $rule[1]($node);
 			
 			default:
 				throw new InvalidArgumentException("Unknown rule signature: '$signature'");

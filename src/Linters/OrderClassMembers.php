@@ -194,21 +194,21 @@ class OrderClassMembers extends OrderingLinter
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPublic($node)
 						&& false === $this->isStatic($node)
-						&& 0 !== strpos($node->getName(), '__');
+						&& ! str_starts_with($node->getName(), '__');
 				}),
 			
 			'a protected method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isProtected($node)
 						&& false === $this->isStatic($node)
-						&& 0 !== strpos($node->getName(), '__');
+						&& ! str_starts_with($node->getName(), '__');
 				}),
 			
 			'a private method' => $this->treeMatcher()
 				->withChild(function(MethodDeclaration $node) {
 					return $this->isPrivate($node)
 						&& false === $this->isStatic($node)
-						&& 0 !== strpos($node->getName(), '__');
+						&& ! str_starts_with($node->getName(), '__');
 				}),
 			
 			// TODO: Not so sure about this rule

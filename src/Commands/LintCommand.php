@@ -20,6 +20,7 @@ use RuntimeException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 // TODO: This command needs major work. Right now it's just a quick-and-dirty tool
 // to get LaraLint running. Eventually it'll need to refactoring and improved configuration/etc.
@@ -90,10 +91,8 @@ class LintCommand extends Command
 			return $flag_count > 0
 				? 2
 				: 0;
-		} catch (\Throwable $e) {
-			return $this->option('ignore-parse-errors')
-				? 0
-				: 3;
+		} catch (Throwable $e) {
+			return $this->option('ignore-parse-errors') ? 0 : 3;
 		}
 	}
 	

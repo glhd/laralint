@@ -16,7 +16,7 @@ use SplObjectStorage;
 
 class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLinter
 {
-	protected const DEFAULT_ALIASES = [
+	protected const array DEFAULT_ALIASES = [
 		'App' => 'Illuminate\\Support\\Facades\\App',
 		'Arr' => 'Illuminate\\Support\\Arr',
 		'Artisan' => 'Illuminate\\Support\\Facades\\Artisan',

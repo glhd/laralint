@@ -2,16 +2,17 @@
 
 namespace Glhd\LaraLint\Tests\Support;
 
+use Glhd\LaraLint\Support\Ignore\IgnoreDirectiveParser;
 use Glhd\LaraLint\Tests\TestCase;
 
 class IgnoreDirectiveParserTest extends TestCase
 {
-	protected \Glhd\LaraLint\Support\Ignore\IgnoreDirectiveParser $parser;
+	protected IgnoreDirectiveParser $parser;
 
 	protected function setUp(): void
 	{
 		parent::setUp();
-		$this->parser = new \Glhd\LaraLint\Support\Ignore\IgnoreDirectiveParser();
+		$this->parser = new IgnoreDirectiveParser();
 	}
 
 	public function test_it_parses_same_line_ignore(): void

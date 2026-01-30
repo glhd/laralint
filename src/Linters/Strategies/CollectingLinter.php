@@ -30,6 +30,7 @@ abstract class CollectingLinter extends MatchingLinter
 		return null;
 	}
 	
+	/** @param Collection<int, Node> $nodes */
 	protected function reduceMatchedNodes(Collection $nodes): Node
 	{
 		return $nodes->first();

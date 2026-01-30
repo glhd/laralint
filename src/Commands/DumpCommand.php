@@ -40,12 +40,8 @@ class DumpCommand extends Command
 				->map(function($line) {
 					return str_replace("\t", '  ', rtrim($line)).'  ';
 				});
-			$longest_line = $code_lines->reduce(function($longest_line, $line) {
-				$length = strlen($line);
-				return $length > $longest_line
-					? $length
-					: $longest_line;
-			}, 0);
+			
+			$longest_line = $code_lines->reduce(fn($longest_line, $line) => max(strlen($line), $longest_line), 0);
 			
 			$dashes = $longest_line > ($node_kind_length + 5)
 				? str_repeat('━', $longest_line - $node_kind_length - 5)
@@ -72,7 +68,7 @@ class DumpCommand extends Command
 	
 	protected function writeln($messages, $type = OutputStyle::OUTPUT_NORMAL)
 	{
-		return $this->getOutput()->writeln($messages, $type);
+		$this->getOutput()->writeln($messages, $type);
 	}
 	
 	protected function indent(): string

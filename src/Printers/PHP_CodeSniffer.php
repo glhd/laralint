@@ -8,7 +8,7 @@ use Illuminate\Console\OutputStyle;
 
 class PHP_CodeSniffer extends IlluminatePrinter
 {
-	protected const PHPCS_VERSION = '3.5.3';
+	protected const string PHPCS_VERSION = '3.5.3';
 	
 	public function opening(): void
 	{

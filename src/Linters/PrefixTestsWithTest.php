@@ -24,7 +24,7 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 	
 	public function setFilename(string $filename): void
 	{
-		$this->active = false !== strpos($filename, 'tests/');
+		$this->active = str_contains($filename, 'tests/');
 	}
 	
 	public function enterNode(Node $node): void
@@ -61,7 +61,7 @@ class PrefixTestsWithTest extends MatchingLinter implements FilenameAwareLinter
 				return false === $node->isStatic()
 					&& false === $node->hasModifier(TokenKind::ProtectedKeyword)
 					&& false === $node->hasModifier(TokenKind::PrivateKeyword)
-					&& 0 !== strpos($node->getName(), 'test_');
+					&& ! str_starts_with($node->getName(), 'test_');
 			});
 	}
 	

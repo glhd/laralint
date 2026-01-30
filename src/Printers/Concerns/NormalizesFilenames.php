@@ -14,7 +14,7 @@ trait NormalizesFilenames
 			$this->base_path = App::basePath().DIRECTORY_SEPARATOR;
 		}
 		
-		if (0 === strpos($filename, $this->base_path)) {
+		if (str_starts_with($filename, $this->base_path)) {
 			$filename = substr($filename, strlen($this->base_path));
 		}
 		
