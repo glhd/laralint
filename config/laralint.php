@@ -43,6 +43,7 @@ return [
 	*/
 	'excluded_files' => [
 		'_ide_helper.php',
+		'.phpstorm.meta.php',
 	],
 	
 	/*
@@ -70,6 +71,7 @@ return [
 	'models' => [
 		'App\\Model',
 		'Illuminate\\Database\\Eloquent\\Model',
+		'Illuminate\\Database\\Eloquent\\Relations\\Pivot',
 	],
 	
 	/*
