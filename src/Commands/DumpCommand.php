@@ -14,7 +14,7 @@ class DumpCommand extends Command
 	
 	protected $description = 'Dump the AST for a file for debugging purposes';
 	
-	protected $depth = -1;
+	protected int $depth = -1;
 	
 	public function handle()
 	{
@@ -32,20 +32,19 @@ class DumpCommand extends Command
 		
 		$indent = str_repeat('┃   ', $this->depth);
 		
-		foreach ($nodes as $i => $node) {
+		foreach ($nodes as $node) {
 			$node_name = $node->getNodeKindName();
 			$node_kind_length = strlen($node_name);
 			
 			$code_lines = Collection::make(explode("\n", "\n".trim($node->getText(), "\n\r")."\n"))
-				->map(function($line) {
-					return str_replace("\t", '  ', rtrim($line)).'  ';
-				});
+				->map(fn($line) => str_replace("\t", '  ', rtrim($line)).'  ');
 			
 			$longest_line = $code_lines->reduce(fn($longest_line, $line) => max(strlen($line), $longest_line), 0);
 			
 			$dashes = $longest_line > ($node_kind_length + 5)
 				? str_repeat('━', $longest_line - $node_kind_length - 5)
 				: '';
+			
 			$this->writeln("{$indent}┏━━ <info>{$node_name}</info> ━━{$dashes}┓");
 			
 			$this->writeln(
