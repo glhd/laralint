@@ -40,11 +40,11 @@ class PHP_CodeSniffer extends IlluminatePrinter
 		$results->each(function(Result $result) {
 			$this->writeln(sprintf(
 				'    <error line="%d" column="%d" source="%s" severity="5" fixable="0">',
-				$result->getLine(),
-				$result->getCharacter(),
+				$result->line,
+				$result->character,
 				'LaraLint'
 			));
-			$this->writeln("      {$result->getMessage()}");
+			$this->writeln("      {$result->message}");
 			$this->writeln('    </error>');
 		});
 		

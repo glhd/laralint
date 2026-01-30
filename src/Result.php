@@ -8,42 +8,15 @@ use Microsoft\PhpParser\PositionUtilities;
 
 class Result
 {
-	/**
-	 * @var Node
-	 */
-	public $node;
+	public int $line;
 	
-	/**
-	 * @var string
-	 */
-	public $message;
+	public int $character;
 	
-	/**
-	 * @var int
-	 */
-	public $line;
-	
-	/**
-	 * @var int
-	 */
-	public $character;
-	
-	/**
-	 * @var int
-	 */
-	public $end;
-	
-	/**
-	 * @var \Glhd\LaraLint\Contracts\Linter
-	 */
-	protected $linter;
-	
-	public function __construct(Linter $linter, Node $node, string $message)
-	{
-		$this->linter = $linter;
-		$this->node = $node;
-		$this->message = $message;
-		
+	public function __construct(
+		public Linter $linter,
+		public Node $node,
+		public string $message
+	) {
 		$position = PositionUtilities::getLineCharacterPositionFromPosition(
 			$node->getStartPosition(),
 			$node->getFileContents()
@@ -51,30 +24,5 @@ class Result
 		
 		$this->line = $position->line + 1;
 		$this->character = $position->character;
-	}
-	
-	public function getLinter(): Linter
-	{
-		return $this->linter;
-	}
-	
-	public function getLine(): int
-	{
-		return $this->line;
-	}
-	
-	public function getCharacter(): int
-	{
-		return $this->character;
-	}
-	
-	public function getNode(): Node
-	{
-		return $this->node;
-	}
-	
-	public function getMessage(): string
-	{
-		return $this->message;
 	}
 }

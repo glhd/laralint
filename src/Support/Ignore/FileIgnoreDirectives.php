@@ -33,10 +33,7 @@ class FileIgnoreDirectives
 	
 	public function shouldIgnoreResult(Result $result): bool
 	{
-		$line = $result->getLine();
-		$linter = class_basename($result->getLinter());
-		
-		return $this->shouldIgnoreLine($line, $linter);
+		return $this->shouldIgnoreLine($result->line, $result->linter::class);
 	}
 	
 	public function shouldIgnoreLine(int $line, ?string $linter = null): bool

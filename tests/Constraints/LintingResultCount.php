@@ -59,7 +59,7 @@ class LintingResultCount extends Constraint
 		$linting_messages = $this->other
 			->toBase()
 			->map(function(Result $result) {
-				return ' - "'.$result->getMessage().'" on line '.$result->getLine();
+				return ' - "'.$result->message.'" on line '.$result->line;
 			})
 			->implode("\n");
 		

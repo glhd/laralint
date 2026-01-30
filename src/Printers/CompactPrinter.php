@@ -40,7 +40,7 @@ class CompactPrinter extends IlluminatePrinter
 		$this->writeln($this->normalizeFilename($filename));
 		
 		$results->each(function(Result $result) {
-			$this->writeln("Line {$result->getLine()}: {$result->getMessage()}");
+			$this->writeln("Line {$result->line}: {$result->message}");
 		});
 	}
 }

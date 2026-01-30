@@ -38,7 +38,7 @@ class LintingResult extends Constraint
 	protected function matches($other): bool
 	{
 		return $other->contains(function(Result $result) {
-			if ($result->getLinter()::class !== $this->linter) {
+			if ($result->linter::class !== $this->linter) {
 				return false;
 			}
 			
@@ -47,11 +47,11 @@ class LintingResult extends Constraint
 			}
 			
 			if ($this->match_substring && $this->message) {
-				return str_contains($result->getMessage(), $this->message);
+				return str_contains($result->message, $this->message);
 			}
 			
 			if ($this->message) {
-				return $result->getMessage() === $this->message;
+				return $result->message === $this->message;
 			}
 			
 			return true;
