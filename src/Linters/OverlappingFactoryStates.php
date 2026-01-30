@@ -55,14 +55,14 @@ class OverlappingFactoryStates extends CollectingLinter
 			$overlaps = $this->findMaximalOverlaps($calls->all());
 			
 			foreach ($overlaps as $overlap) {
-				$attributeList = collect($overlap['attributes'])
+				$attribute_list = collect($overlap['attributes'])
 					->map(fn($v, $k) => "{$k} => ".var_export($v, true))
 					->implode(', ');
-				
+
 				$results->push(new Result(
 					$this,
 					$overlap['node'],
-					"Consider extracting a factory state for {$model} — {$overlap['count']} calls share attributes: [{$attributeList}]"
+					"Consider extracting a factory state for {$model} — {$overlap['count']} calls share attributes: [{$attribute_list}]"
 				));
 			}
 		}
@@ -176,16 +176,16 @@ class OverlappingFactoryStates extends CollectingLinter
 			return [];
 		}
 		
-		$attrToCalls = [];
-		
+		$attr_to_calls = [];
+
 		foreach ($calls as $index => $call) {
 			foreach ($call['attributes'] as $key => $value) {
 				$attr = json_encode([$key => $value]);
-				$attrToCalls[$attr][] = $index;
+				$attr_to_calls[$attr][] = $index;
 			}
 		}
-		
-		$frequent = array_filter($attrToCalls, fn($indices) => count($indices) >= self::MIN_OCCURRENCES);
+
+		$frequent = array_filter($attr_to_calls, fn($indices) => count($indices) >= self::MIN_OCCURRENCES);
 		
 		if (count($frequent) < self::MIN_SHARED_ATTRIBUTES) {
 			return [];
@@ -193,37 +193,37 @@ class OverlappingFactoryStates extends CollectingLinter
 		
 		$candidates = [];
 		
-		foreach ($this->combinations(array_keys($frequent), self::MIN_SHARED_ATTRIBUTES) as $attrCombo) {
-			$sharedCallIndices = null;
-			
-			foreach ($attrCombo as $attr) {
-				if ($sharedCallIndices === null) {
-					$sharedCallIndices = $frequent[$attr];
+		foreach ($this->combinations(array_keys($frequent), self::MIN_SHARED_ATTRIBUTES) as $attr_combo) {
+			$shared_call_indices = null;
+
+			foreach ($attr_combo as $attr) {
+				if ($shared_call_indices === null) {
+					$shared_call_indices = $frequent[$attr];
 				} else {
-					$sharedCallIndices = array_values(array_intersect($sharedCallIndices, $frequent[$attr]));
+					$shared_call_indices = array_values(array_intersect($shared_call_indices, $frequent[$attr]));
 				}
 			}
-			
-			if (count($sharedCallIndices) < self::MIN_OCCURRENCES) {
+
+			if (count($shared_call_indices) < self::MIN_OCCURRENCES) {
 				continue;
 			}
-			
-			$fullIntersection = $this->intersectAttributes(
-				array_map(fn($i) => $calls[$i]['attributes'], $sharedCallIndices)
+
+			$full_intersection = $this->intersectAttributes(
+				array_map(fn($i) => $calls[$i]['attributes'], $shared_call_indices)
 			);
-			
-			if (count($fullIntersection) < self::MIN_SHARED_ATTRIBUTES) {
+
+			if (count($full_intersection) < self::MIN_SHARED_ATTRIBUTES) {
 				continue;
 			}
-			
-			ksort($fullIntersection);
-			$key = json_encode($fullIntersection);
-			
-			if (! isset($candidates[$key]) || count($sharedCallIndices) > $candidates[$key]['count']) {
+
+			ksort($full_intersection);
+			$key = json_encode($full_intersection);
+
+			if (! isset($candidates[$key]) || count($shared_call_indices) > $candidates[$key]['count']) {
 				$candidates[$key] = [
-					'attributes' => $fullIntersection,
-					'count' => count($sharedCallIndices),
-					'node' => $calls[$sharedCallIndices[0]]['node'],
+					'attributes' => $full_intersection,
+					'count' => count($shared_call_indices),
+					'node' => $calls[$shared_call_indices[0]]['node'],
 				];
 			}
 		}
@@ -231,22 +231,22 @@ class OverlappingFactoryStates extends CollectingLinter
 		return array_values($candidates);
 	}
 	
-	protected function intersectAttributes(array $attributeSets): array
+	protected function intersectAttributes(array $attribute_sets): array
 	{
-		if (empty($attributeSets)) {
+		if (empty($attribute_sets)) {
 			return [];
 		}
-		
-		$result = array_shift($attributeSets);
-		
-		foreach ($attributeSets as $attrs) {
-			$newResult = [];
+
+		$result = array_shift($attribute_sets);
+
+		foreach ($attribute_sets as $attrs) {
+			$new_result = [];
 			foreach ($result as $key => $value) {
 				if (array_key_exists($key, $attrs) && $attrs[$key] === $value) {
-					$newResult[$key] = $value;
+					$new_result[$key] = $value;
 				}
 			}
-			$result = $newResult;
+			$result = $new_result;
 		}
 		
 		return $result;
