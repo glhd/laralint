@@ -8,11 +8,15 @@ class NoLintingResult extends LintingResult
 	{
 		$linter = class_basename($this->linter);
 		
-		if ($this->message) {
-			return "{$linter} did not trigger '{$this->message}'";
+		$message = $this->message
+			? "{$linter} did not trigger '{$this->message}'"
+			: "{$linter} did not trigger a result";
+		
+		if ($this->line) {
+			$message .= " (on line {$this->line})";
 		}
 		
-		return "{$linter} did not trigger a result";
+		return $message;
 	}
 	
 	protected function matches($other): bool

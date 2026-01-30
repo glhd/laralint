@@ -13,7 +13,8 @@ class LintingResult extends Constraint
 	public function __construct(
 		Linter|string $linter,
 		protected ?string $message = null,
-		protected bool $match_substring = false
+		protected bool $match_substring = false,
+		protected ?int $line = null,
 	) {
 		$this->linter = $linter instanceof Linter ? $linter::class : $linter;
 	}
@@ -22,26 +23,31 @@ class LintingResult extends Constraint
 	{
 		$linter = class_basename($this->linter);
 		
-		if ($this->message) {
-			return "{$linter} triggered '{$this->message}'";
+		$message = $this->message
+			? "{$linter} triggered '{$this->message}'"
+			: "{$linter} triggered a result";
+		
+		if ($this->line) {
+			$message .= " (on line {$this->line})";
 		}
 		
-		return "{$linter} triggered a result";
+		return $message;
 	}
 	
-	/**
-	 * @param \Glhd\LaraLint\ResultCollection $other
-	 * @return bool
-	 */
+	/** @param \Glhd\LaraLint\ResultCollection $other */
 	protected function matches($other): bool
 	{
 		return $other->contains(function(Result $result) {
-			if (get_class($result->getLinter()) !== $this->linter) {
+			if ($result->getLinter()::class !== $this->linter) {
+				return false;
+			}
+			
+			if ($this->line && $result->line !== $this->line) {
 				return false;
 			}
 			
 			if ($this->match_substring && $this->message) {
-				return false !== strpos($result->getMessage(), $this->message);
+				return str_contains($result->getMessage(), $this->message);
 			}
 			
 			if ($this->message) {

@@ -6,7 +6,10 @@ use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Linter;
 use Glhd\LaraLint\Contracts\Runner;
+use Glhd\LaraLint\Result;
 use Glhd\LaraLint\ResultCollection;
+use Glhd\LaraLint\Support\Ignore\FileIgnoreDirectives;
+use Glhd\LaraLint\Support\Ignore\IgnoreDirectiveParser;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node;
 use Microsoft\PhpParser\Parser;
@@ -17,21 +20,32 @@ abstract class SourceCodeRunner implements Runner
 	
 	protected Collection $linters;
 	
+	protected ?FileIgnoreDirectives $ignore = null;
+	
 	public function run(Collection $linters): ResultCollection
 	{
+		$source = $this->source();
+		
+		$this->ignore = (new IgnoreDirectiveParser())->parse($source);
+		
+		if ($this->ignore->shouldIgnoreFile()) {
+			return new ResultCollection();
+		}
+		
 		$this->setLinters($linters);
 		
 		// TODO: Allow for blade compilation
-		$ast = (new Parser())->parseSourceFile($this->source());
+		$ast = (new Parser())->parseSourceFile($source);
 		
-		// We'll walk the entire tree and perform any filtering
-		// or collection logic on all the nodes and tokens
+		// We'll walk the entire tree and perform any filtering or collection logic on all the nodes and tokens
 		$this->walk($ast->getChildNodes());
 		
 		// Then we'll run the "lint" stage on all the linters to collect all our results
-		return new ResultCollection(
+		$results = new ResultCollection(
 			$this->linters->flatMap(fn(Linter $linter) => $linter->lint())
 		);
+		
+		return $this->filterIgnoredResults($results);
 	}
 	
 	protected function setLinters(Collection $linters): self
@@ -79,6 +93,17 @@ abstract class SourceCodeRunner implements Runner
 		return ($linter instanceof ConditionalLinter)
 			? $linter->shouldWalkNode($node)
 			: true;
+	}
+	
+	protected function filterIgnoredResults(ResultCollection $results): ResultCollection
+	{
+		if (! $this->ignore) {
+			return $results;
+		}
+		
+		return new ResultCollection(
+			$results->reject(fn(Result $result) => $this->ignore->shouldIgnoreResult($result))->values()
+		);
 	}
 	
 	abstract protected function source(): string;

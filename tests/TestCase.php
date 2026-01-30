@@ -56,21 +56,27 @@ abstract class TestCase extends Orchestra
 		return $this;
 	}
 	
-	protected function assertLintingResult(string $message = null, bool $match_substring = false): self
-	{
+	protected function assertLintingResult(
+		?string $message = null,
+		bool $match_substring = false,
+		?int $line = null,
+	): self {
 		$this->assertThat(
 			$this->results,
-			new LintingResult($this->linter, $message, $match_substring)
+			new LintingResult($this->linter, $message, $match_substring, $line)
 		);
 		
 		return $this;
 	}
 	
-	protected function assertNoLintingResult(string $message = null, bool $match_substring = false): self
-	{
+	protected function assertNoLintingResult(
+		?string $message = null,
+		bool $match_substring = false,
+		?int $line = null,
+	): self {
 		$this->assertThat(
 			$this->results,
-			new NoLintingResult($this->linter, $message, $match_substring)
+			new NoLintingResult($this->linter, $message, $match_substring, $line)
 		);
 		
 		return $this;
