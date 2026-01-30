@@ -61,5 +61,6 @@ abstract class MatchingLinter implements Linter
 	
 	abstract protected function matcher(): Matcher;
 	
+	/** @param Collection<int, \Microsoft\PhpParser\Node> $nodes */
 	abstract protected function onMatch(Collection $nodes): ?Result;
 }

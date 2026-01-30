@@ -11,15 +11,6 @@ class ResultCollection extends Collection
 	{
 		parent::__construct($items);
 		
-		$this->each(function($item) {
-			$this->validateItemType($item);
-		});
-	}
-	
-	protected function validateItemType($item): void
-	{
-		if (! ($item instanceof Result)) {
-			throw new InvalidArgumentException(__CLASS__.' can only contain '.Result::class.' objects.');
-		}
+		$this->ensure(Result::class);
 	}
 }

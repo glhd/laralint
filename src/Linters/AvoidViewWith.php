@@ -14,12 +14,8 @@ class AvoidViewWith extends MatchingLinter
 	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
-			->withChild(function(CallExpression $node) {
-				return false !== stripos($node->getText(), '->with(');
-			})
-			->withChild(function(MemberAccessExpression $node) {
-				return 0 === stripos($node->dereferencableExpression->getText(), 'view(');
-			});
+			->withChild(fn(CallExpression $node) => false !== stripos($node->getText(), '->with('))
+			->withChild(fn(MemberAccessExpression $node) => 0 === stripos($node->dereferencableExpression->getText(), 'view('));
 	}
 	
 	protected function onMatch(Collection $nodes): ?Result

@@ -54,11 +54,11 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLint
 		'View' => 'Illuminate\\Support\\Facades\\View',
 	];
 	
-	protected $aliases;
+	protected array $aliases;
 	
-	protected $node_map;
+	protected SplObjectStorage $node_map;
 	
-	protected $active = false;
+	protected bool $active = false;
 	
 	public function __construct()
 	{
@@ -101,11 +101,10 @@ class AvoidGlobalFacadeAliases extends MatchingLinter implements ConditionalLint
 			});
 	}
 	
+	/** @param Collection<int, QualifiedName> $nodes */
 	protected function onMatch(Collection $nodes): ?Result
 	{
-		$node = $nodes->first(function($node) {
-			return $this->node_map->contains($node);
-		});
+		$node = $nodes->first(fn($node) => $this->node_map->contains($node));
 		
 		$alias = $this->node_map[$node];
 		$qualified = $this->aliases[$alias];
