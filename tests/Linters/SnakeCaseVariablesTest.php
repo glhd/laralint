@@ -216,7 +216,7 @@ class SnakeCaseVariablesTest extends TestCase
 			->assertLintingResult('Parameter $camelCase should be $camel_case');
 	}
 
-	public function test_it_skips_view_components(): void
+	public function test_it_allows_camel_case_constructor_params_in_view_components(): void
 	{
 		$source = <<<'END_SOURCE'
 		class Alert extends Component {
@@ -230,5 +230,59 @@ class SnakeCaseVariablesTest extends TestCase
 		$this->withLinter(SnakeCaseVariables::class)
 			->lintSource($source, 'app/View/Components/Alert.php')
 			->assertNoLintingResults();
+	}
+
+	public function test_it_flags_snake_case_constructor_params_in_view_components(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Alert extends Component {
+			public function __construct(
+				public $alert_type,
+			) {}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source, 'app/View/Components/Alert.php')
+			->assertLintingResult('Parameter $alert_type should be $alertType');
+	}
+
+	public function test_it_still_flags_snake_case_violations_in_view_component_variables(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Alert extends Component {
+			public function __construct(
+				public $alertType,
+			) {}
+
+			public function render() {
+				$badVariable = 'test';
+				return view('components.alert');
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source, 'app/View/Components/Alert.php')
+			->assertLintingResult('Variable $badVariable should be $bad_variable');
+	}
+
+	public function test_it_still_flags_non_constructor_params_as_snake_case_in_view_components(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Alert extends Component {
+			public function __construct(
+				public $alertType,
+			) {}
+
+			public function render($badParam) {
+				return view('components.alert');
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source, 'app/View/Components/Alert.php')
+			->assertLintingResult('Parameter $badParam should be $bad_param');
 	}
 }

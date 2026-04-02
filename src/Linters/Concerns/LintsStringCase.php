@@ -15,4 +15,14 @@ trait LintsStringCase
 
 		return strtolower($name);
 	}
+
+	protected function isCamelCase(string $name): bool
+	{
+		return (bool) preg_match('/^[a-z][a-zA-Z0-9]*$/', $name);
+	}
+
+	protected function toCamelCase(string $name): string
+	{
+		return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $name))));
+	}
 }
