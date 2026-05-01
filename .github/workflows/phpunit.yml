@@ -13,9 +13,9 @@ jobs:
 
     strategy:
       matrix:
-        laravel: [ 11.*, 12.* ]
+        laravel: [ 11.*, 12.*, 13.x]
         dependency-version: [ lowest, stable ]
-        php: [ 8.3, 8.4 ]
+        php: [ 8.3, 8.4, 8.5 ]
 
     name: ${{ matrix.laravel }} on ${{ matrix.php }} (${{ matrix.dependency-version }} deps)
 
