@@ -1,0 +1,24 @@
+tests/Linters/AvoidHigherOrderCollectionProxiesTest.php
+  s_ee06a1230cabc6::t_b981f0d6d66c6c 1-68
+src/Linters/AvoidHigherOrderCollectionProxies.php
+  s_ee06a1230cabc6::t_980d9e295e4d56 1-64
+src/Presets/LaraLint.php
+  s_ee06a1230cabc6::t_c758b18709e8b1 39
+  s_ee06a1230cabc6::t_7fe0bfe6ff463b 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "016ab5f6b15b3d101d2c7756b3915d0a3992a7c6",
+  "prompts": {},
+  "sessions": {
+    "s_ee06a1230cabc6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dbb5ee7b-0eb2-451d-a5af-f0c4d49eeb83",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Bogdan Kharchenko <scriptor@gmail.com>"
+    }
+  }
+}
