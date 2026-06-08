@@ -1,0 +1,14 @@
+composer.json
+  h_3e6bb85bf97756 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "50f819ea77497762fdae126181837ef1aa17f97b",
+  "prompts": {},
+  "humans": {
+    "h_3e6bb85bf97756": {
+      "author": "Bogdan Kharchenko <scriptor@gmail.com>"
+    }
+  }
+}
