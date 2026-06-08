@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Presets;
 
 use Glhd\LaraLint\Contracts\Preset;
 use Glhd\LaraLint\Linters\AvoidGlobalFacadeAliases;
+use Glhd\LaraLint\Linters\AvoidHigherOrderCollectionProxies;
 use Glhd\LaraLint\Linters\AvoidViewCompact;
 use Glhd\LaraLint\Linters\AvoidViewWith;
 use Glhd\LaraLint\Linters\DoNotApplyMiddlewareInControllers;
@@ -35,6 +36,7 @@ class LaraLint implements Preset
 			AvoidViewCompact::class,
 			PreferAuthId::class,
 			AvoidGlobalFacadeAliases::class,
+			AvoidHigherOrderCollectionProxies::class,
 			OrderClassMembers::class,
 			OrderModelMembers::class,
 			PreferFullyRestfulControllers::class,
