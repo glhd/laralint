@@ -1,0 +1,21 @@
+.github/workflows/phpunit.yml
+  s_ee06a1230cabc6::t_035c9a8bd272c4 19-25
+  s_ee06a1230cabc6::t_30e82096f2e92c 57-66
+  s_ee06a1230cabc6::t_ae733c5d839baa 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "19aaf7eb953a04d510d941bec903db69396dfb78",
+  "prompts": {},
+  "sessions": {
+    "s_ee06a1230cabc6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dbb5ee7b-0eb2-451d-a5af-f0c4d49eeb83",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Bogdan Kharchenko <scriptor@gmail.com>"
+    }
+  }
+}
