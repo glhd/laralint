@@ -16,6 +16,13 @@ jobs:
         laravel: [ 11.*, 12.*, 13.x]
         dependency-version: [ lowest, stable ]
         php: [ 8.3, 8.4, 8.5 ]
+        include:
+          - laravel: 11.*
+            testbench: ^9.16.0
+          - laravel: 12.*
+            testbench: ^10.9.0
+          - laravel: 13.x
+            testbench: ^11.0.0
 
     name: ${{ matrix.laravel }} on ${{ matrix.php }} (${{ matrix.dependency-version }} deps)
 
@@ -47,13 +54,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require --no-interaction --prefer-dist --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} "illuminate/support:${{ matrix.laravel }}"
+          # The matrix exercises older-but-still-supported Laravel branches, so
+          # don't let advisories against those branches block the test install.
+          composer config audit.block-insecure false
+          # Pin the framework and testbench together so the whole graph (testbench
+          # included) moves to the matrix's Laravel version rather than leaving
+          # testbench pinned high and creating an unsolvable conflict.
+          composer require --no-interaction --no-update \
+            "laravel/framework:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}"
+          composer update --no-interaction --prefer-dist --prefer-${{ matrix.dependency-version }} --with-all-dependencies
 
       - name: Execute tests
         run: vendor/bin/phpunit --coverage-html "${{ github.workspace }}/code-coverage"
 
       - name: Publish code coverage
-        if: matrix.laravel == 12 && matrix.dependency-version == 'stable'
+        if: matrix.laravel == '12.*' && matrix.dependency-version == 'stable'
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage
