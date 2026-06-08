@@ -8,24 +8,12 @@ use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
 use Microsoft\PhpParser\Node\Expression\MemberAccessExpression;
 use Microsoft\PhpParser\Token;
+use ReflectionProperty;
 
 class AvoidHigherOrderCollectionProxies extends MatchingLinter
 {
-	/**
-	 * The methods Laravel exposes as higher-order collection proxies. Accessing
-	 * any of these as a property (rather than calling them) returns a proxy that
-	 * forwards a subsequent member access to every item in the collection.
-	 *
-	 * @see \Illuminate\Collections\Traits\EnumeratesValues::$proxies
-	 */
-	protected const array PROXIES = [
-		'average', 'avg', 'contains', 'doesntContain', 'each', 'every', 'filter',
-		'first', 'flatMap', 'groupBy', 'hasMany', 'hasSole', 'keyBy', 'last', 'map',
-		'max', 'min', 'partition', 'percentage', 'reject', 'skipUntil', 'skipWhile',
-		'some', 'sortBy', 'sortByDesc', 'sum', 'takeUntil', 'takeWhile', 'unique',
-		'unless', 'until', 'when',
-	];
-
+	protected array $proxy_methods;
+	
 	protected function matcher(): Matcher
 	{
 		return $this->treeMatcher()
@@ -36,29 +24,35 @@ class AvoidHigherOrderCollectionProxies extends MatchingLinter
 				// callable of a CallExpression, so requiring the parent to chain
 				// another member access off of us excludes it cleanly.
 				$member_name = $node->memberName;
-
+				
 				if (! $member_name instanceof Token) {
 					return false;
 				}
-
-				if (! in_array($member_name->getText($node->getFileContents()), static::PROXIES, true)) {
+				
+				if (! in_array($member_name->getText($node->getFileContents()), $this->proxyMethods(), true)) {
 					return false;
 				}
-
+				
 				return $node->parent instanceof MemberAccessExpression
 					&& $node->parent->dereferencableExpression === $node;
 			});
 	}
-
+	
+	/** @param \Illuminate\Support\Collection<int, MemberAccessExpression> $nodes */
 	protected function onMatch(Collection $nodes): ?Result
 	{
 		$node = $nodes->first();
 		$method = $node->memberName->getText($node->getFileContents());
-
+		
 		return new Result(
 			$this,
 			$node,
 			"Call ->{$method}() with a closure rather than using the magic higher-order collection proxy."
 		);
+	}
+	
+	protected function proxyMethods(): array
+	{
+		return $this->proxy_methods ??= (new ReflectionProperty(Collection::class, 'proxies'))->getValue();
 	}
 }

@@ -65,4 +65,15 @@ class AvoidHigherOrderCollectionProxiesTest extends TestCase
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
+	
+	public function test_it_does_not_flag_a_variable_named_a_proxy_method(): void
+	{
+		$source = <<<'END_SOURCE'
+		$result = $map->get();
+		END_SOURCE;
+		
+		$this->withLinter(AvoidHigherOrderCollectionProxies::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
 }
