@@ -47,7 +47,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require --no-interaction --prefer-dist --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} "illuminate/support:${{ matrix.laravel }}"
+          composer require --no-interaction --prefer-dist --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} "laravel/framework:${{ matrix.laravel }}"
 
       - name: Execute tests
         run: vendor/bin/phpunit --coverage-html "${{ github.workspace }}/code-coverage"
