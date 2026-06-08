@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        laravel: [ 11.*, 12.*, 13.x]
+        laravel: [ 11.*, 12.*, 13.*]
         dependency-version: [ lowest, stable ]
         php: [ 8.3, 8.4, 8.5 ]
 
@@ -53,7 +53,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-html "${{ github.workspace }}/code-coverage"
 
       - name: Publish code coverage
-        if: matrix.laravel == 12 && matrix.dependency-version == 'stable'
+        if: matrix.laravel == '13.*' && matrix.dependency-version == 'stable'
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage
