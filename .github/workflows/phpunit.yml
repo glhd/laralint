@@ -44,10 +44,15 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+            
+      - name: Disable `policy.advisories.block` for Laravel 11
+        run: |
+          composer config --no-interaction policy.advisories.block false
+        if: matrix.laravel == '11.*'
 
       - name: Install dependencies
         run: |
-          composer require --no-interaction --prefer-dist --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} "laravel/framework:${{ matrix.laravel }}"
+          composer require --dev --no-interaction --prefer-dist --update-with-all-dependencies --prefer-${{ matrix.dependency-version }} "laravel/framework:${{ matrix.laravel }}"
 
       - name: Execute tests
         run: vendor/bin/phpunit --coverage-html "${{ github.workspace }}/code-coverage"
