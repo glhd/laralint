@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Concerns\ChecksInheritedMembers;
 use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
 use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
@@ -15,6 +16,7 @@ use Microsoft\PhpParser\Node\Parameter;
 
 class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 {
+	use ChecksInheritedMembers;
 	use LintsStringCase;
 
 	protected bool $current_file_is_view_component = false;
@@ -49,7 +51,8 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 
 				return null !== $name
 					&& !in_array($name, $this->excluded, true)
-					&& !$this->isSnakeCase($name);
+					&& !$this->isSnakeCase($name)
+					&& !$this->isInheritedParameterVariable($node, $name);
 			}),
 			$this->treeMatcher()->withChild(function(Parameter $node) {
 				$name = $node->getName();
@@ -62,7 +65,8 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 					return !$this->isCamelCase($name);
 				}
 
-				return !$this->isSnakeCase($name);
+				return !$this->isSnakeCase($name)
+					&& !$this->isInheritedParameter($node, $name);
 			})
 		);
 	}
@@ -84,6 +88,22 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 			$node,
 			"{$type} \${$name} should be \${$suggested}"
 		);
+	}
+
+	protected function isInheritedParameter(Parameter $node, string $name): bool
+	{
+		$method = $node->parent?->parent;
+
+		return $method instanceof MethodDeclaration
+			&& $this->isInheritedParameterName($method, $name);
+	}
+
+	protected function isInheritedParameterVariable(Variable $node, string $name): bool
+	{
+		$method = $node->getFirstAncestor(MethodDeclaration::class);
+
+		return $method instanceof MethodDeclaration
+			&& $this->isInheritedParameterName($method, $name);
 	}
 
 	protected function isConstructorParameter(Parameter $node): bool

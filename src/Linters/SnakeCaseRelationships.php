@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\ConditionalLinter;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Concerns\ChecksInheritedMembers;
 use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Concerns\LintsModelRelations;
 use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
@@ -15,6 +16,7 @@ use Microsoft\PhpParser\Node\MethodDeclaration;
 
 class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 {
+	use ChecksInheritedMembers;
 	use EvaluatesNodes;
 	use LintsModelRelations;
 	use LintsStringCase;
@@ -25,7 +27,8 @@ class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 		return $this->treeMatcher()
 			->withChild(fn(MethodDeclaration $node) => $this->isPublic($node)
 				&& $this->isRelationship($node)
-				&& ! $this->isSnakeCase($node->getName()));
+				&& ! $this->isSnakeCase($node->getName())
+				&& ! $this->isInheritedMethod($node));
 	}
 
 	/** @param Collection<int, MethodDeclaration> $nodes */
