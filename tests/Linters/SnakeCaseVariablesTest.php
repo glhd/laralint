@@ -285,4 +285,84 @@ class SnakeCaseVariablesTest extends TestCase
 			->lintSource($source, 'app/View/Components/Alert.php')
 			->assertLintingResult('Parameter $badParam should be $bad_param');
 	}
+
+	public function test_it_ignores_parameters_of_overridden_methods(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Child extends ParentClass
+		{
+			#[\Override]
+			public function handle(string $someValue, int $otherValue): void
+			{
+				echo $someValue;
+				$callback = fn() => $otherValue;
+				$other = function() use ($someValue) {
+					return $someValue;
+				};
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+
+	public function test_it_ignores_parameters_of_overridden_methods_with_imported_attribute(): void
+	{
+		$source = <<<'END_SOURCE'
+		namespace App;
+
+		use Override;
+
+		$handler = new class implements ParentInterface {
+			#[Override]
+			public function process(array $inputData): array
+			{
+				return $inputData;
+			}
+		};
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+
+	public function test_it_still_flags_local_variables_in_overridden_methods(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Child extends ParentClass
+		{
+			#[\Override]
+			public function handle(string $someValue): void
+			{
+				$localValue = $someValue;
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertLintingResultCount(1)
+			->assertLintingResult('Variable $localValue should be $local_value');
+	}
+
+	public function test_it_still_flags_parameters_of_methods_without_override(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Child extends ParentClass
+		{
+			public function handle(string $someValue): void
+			{
+				echo $someValue;
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertLintingResult('Parameter $someValue should be $some_value')
+			->assertLintingResult('Variable $someValue should be $some_value');
+	}
 }

@@ -25,7 +25,8 @@ class SnakeCaseRelationships extends MatchingLinter implements ConditionalLinter
 		return $this->treeMatcher()
 			->withChild(fn(MethodDeclaration $node) => $this->isPublic($node)
 				&& $this->isRelationship($node)
-				&& ! $this->isSnakeCase($node->getName()));
+				&& ! $this->isSnakeCase($node->getName())
+				&& ! $this->hasAttribute($node, 'Override'));
 	}
 
 	/** @param Collection<int, MethodDeclaration> $nodes */
