@@ -3,9 +3,7 @@
 namespace Glhd\LaraLint\Tests\Linters;
 
 use Glhd\LaraLint\Linters\SnakeCaseRelationships;
-use Glhd\LaraLint\Tests\fixtures\Inheritance\ParentModel;
 use Glhd\LaraLint\Tests\TestCase;
-use Illuminate\Support\Facades\Config;
 
 class SnakeCaseRelationshipsTest extends TestCase
 {
@@ -157,27 +155,24 @@ class SnakeCaseRelationshipsTest extends TestCase
 			->assertLintingResultCount(2);
 	}
 
-	public function test_it_ignores_relationships_inherited_from_a_parent_model(): void
+	public function test_it_ignores_overridden_relationships(): void
 	{
-		Config::set('laralint.models', [ParentModel::class]);
-		
 		$source = <<<'END_SOURCE'
-		use Glhd\LaraLint\Tests\fixtures\Inheritance\ParentModel;
-		
-		class Foo extends ParentModel
+		class Foo extends \App\Model
 		{
+			#[\Override]
 			public function relatedItems()
 			{
 				return $this->hasMany(Item::class);
 			}
-			
+
 			public function otherItems()
 			{
 				return $this->hasMany(Item::class);
 			}
 		}
 		END_SOURCE;
-		
+
 		$this->withLinter(SnakeCaseRelationships::class)
 			->lintSource($source)
 			->assertLintingResultCount(1)

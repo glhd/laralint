@@ -286,102 +286,83 @@ class SnakeCaseVariablesTest extends TestCase
 			->assertLintingResult('Parameter $badParam should be $bad_param');
 	}
 
-	public function test_it_ignores_parameter_names_from_a_parent_class(): void
+	public function test_it_ignores_parameters_of_overridden_methods(): void
 	{
 		$source = <<<'END_SOURCE'
-		namespace App;
-		
-		use Glhd\LaraLint\Tests\fixtures\Inheritance\ParentClass;
-		
 		class Child extends ParentClass
 		{
-			public function handle(string $someValue, int $other_value): void
+			#[\Override]
+			public function handle(string $someValue, int $otherValue): void
 			{
 				echo $someValue;
+				$callback = fn() => $otherValue;
+				$other = function() use ($someValue) {
+					return $someValue;
+				};
 			}
 		}
 		END_SOURCE;
-		
+
 		$this->withLinter(SnakeCaseVariables::class)
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-	
-	public function test_it_ignores_parameter_names_from_an_interface(): void
+
+	public function test_it_ignores_parameters_of_overridden_methods_with_imported_attribute(): void
 	{
 		$source = <<<'END_SOURCE'
 		namespace App;
-		
-		class Child implements \Glhd\LaraLint\Tests\fixtures\Inheritance\ParentInterface
-		{
-			public function process(array $inputData): array
-			{
-				return array_map(fn($item) => $item, $inputData);
-			}
-		}
-		END_SOURCE;
-		
-		$this->withLinter(SnakeCaseVariables::class)
-			->lintSource($source)
-			->assertNoLintingResults();
-	}
-	
-	public function test_it_ignores_parameter_names_from_an_interface_on_an_anonymous_class(): void
-	{
-		$source = <<<'END_SOURCE'
-		use Glhd\LaraLint\Tests\fixtures\Inheritance\ParentInterface;
-		
+
+		use Override;
+
 		$handler = new class implements ParentInterface {
+			#[Override]
 			public function process(array $inputData): array
 			{
 				return $inputData;
 			}
 		};
 		END_SOURCE;
-		
+
 		$this->withLinter(SnakeCaseVariables::class)
 			->lintSource($source)
 			->assertNoLintingResults();
 	}
-	
-	public function test_it_still_flags_names_not_dictated_by_a_parent(): void
+
+	public function test_it_still_flags_local_variables_in_overridden_methods(): void
 	{
 		$source = <<<'END_SOURCE'
-		use Glhd\LaraLint\Tests\fixtures\Inheritance\ParentClass;
-		
 		class Child extends ParentClass
 		{
-			public function handle(string $renamedValue, int $other_value): void
+			#[\Override]
+			public function handle(string $someValue): void
 			{
-				$localValue = $renamedValue;
-			}
-			
-			public function hidden(string $privateValue): void
-			{
+				$localValue = $someValue;
 			}
 		}
 		END_SOURCE;
-		
+
 		$this->withLinter(SnakeCaseVariables::class)
 			->lintSource($source)
-			->assertLintingResult('Parameter $renamedValue should be $renamed_value')
-			->assertLintingResult('Variable $localValue should be $local_value')
-			->assertLintingResult('Parameter $privateValue should be $private_value');
+			->assertLintingResultCount(1)
+			->assertLintingResult('Variable $localValue should be $local_value');
 	}
-	
-	public function test_it_still_flags_names_when_the_parent_cannot_be_loaded(): void
+
+	public function test_it_still_flags_parameters_of_methods_without_override(): void
 	{
 		$source = <<<'END_SOURCE'
-		class Child extends \App\DoesNotExist
+		class Child extends ParentClass
 		{
 			public function handle(string $someValue): void
 			{
+				echo $someValue;
 			}
 		}
 		END_SOURCE;
-		
+
 		$this->withLinter(SnakeCaseVariables::class)
 			->lintSource($source)
-			->assertLintingResult('Parameter $someValue should be $some_value');
+			->assertLintingResult('Parameter $someValue should be $some_value')
+			->assertLintingResult('Variable $someValue should be $some_value');
 	}
 }
