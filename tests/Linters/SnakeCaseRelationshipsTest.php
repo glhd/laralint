@@ -154,4 +154,28 @@ class SnakeCaseRelationshipsTest extends TestCase
 			->lintSource($source)
 			->assertLintingResultCount(2);
 	}
+
+	public function test_it_ignores_overridden_relationships(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Foo extends \App\Model
+		{
+			#[\Override]
+			public function relatedItems()
+			{
+				return $this->hasMany(Item::class);
+			}
+
+			public function otherItems()
+			{
+				return $this->hasMany(Item::class);
+			}
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseRelationships::class)
+			->lintSource($source)
+			->assertLintingResultCount(1)
+			->assertLintingResult('Relationship method otherItems() should be other_items()');
+	}
 }

@@ -4,6 +4,7 @@ namespace Glhd\LaraLint\Linters;
 
 use Glhd\LaraLint\Contracts\FilenameAwareLinter;
 use Glhd\LaraLint\Contracts\Matcher;
+use Glhd\LaraLint\Linters\Concerns\EvaluatesNodes;
 use Glhd\LaraLint\Linters\Concerns\LintsStringCase;
 use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
@@ -16,6 +17,7 @@ use Microsoft\PhpParser\Node\Parameter;
 
 class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 {
+	use EvaluatesNodes;
 	use LintsStringCase;
 
 	protected bool $current_file_is_view_component = false;
@@ -51,7 +53,8 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 				return null !== $name
 					&& !in_array($name, $this->excluded, true)
 					&& !$this->isStaticPropertyAccess($node)
-					&& !$this->isSnakeCase($name);
+					&& !$this->isSnakeCase($name)
+					&& !$this->isOverriddenMethodParameterVariable($node, $name);
 			}),
 			$this->treeMatcher()->withChild(function(Parameter $node) {
 				$name = $node->getName();
@@ -64,7 +67,8 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 					return !$this->isCamelCase($name);
 				}
 
-				return !$this->isSnakeCase($name);
+				return !$this->isSnakeCase($name)
+					&& !$this->isOverriddenMethodParameter($node);
 			})
 		);
 	}
@@ -94,6 +98,31 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 		// elsewhere (often in third-party code), so we don't lint it here.
 		return $node->parent instanceof ScopedPropertyAccessExpression
 			&& $node->parent->memberName === $node;
+	}
+
+	protected function isOverriddenMethodParameter(Parameter $node): bool
+	{
+		$method = $node->parent?->parent;
+
+		return $method instanceof MethodDeclaration
+			&& $this->hasAttribute($method, 'Override');
+	}
+
+	protected function isOverriddenMethodParameterVariable(Variable $node, string $name): bool
+	{
+		$method = $node->getFirstAncestor(MethodDeclaration::class);
+
+		if (! $method instanceof MethodDeclaration || ! $this->hasAttribute($method, 'Override')) {
+			return false;
+		}
+
+		foreach ($method->parameters?->getElements() ?? [] as $parameter) {
+			if ($parameter instanceof Parameter && $parameter->getName() === $name) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	protected function isConstructorParameter(Parameter $node): bool
