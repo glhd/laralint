@@ -9,6 +9,7 @@ use Glhd\LaraLint\Linters\Matchers\AggregateMatcher;
 use Glhd\LaraLint\Linters\Strategies\MatchingLinter;
 use Glhd\LaraLint\Result;
 use Illuminate\Support\Collection;
+use Microsoft\PhpParser\Node\Expression\ScopedPropertyAccessExpression;
 use Microsoft\PhpParser\Node\Expression\Variable;
 use Microsoft\PhpParser\Node\MethodDeclaration;
 use Microsoft\PhpParser\Node\Parameter;
@@ -49,6 +50,7 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 
 				return null !== $name
 					&& !in_array($name, $this->excluded, true)
+					&& !$this->isStaticPropertyAccess($node)
 					&& !$this->isSnakeCase($name);
 			}),
 			$this->treeMatcher()->withChild(function(Parameter $node) {
@@ -84,6 +86,14 @@ class SnakeCaseVariables extends MatchingLinter implements FilenameAwareLinter
 			$node,
 			"{$type} \${$name} should be \${$suggested}"
 		);
+	}
+
+	protected function isStaticPropertyAccess(Variable $node): bool
+	{
+		// Accessing a property such as `Stripe::$apiVersion` refers to a name defined
+		// elsewhere (often in third-party code), so we don't lint it here.
+		return $node->parent instanceof ScopedPropertyAccessExpression
+			&& $node->parent->memberName === $node;
 	}
 
 	protected function isConstructorParameter(Parameter $node): bool

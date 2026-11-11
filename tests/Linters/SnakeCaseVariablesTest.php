@@ -285,4 +285,44 @@ class SnakeCaseVariablesTest extends TestCase
 			->lintSource($source, 'app/View/Components/Alert.php')
 			->assertLintingResult('Parameter $badParam should be $bad_param');
 	}
+
+	public function test_it_allows_accessing_camel_case_properties_on_objects_and_classes(): void
+	{
+		$source = <<<'END_SOURCE'
+		$version = Stripe::$apiVersion;
+		$version = static::$apiVersion;
+		$version = $stripe->apiVersion;
+		$version = $stripe?->apiVersion;
+		Stripe::$apiVersion = '2024-01-01';
+		$stripe->apiVersion = '2024-01-01';
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertNoLintingResults();
+	}
+
+	public function test_it_still_flags_variables_assigned_from_property_access(): void
+	{
+		$source = <<<'END_SOURCE'
+		$stripeVersion = $stripe->getVersion();
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertLintingResult('Variable $stripeVersion should be $stripe_version');
+	}
+
+	public function test_it_still_flags_camel_case_static_property_declarations(): void
+	{
+		$source = <<<'END_SOURCE'
+		class Stripe {
+			public static $apiVersion;
+		}
+		END_SOURCE;
+
+		$this->withLinter(SnakeCaseVariables::class)
+			->lintSource($source)
+			->assertLintingResult('Variable $apiVersion should be $api_version');
+	}
 }
